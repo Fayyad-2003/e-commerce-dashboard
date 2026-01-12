@@ -1,6 +1,7 @@
 // "use client";
 import Link from "next/link";
 import { Pagination } from "../common";
+import { Archive } from "lucide-react";
 
 export default function OrdersTable({
   orders = [],
@@ -14,6 +15,7 @@ export default function OrdersTable({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">أرشفة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الطلبية</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
@@ -25,6 +27,14 @@ export default function OrdersTable({
           {orders.length > 0 ? (
             orders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50">
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  <button
+                    className="text-gray-600 hover:text-orange-600 transition-colors"
+                    title="أرشفة الطلبية"
+                  >
+                    <Archive className="w-5 h-5" />
+                  </button>
+                </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderNumber}</td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.date || "—"}</td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
@@ -55,7 +65,7 @@ export default function OrdersTable({
               </tr>
             ))
           ) : (
-            <tr><td colSpan={5} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
+            <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
           )}
         </tbody>
       </table>
