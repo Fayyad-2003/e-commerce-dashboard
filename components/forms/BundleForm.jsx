@@ -29,6 +29,17 @@ function normalizeDateForInput(value) {
   return "";
 }
 
+/** normalizeArabic: standardizes Arabic characters for better searching. */
+function normalizeArabic(text) {
+  if (!text) return "";
+  return text
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى/g, "ي")
+    .replace(/[\u064B-\u0652]/g, "") // remove diacritics
+    .replace(/ـ/g, ""); // remove kashida
+}
+
 /**
  * ✅ SECURITY COMPONENT: SafeImage
  * This component acts as a firewall. It isolates the raw 'src' prop
@@ -323,9 +334,11 @@ export default function BundleForm({
     }
   };
 
-  const filteredProducts = productsList.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = productsList.filter((p) => {
+    const name = normalizeArabic(p.name.toLowerCase());
+    const term = normalizeArabic(searchTerm.toLowerCase());
+    return name.includes(term);
+  });
 
   return (
     <form
@@ -475,24 +488,24 @@ export default function BundleForm({
                     />
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
+                      <div className="flex gap-2 items-start">
                         <span className="font-semibold truncate">{p.name}</span>
-                        <span className="text-blue-600 font-bold ml-2">
+                        <span className="text-gray-600 font-bold ml-2">
                           {p.base_price} $
                         </span>
                       </div>
                       <div className="text-xs text-gray-500 truncate" title={p.description}>
                         {p.description}
                       </div>
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-[10px] bg-gray-100 px-1 rounded text-gray-600">
-                          {p.unit_of_measure || "وحدة غير معروفة"}
-                        </span>
+                      <div className="flex gap-3 items-center mt-1">
                         {qty > 0 && (
                           <div className="text-xs text-blue-600 font-medium">
                             الكمية: {qty}
                           </div>
                         )}
+                        <span className="text-[10px] bg-gray-100 px-1 rounded text-gray-600">
+                          {p.unit_of_measure || "وحدة غير معروفة"}
+                        </span>
                       </div>
                     </div>
                   </div>

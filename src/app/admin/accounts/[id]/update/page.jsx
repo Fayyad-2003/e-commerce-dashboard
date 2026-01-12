@@ -104,60 +104,59 @@ export default function UpdateCustomerPage() {
       loadingText="جاري تحميل البيانات..."
       errorText={error}
     >
-      <div className="p-6 space-y-6">
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          className="text-gray-700 hover:text-black flex gap-1"
-        >
-          <MoveLeft size={20} /> <span>رجوع</span>
-        </button>
+      <div className="bg-white rounded-lg shadow-md overflow-hidden p-8 max-w-3xl mx-auto">
+        <div className="flex justify-between items-center mb-6 border-b pb-4">
+          <h2 className="text-2xl font-bold text-[#402E32]">تعديل بيانات الزبون</h2>
+          <button
+            onClick={() => router.back()}
+            className="text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          >
+            <MoveLeft size={20} /> <span>إغلاق</span>
+          </button>
+        </div>
 
-        <h2 className="text-xl font-semibold">تعديل بيانات الزبون</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* name */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">اسم الزبون</label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#5A443A] focus:outline-none"
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
+            </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 bg-white p-6 rounded-md shadow-md max-w-md"
-        >
-          {/* name */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">اسم الزبون</label>
-            <input
-              className="border p-2 rounded-md"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-            />
+            {/* phone */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#5A443A] focus:outline-none"
+                type="text"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
           </div>
 
           {/* email */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">البريد الإلكتروني</label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
             <input
-              className="border p-2 rounded-md"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#5A443A] focus:outline-none"
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
 
-          {/* phone */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">رقم الهاتف</label>
-            <input
-              className="border p-2 rounded-md"
-              type="text"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </div>
-
           {/* password */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium">كلمة المرور (اختياري)</label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">كلمة المرور (اختياري)</label>
             <input
-              className="border p-2 rounded-md"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#5A443A] focus:outline-none"
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -165,12 +164,14 @@ export default function UpdateCustomerPage() {
             />
           </div>
 
-          <button
-            disabled={saving}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-md w-full"
-          >
-            {saving ? "جارٍ الحفظ..." : "حفظ التغييرات"}
-          </button>
+          <div className="flex justify-end pt-4">
+            <button
+              disabled={saving}
+              className="bg-[#5A443A] hover:bg-[#402E32] text-white px-8 py-2 rounded-md transition-colors disabled:opacity-70"
+            >
+              {saving ? "جارٍ الحفظ..." : "حفظ التغييرات"}
+            </button>
+          </div>
         </form>
       </div>
     </ConditionalRender>
