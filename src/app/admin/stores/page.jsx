@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import Table from "../../../../components/home/Table";
 import { ConditionalRender, SectionLayout } from "../../../../components/common";
-import { useStores } from "../../../../hooks";
+import useStores from "../../../../hooks/stores/useStores";
 
 function StoresPageClient() {
     const {

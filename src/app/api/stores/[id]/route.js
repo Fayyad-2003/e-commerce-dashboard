@@ -1,52 +1,50 @@
-import { backendClient } from "../../../../../lib/api";
 import { NextResponse } from "next/server";
+import { handleResponse, serverFetch } from "@/lib/api";
 
 export async function GET(req, { params }) {
     try {
-        const res = await backendClient(`/admin/stores/${params.id}`);
-        return NextResponse.json(res.data);
-    } catch (error) {
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
+            method: "GET"
+        });
+        return handleResponse(res);
+    } catch (err) {
         return NextResponse.json(
-            { success: false, message: error.message },
-            { status: error.response?.status || 500 }
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
         );
     }
 }
 
 export async function DELETE(req, { params }) {
     try {
-        const res = await backendClient.delete(`/admin/stores/${params.id}`, {
-            headers: {
-                Authorization: req.headers.get("Authorization"),
-            },
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
+            method: "DELETE",
         });
-        return NextResponse.json(res.data);
-    } catch (error) {
+        return handleResponse(res);
+    } catch (err) {
         return NextResponse.json(
-            { success: false, message: error.message },
-            { status: error.response?.status || 500 }
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
         );
     }
 }
 
 export async function POST(req, { params }) {
-    // Usually for UPDATE (PUT/PATCH), but using POST with _method or direct POST for FormData handling in some backends
     try {
         const formData = await req.formData();
-        // Append _method=PUT if your backend requires it for FormData updates
+        // Assuming update uses POST or PUT depending on backend. 
+        // Ads update uses POST. Check if backend requires _method=PUT.
         // formData.append("_method", "PUT"); 
 
-        const res = await backendClient.post(`/admin/stores/${params.id}`, formData, {
-            headers: {
-                Authorization: req.headers.get("Authorization"),
-                "Content-Type": "multipart/form-data",
-            },
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
+            method: "POST",
+            body: formData,
         });
-        return NextResponse.json(res.data);
-    } catch (error) {
+        return handleResponse(res);
+    } catch (err) {
         return NextResponse.json(
-            { success: false, message: error.message, errors: error.response?.data?.errors },
-            { status: error.response?.status || 500 }
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
         );
     }
 }

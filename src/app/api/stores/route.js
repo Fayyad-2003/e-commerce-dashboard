@@ -1,25 +1,23 @@
-import { backendClient } from "../../../../lib/api";
 import { NextResponse } from "next/server";
+import { handleResponse, serverFetch } from "@/lib/api";
 
 export async function GET(req) {
-    const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page") || 1;
-    const per_page = searchParams.get("per_page") || 10;
-    const search = searchParams.get("search") || "";
-
     try {
-        const res = await backendClient(`/admin/stores`, {
-            params: { page, per_page, search },
-            headers: {
-                Authorization: req.headers.get("Authorization"),
-            },
-        });
+        const { searchParams } = new URL(req.url);
+        const page = searchParams.get("page") || "1";
+        const per_page = searchParams.get("per_page") || "10";
+        const search = searchParams.get("search") || "";
 
-        return NextResponse.json(res.data);
-    } catch (error) {
+        const res = await serverFetch(
+            `/admin/stores?page=${page}&per_page=${per_page}&search=${search}`,
+            { method: "GET" }
+        );
+
+        return handleResponse(res);
+    } catch (err) {
         return NextResponse.json(
-            { success: false, message: error.message },
-            { status: error.response?.status || 500 }
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
         );
     }
 }
@@ -27,18 +25,16 @@ export async function GET(req) {
 export async function POST(req) {
     try {
         const formData = await req.formData();
-        const res = await backendClient.post("/admin/stores", formData, {
-            headers: {
-                Authorization: req.headers.get("Authorization"),
-                "Content-Type": "multipart/form-data",
-            },
+        const res = await serverFetch("/admin/stores", {
+            method: "POST",
+            body: formData,
         });
 
-        return NextResponse.json(res.data);
-    } catch (error) {
+        return handleResponse(res);
+    } catch (err) {
         return NextResponse.json(
-            { success: false, message: error.response?.data?.message || error.message, errors: error.response?.data?.errors },
-            { status: error.response?.status || 500 }
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
         );
     }
 }

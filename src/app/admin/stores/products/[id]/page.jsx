@@ -6,7 +6,7 @@ import {
     ConditionalRender,
     SectionLayout,
 } from "../../../../../../components/common";
-import { useStoreProducts } from "../../../../../../hooks";
+import useStoreProducts from "../../../../../../hooks/stores/useStoreProducts";
 
 function StoreProductsPage() {
     const params = useParams();
