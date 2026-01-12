@@ -345,6 +345,16 @@ export default function BundleForm({
       onSubmit={handleSubmit}
       className="bg-white p-6 rounded-lg shadow max-w-3xl mx-auto space-y-4"
     >
+      <style>{`
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
       {/* Image */}
       <div>
         <label className="text-sm font-medium mb-1 block">صورة العرض</label>
@@ -515,7 +525,7 @@ export default function BundleForm({
                       type="button"
                       onClick={() => removeProduct(p)}
                       disabled={qty <= 0}
-                      className={`px-3 py-1 rounded text-sm ${qty > 0
+                      className={`h-8 w-8 flex items-center justify-center rounded text-sm ${qty > 0
                         ? "bg-red-500 text-white hover:bg-red-600"
                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
                         }`}
@@ -528,13 +538,13 @@ export default function BundleForm({
                       min="0"
                       value={qty}
                       onChange={(e) => handleQtyChange(p, e.target.value)}
-                      className="w-16 border rounded px-1 py-1 text-center focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="w-12 h-8 border rounded text-center focus:ring-2 focus:ring-blue-500 outline-none"
                     />
 
                     <button
                       type="button"
                       onClick={() => addProduct(p)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                      className="h-8 w-8 flex items-center justify-center bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
                     >
                       +
                     </button>
