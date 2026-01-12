@@ -184,6 +184,30 @@ export default function useOrders() {
     }
   };
 
+  const handleDelete = async (orderId) => {
+    if (!confirm("تأكيد: هل تريد حذف هذه الطلبية نهائياً؟")) return;
+
+    // optimistic - remove from list
+    const previousOrders = [...orders];
+    setOrders((os) => os.filter((o) => o.id !== orderId));
+    if (selectedOrder?.id === orderId) {
+      setSelectedOrder(null);
+    }
+
+    try {
+      const res = await fetchClient(`/api/orders/${orderId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json?.message || "فشل حذف الطلبية");
+    } catch (e) {
+      alert(e?.message || "فشل حذف الطلبية");
+
+      // revert - restore the order
+      setOrders(previousOrders);
+    }
+  };
+
   return {
     orders,
     pagination,
@@ -192,6 +216,7 @@ export default function useOrders() {
     selectedOrder,
     goToPage,
     handleComplete,
+    handleDelete,
     handleSelectOrder,
     setSelectedOrder,
     changePerPage,

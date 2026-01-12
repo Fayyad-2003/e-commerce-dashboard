@@ -1,11 +1,12 @@
 // "use client";
 import Link from "next/link";
 import { Pagination } from "../common";
-import { Archive } from "lucide-react";
+import { Archive, Trash2 } from "lucide-react";
 
 export default function OrdersTable({
   orders = [],
   onUpdateStatus,
+  onDelete,
   pagination,
   onPageChange,
   onPerPageChange,
@@ -17,6 +18,7 @@ export default function OrdersTable({
           <tr>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">أرشفة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الطلبية</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العميل</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ الإجمالي</th>
@@ -36,6 +38,9 @@ export default function OrdersTable({
                   </button>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderNumber}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {order.user?.name || "—"}
+                </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.date || "—"}</td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm">
                   <span className={`px-2 py-1 rounded-full text-xs ${order.status === "completed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
@@ -61,11 +66,20 @@ export default function OrdersTable({
                       تمت
                     </button>
                   )}
+                  {order.status === "completed" && (
+                    <button
+                      onClick={() => { }}
+                      className="text-red-600 hover:text-red-800 mr-10"
+                      title="حذف الطلبية"
+                    >
+                      <Trash2 className="w-4 h-4 inline" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))
           ) : (
-            <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
+            <tr><td colSpan={7} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
           )}
         </tbody>
       </table>

@@ -49,6 +49,7 @@ export function OrdersPage() {
     err,
     goToPage,
     handleComplete,
+    handleDelete,
     changePerPage,
     selectedStatus,
     changeStatus
@@ -66,6 +67,7 @@ export function OrdersPage() {
         <OrdersTable
           orders={orders}
           onUpdateStatus={handleComplete}
+          onDelete={handleDelete}
           pagination={pagination}
           onPageChange={goToPage}
           onPerPageChange={changePerPage}
