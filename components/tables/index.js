@@ -8,6 +8,7 @@ import UnitsOfMeasureTable from "./UnitsOfMeasureTable";
 import CustomersTable from "./CustomersTable";
 import ArticlesTable from "./ArticlesTable";
 import FootersTable from "./FootersTable";
+import AdsTable from "./AdsTable";
 
 export {
     ArticlesTable,
@@ -19,5 +20,6 @@ export {
     BundlesTable,
     UnitsOfMeasureTable,
     CustomersTable,
-    FootersTable
+    FootersTable,
+    AdsTable
 }

@@ -19,6 +19,9 @@ import useAddMainBranch from "./create/useAddMainBranch";
 import useEditDiscount from "./update/useEditDiscount";
 import useFooters from "./main/useFooters";
 import useBranches from "./main/useBranches";
+import useAds from "./main/useAds";
+import useCreateNewAd from "./create/useCreateNewAd";
+import useEditAd from "./update/useEditAd";
 
 
 
@@ -43,5 +46,8 @@ export {
     useUpdateBundle,
     useEditDiscount,
     useFooters,
-    useBranches
+    useBranches,
+    useAds,
+    useCreateNewAd,
+    useEditAd
 }

@@ -4,6 +4,7 @@ import BranchForm from "./BranchForm";
 import UnitsOfMeasureForm from "./UnitOfMeasureForm";
 import ArticleForm from "./ArticleForm";
 import ProductForm from "./ProductForm";
+import AdForm from "./AdForm";
 
 
 export {
@@ -12,5 +13,6 @@ export {
     DiscountForm,
     BranchForm,
     UnitsOfMeasureForm,
-    ProductForm
+    ProductForm,
+    AdForm
 }
