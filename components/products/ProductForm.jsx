@@ -526,8 +526,8 @@ export default function ProductForm({
               value={formData.sub_category_id}
               onChange={onChange}
               className={`w-full px-3 py-2 border rounded-md ${errors.sub_category_id
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
+                ? "border-red-500"
+                : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
                 }`}
               min="1"
             />
@@ -563,8 +563,8 @@ export default function ProductForm({
                 value={formData[f]}
                 onChange={onChange}
                 className={`w-full px-3 py-2 border rounded-md ${errors[f]
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
                   }`}
               />
               {errors[f] && <p className="text-sm text-red-500">{errors[f]}</p>}
@@ -584,8 +584,8 @@ export default function ProductForm({
               value={formData.base_price}
               onChange={onChange}
               className={`w-full px-3 py-2 border rounded-md ${errors.base_price
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
+                ? "border-red-500"
+                : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
                 }`}
               min="0"
               step="0.01"
@@ -606,8 +606,8 @@ export default function ProductForm({
               onChange={onChange}
               disabled={units.loading || !!units.error}
               className={`w-full px-3 py-2 border rounded-md bg-white ${errors.unit_of_measure_id
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
+                ? "border-red-500"
+                : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
                 }`}
             >
               <option value="">
@@ -642,8 +642,8 @@ export default function ProductForm({
             value={formData.description}
             onChange={onChange}
             className={`w-full px-3 py-2 border rounded-md min-h-28 ${errors.description
-                ? "border-red-500"
-                : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
+              ? "border-red-500"
+              : "border-gray-300 focus:ring-2 focus:ring-[#5A443A]"
               }`}
           />
           {errors.description && (
@@ -844,7 +844,7 @@ export default function ProductForm({
                   key={idx}
                   className="flex items-center bg-white p-3 rounded-md shadow-sm"
                 >
-                  <span className="flex-1">{`من كمية ${t.min_quantity}+ : سعر الوحدة = ${t.price_per_unit}`}</span>
+                  <span className="flex-1">{`من كمية ${t.min_quantity}+ ${units.items.find(u => u.id == formData.unit_of_measure_id)?.name || 'وحدة'} : سعر الوحدة = ${t.price_per_unit}`}</span>
                   <button
                     type="button"
                     onClick={() => removeTier(idx)}

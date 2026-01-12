@@ -231,7 +231,7 @@ export default function Form(props) {
               <div className="space-y-2">
                 {price_tiers.map((tier, index) => (
                   <div key={index} className="flex justify-between items-center border-b border-gray-200 pb-2">
-                    <span className="text-gray-700">من {tier.min_quantity} قطعة</span>
+                    <span className="text-gray-700">من {tier.min_quantity} {unit_of_measure?.name || 'وحدة'}</span>
                     <span className="text-gray-700">السعر لكل وحدة: {tier.price_per_unit} $</span>
                   </div>
                 ))}
