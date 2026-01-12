@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-export default function DiscountForm({ initialData = null, onSubmit, onCancel, submitting = false }) {
+export default function DiscountForm({ initialData = null, onSubmit, onCancel, submitting = false, errors = {} }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     type: initialData?.type || "order_total",
@@ -37,6 +37,12 @@ export default function DiscountForm({ initialData = null, onSubmit, onCancel, s
       </h2>
 
       <form onSubmit={submit} className="space-y-4">
+        {errors.form && (
+          <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">
+            {errors.form}
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">اسم الخصم</label>
           <input
@@ -44,9 +50,11 @@ export default function DiscountForm({ initialData = null, onSubmit, onCancel, s
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+              }`}
             required
           />
+          {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
         </div>
 
         <div>
@@ -71,9 +79,11 @@ export default function DiscountForm({ initialData = null, onSubmit, onCancel, s
             name="value"
             value={formData.value}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${errors.value ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+              }`}
             required
           />
+          {errors.value && <p className="text-sm text-red-500 mt-1">{errors.value}</p>}
         </div>
 
         <div>
@@ -98,8 +108,10 @@ export default function DiscountForm({ initialData = null, onSubmit, onCancel, s
             name="min_order_total"
             value={formData.min_order_total}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${errors.min_order_total ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+              }`}
           />
+          {errors.min_order_total && <p className="text-sm text-red-500 mt-1">{errors.min_order_total}</p>}
         </div>
 
         <div className="flex justify-end gap-3 mt-4">

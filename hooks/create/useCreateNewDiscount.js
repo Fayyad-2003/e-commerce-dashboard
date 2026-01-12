@@ -6,12 +6,12 @@ import { fetchClient } from "../../src/lib/fetchClient";
 export default function useCreateNewDiscount() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
   /** ✅ Submit new discount */
   const handleSubmit = async (formData) => {
     setSubmitting(true);
-    setError("");
+    setErrors({});
 
     try {
       const form = new FormData();
@@ -26,12 +26,18 @@ export default function useCreateNewDiscount() {
 
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
-        throw new Error(out?.message || "فشل إنشاء الخصم");
+        // Check for validation errors
+        if (out?.errors && typeof out.errors === 'object') {
+          setErrors(out.errors);
+        } else {
+          setErrors({ form: out?.message || "فشل إنشاء الخصم" });
+        }
+        return;
       }
 
       router.push("/admin/discounts");
     } catch (err) {
-      setError(err.message || "حدث خطأ أثناء إنشاء الخصم");
+      setErrors({ form: err.message || "حدث خطأ أثناء إنشاء الخصم" });
     } finally {
       setSubmitting(false);
     }
@@ -39,7 +45,7 @@ export default function useCreateNewDiscount() {
 
   return {
     submitting,
-    error,
+    errors,
     handleSubmit,
     goBack: () => router.back(),
   };

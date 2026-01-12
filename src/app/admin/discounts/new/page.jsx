@@ -5,13 +5,14 @@ import useCreateNewDiscount from "../../../../../hooks/create/useCreateNewDiscou
 
 export default function NewDiscountPage() {
 
-  const { handleSubmit, submitting, error, goBack } = useCreateNewDiscount();
+  const { handleSubmit, submitting, errors, goBack } = useCreateNewDiscount();
   return (
     <div className="container mx-auto p-4">
       <DiscountForm
         onSubmit={handleSubmit}
         onCancel={goBack}
         submitting={submitting}
+        errors={errors}
       />
     </div>
   );

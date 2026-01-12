@@ -11,7 +11,7 @@ export default function useEditDiscount() {
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
   /** ✅ Fetch discount */
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function useEditDiscount() {
 
     (async () => {
       setLoading(true);
-      setError("");
+      setErrors({});
 
       try {
         const res = await fetchClient(`/api/discounts/${discountId}`, { cache: "no-store" });
@@ -36,7 +36,7 @@ export default function useEditDiscount() {
           min_order_total: discount?.min_order_total ?? "",
         });
       } catch (err) {
-        setError(err.message || "فشل جلب البيانات");
+        setErrors({ form: err.message || "فشل جلب البيانات" });
       } finally {
         setLoading(false);
       }
@@ -46,7 +46,7 @@ export default function useEditDiscount() {
   /** ✅ Submit */
   const handleSubmit = async (formData) => {
     setSubmitting(true);
-    setError("");
+    setErrors({});
 
     try {
       const form = new FormData();
@@ -61,12 +61,18 @@ export default function useEditDiscount() {
 
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
-        throw new Error(out?.message || "لم يتم الحفظ");
+        // Check for validation errors
+        if (out?.errors && typeof out.errors === 'object') {
+          setErrors(out.errors);
+        } else {
+          setErrors({ form: out?.message || "لم يتم الحفظ" });
+        }
+        return;
       }
 
       router.push("/admin/discounts");
     } catch (err) {
-      setError(err.message || "فشل الحفظ");
+      setErrors({ form: err.message || "فشل الحفظ" });
     } finally {
       setSubmitting(false);
     }
@@ -76,7 +82,7 @@ export default function useEditDiscount() {
     initialData,
     loading,
     submitting,
-    error,
+    errors,
     handleSubmit,
     goBack: () => router.back(),
   };
