@@ -11,6 +11,5 @@ export {
     BundleForm,
     DiscountForm,
     BranchForm,
-    UnitsOfMeasureForm,
-    FooterForm
+    UnitsOfMeasureForm
 }
