@@ -49,8 +49,12 @@ export default function AdsTable({
                                         {ad.end_date ? new Date(ad.end_date).toLocaleDateString('ar-EG') : '-'}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {ad.image ? (
-                                            <img src={ad.image} alt={ad.title} className="h-10 w-20 object-cover rounded" />
+                                        {ad.image || ad.full_image_url ? (
+                                            <img
+                                                src={ad.full_image_url || ad.image}
+                                                alt={ad.title}
+                                                className="h-10 w-20 object-cover rounded"
+                                            />
                                         ) : (
                                             <span className="text-gray-400">لا توجد صورة</span>
                                         )}

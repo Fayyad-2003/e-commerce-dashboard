@@ -1,6 +1,7 @@
+"use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { fetchClient } from "../../src/lib/fetchClient";
+import useFetchList from "../useFetchList";
 
 // --- Helpers ---
 const fmt = (d) => (typeof d === "string" ? d : d?.toISOString()?.slice(0, 10));
@@ -21,7 +22,6 @@ function mapProductRows(apiItems = []) {
       name: p?.name ?? "-",
       sales: qty,
       revenue: qty * price,
-      // Fix: check last_sold_date first
       date: it?.last_sold_date || it?.last_sold_at || "-",
     };
   });
@@ -39,45 +39,56 @@ function mapCustomerRows(apiItems = []) {
   });
 }
 
-/**
- * useReports
- * - reads page & per_page from URL via useSearchParams()
- * - returns pagination + handlers: goToPage, changePerPage, applyFilters
- */
 export function useReports() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Read applied filters from URL (source of truth for API)
+  // 1. Filter State
   const urlTab = searchParams.get("tab") || "products";
   const urlFrom = searchParams.get("from") || daysAgo(30);
   const urlTo = searchParams.get("to") || today();
 
-  // local UI state (decoupled from API trigger)
   const [activeTab, setActiveTab] = useState(urlTab);
   const [from, setFrom] = useState(urlFrom);
   const [to, setTo] = useState(urlTo);
 
-  // data + meta + pagination
-  const [rows, setRows] = useState([]);
-  const [meta, setMeta] = useState(null);
-  const [pagination, setPagination] = useState({
-    total: 0,
-    per_page: 50,
-    current_page: 1,
-    last_page: 1,
-    from: 0,
-    to: 0,
+  useEffect(() => {
+    setActiveTab(urlTab);
+    setFrom(urlFrom);
+    setTo(urlTo);
+  }, [urlTab, urlFrom, urlTo]);
+
+  // 2. Data Fetching
+  const {
+    data: rawItems,
+    meta,
+    pagination,
+    loading,
+    error: err,
+    goToPage,
+    changePerPage,
+    reload,
+    // useFetchList handles page/per_page via URL
+  } = useFetchList({
+    url: (page, perPage) => {
+      const u = new URLSearchParams();
+      u.set("page", String(page));
+      u.set("per_page", String(perPage));
+      u.set("tab", urlTab);
+      u.set("from", urlFrom ?? "");
+      u.set("to", urlTo ?? "");
+      return `/api/reports?${u.toString()}`;
+    },
+    dependencies: [urlTab, urlFrom, urlTo]
   });
 
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
+  // 3. Data Transformation
+  const rows = useMemo(() => {
+    const mapper = urlTab === "products" ? mapProductRows : mapCustomerRows;
+    return mapper(rawItems);
+  }, [rawItems, urlTab]);
 
-  // read page & per_page from URL (reactively)
-  const page = Number(searchParams.get("page") ?? 1);
-  const perPage = Number(searchParams.get("per_page") ?? 50);
-
-  // columns memo
+  // 4. Columns Definition
   const columns = useMemo(() => {
     const dateRender = (item) => {
       if (!item.date || item.date === "-") return "-";
@@ -110,136 +121,39 @@ export function useReports() {
     ];
   }, [activeTab]);
 
-  // load data from API using given page/perPage (or URL ones)
-  const load = useCallback(
-    async ({ pageOverride = null, perPageOverride = null } = {}) => {
-      try {
-        setLoading(true);
-        setErr("");
-
-        const url = new URL("/api/reports", window.location.origin);
-        url.searchParams.set("tab", urlTab); // Use URL state
-        url.searchParams.set("from", urlFrom ?? ""); // Use URL state
-        url.searchParams.set("to", urlTo ?? ""); // Use URL state
-
-        const p = pageOverride ?? page;
-        const pp = perPageOverride ?? perPage;
-        url.searchParams.set("page", String(p));
-        url.searchParams.set("per_page", String(pp));
-
-        const res = await fetchClient(url.toString(), { cache: "no-store" });
-
-        const json = await res.json().catch(() => ({}));
-
-        if (!res.ok || json?.success === false) {
-          throw new Error(json?.message || `HTTP ${res.status}`);
-        }
-
-        const items = Array.isArray(json?.data) ? json.data : [];
-        const metaObj = json?.meta ?? null;
-        setMeta(metaObj);
-
-        // build pagination object (safely reading metaObj.pagination or metaObj)
-        const pmeta = (metaObj && (metaObj.pagination || metaObj)) || {};
-        setPagination({
-          total: Number(pmeta.total ?? items.length),
-          per_page: Number(pmeta.per_page ?? pp),
-          current_page: Number(pmeta.current_page ?? p),
-          last_page: Number(pmeta.last_page ?? 1),
-          from: Number(pmeta.from ?? (items.length ? 1 : 0)),
-          to: Number(pmeta.to ?? items.length),
-        });
-
-        const mapper = urlTab === "products" ? mapProductRows : mapCustomerRows;
-        setRows(mapper(items));
-      } catch (e) {
-        setErr(e?.message || "تعذّر الجلب");
-        setRows([]);
-        setMeta(null);
-        setPagination((prev) => ({
-          ...prev,
-          total: 0,
-          current_page: 1,
-          last_page: 1,
-          from: 0,
-          to: 0,
-        }));
-      } finally {
-        setLoading(false);
-      }
-    },
-    [urlTab, urlFrom, urlTo, page, perPage]
-  );
-
-  const reload = useCallback(() => load(), [load]);
-
-  // Effect to sync local state with URL (e.g. back button)
-  useEffect(() => {
-    setActiveTab(urlTab);
-    setFrom(urlFrom);
-    setTo(urlTo);
-  }, [urlTab, urlFrom, urlTo]);
-
-  // effect: run when URL filters or page/perPage change
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlTab, urlFrom, urlTo, page, perPage]);
-
-  // navigate to a specific page (keeping current filters)
-  const goToPage = (n) => {
-    const nn = Number(n) || 1;
-    const last = Math.max(1, Number(pagination.last_page ?? 1));
-    const target = Math.max(1, Math.min(nn, last));
-    const sp = new URLSearchParams(searchParams.toString());
-    sp.set("page", String(target));
-    sp.set("per_page", String(perPage));
-    // keep date filters & tab in the query (from URL truth)
-    sp.set("from", String(urlFrom ?? ""));
-    sp.set("to", String(urlTo ?? ""));
-    sp.set("tab", urlTab);
-    router.push(`${window.location.pathname}?${sp.toString()}`);
-  };
-
-  // change items per page -> reset to page 1
-  const changePerPage = (newPer) => {
-    const per = Number(newPer) || 50;
-    const sp = new URLSearchParams(searchParams.toString());
-    sp.set("page", "1");
-    sp.set("per_page", String(per));
-    sp.set("from", String(urlFrom ?? ""));
-    sp.set("to", String(urlTo ?? ""));
-    sp.set("tab", urlTab);
-    router.push(`${window.location.pathname}?${sp.toString()}`);
-  };
-
-  // apply filters (push filters into URL and reset page)
+  // 5. Filter Handlers
   const applyFilters = () => {
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("page", "1");
-    sp.set("per_page", String(perPage));
-    sp.set("from", String(from ?? "")); // use local UI state here to update URL
-    sp.set("to", String(to ?? "")); // use local UI state here to update URL
+    sp.set("from", String(from ?? ""));
+    sp.set("to", String(to ?? ""));
     sp.set("tab", activeTab);
     router.push(`${window.location.pathname}?${sp.toString()}`);
   };
 
-  // NEW: explicitly change tab and update URL immediately to avoid stale state
   const changeTab = (newTab) => {
     setActiveTab(newTab);
     const sp = new URLSearchParams(searchParams.toString());
-    sp.set("page", "1"); // reset page
-    sp.set("per_page", String(perPage));
+    sp.set("page", "1");
     sp.set("from", String(from ?? ""));
     sp.set("to", String(to ?? ""));
-    sp.set("tab", newTab); // use newTab, not activeTab (which is stale in closure)
+    sp.set("tab", newTab);
     router.push(`${window.location.pathname}?${sp.toString()}`);
   };
+
+  // Override goToPage/changePerPage to keep filters
+  // useFetchList's default handlers maintain current searchParams, so this is handled automatically!
+  // But implementation in useFetchList: 
+  // const sp = new URLSearchParams(searchParams.toString()); sp.set("page"...);
+  // So yes, it preserves existing params (from, to, tab).
+  // We don't need to override them unless we want specific behavior.
+
+  // Legacy 'load' compatibility not needed since 'reload' exists.
 
   return {
     activeTab,
     setActiveTab,
-    changeTab, // <--- exposed
+    changeTab,
     from,
     setFrom,
     to,
@@ -249,8 +163,8 @@ export function useReports() {
     pagination,
     loading,
     err,
-    load,
     reload,
+    load: reload, // alias for compatibility
     applyFilters,
     goToPage,
     changePerPage,
