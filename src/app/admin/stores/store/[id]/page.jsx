@@ -2,15 +2,12 @@
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import Table from "../../../../../../components/home/Table";
-import {
-    ConditionalRender,
-    SectionLayout,
-} from "../../../../../../components/common";
+import { ConditionalRender, SectionLayout } from "../../../../../../components/common";
 import useStoreSubCategories from "../../../../../../hooks/stores/useStoreSubCategories";
 
-function StoreSubCategoriesPage() {
+function StoreLevel3Page() {
     const params = useParams();
-    const categoryId = params?.id;
+    const storeId = params?.id; // This is the store ID
 
     const {
         data,
@@ -20,30 +17,28 @@ function StoreSubCategoriesPage() {
         err,
         goToPage,
         changePerPage,
-    } = useStoreSubCategories(categoryId);
+    } = useStoreSubCategories(storeId);
 
-    const categoryName = meta?.category_name || "";
+    const storeName = meta?.store_name || "";
 
     return (
         <SectionLayout
-            title={`المتاجر — أقسام فرعية ${categoryName}`}
-            // Ideally back to store categories, but we need storeId. Meta should provide it or we pass it in URL logic.
-            // For now fallback to stores list or previous page logic
-            backHref="/admin/stores"
-            addHref={`/admin/stores/sub-categories/${categoryId}/new`}
-            addLabel="إضافة قسم فرعي جديد"
+            title={`الأقسام الفرعية — متجر ${storeName}`}
+            backHref={`/admin/stores`} // Ideally back to category, but strict back logic is complex without context.
+            addHref={`/admin/stores/store/${storeId}/new`}
+            addLabel="إضافة قسم فرعي"
         >
             <ConditionalRender
                 loading={loading}
                 error={err}
-                loadingText="جار تحميل الأقسام الفرعية"
+                loadingText="جاري تحميل الأقسام الفرعية"
             >
                 <Table
                     data={data}
                     pagination={pagination}
                     categorie="القسم الفرعي"
                     sub="المنتجات"
-                    url="/admin/stores/products"
+                    url="/admin/stores/products" // Links to /admin/stores/products/[id]
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                 />
@@ -52,4 +47,4 @@ function StoreSubCategoriesPage() {
     );
 }
 
-export default dynamic(() => Promise.resolve(StoreSubCategoriesPage), { ssr: false });
+export default dynamic(() => Promise.resolve(StoreLevel3Page), { ssr: false });

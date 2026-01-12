@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 
-export default function useStores() {
+export default function useStores(categoryId = null) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -18,6 +18,9 @@ export default function useStores() {
         last_page: 1,
     });
 
+    // Meta for parent name if available
+    const [meta, setMeta] = useState(null);
+
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
 
@@ -29,12 +32,16 @@ export default function useStores() {
     }, [searchParams]);
 
     const apiUrl = useMemo(() => {
-        const qs = new URLSearchParams({
+        const params = {
             page: String(page),
             per_page: String(perPage),
-        });
+        };
+        if (categoryId) {
+            params.category_id = categoryId;
+        }
+        const qs = new URLSearchParams(params);
         return `/api/stores?${qs.toString()}`;
-    }, [page, perPage]);
+    }, [page, perPage, categoryId]);
 
     const reload = useCallback(async () => {
         setLoading(true);
@@ -48,6 +55,7 @@ export default function useStores() {
             const p = json?.meta?.pagination ?? json?.meta ?? {};
 
             setStores(arr);
+            setMeta(json?.meta); // Capture meta for parent category name if needed
             setPagination({
                 total: Number(p.total ?? arr.length),
                 per_page: Number(p.per_page ?? perPage),
@@ -70,7 +78,9 @@ export default function useStores() {
         const sp = new URLSearchParams(searchParams.toString());
         sp.set("page", String(nn));
         sp.set("per_page", String(perPage));
-        router.push(`/admin/stores?${sp.toString()}`);
+        // Keep current path
+        const currentPath = window.location.pathname;
+        router.push(`${currentPath}?${sp.toString()}`);
     };
 
     const changePerPage = (newPer) => {
@@ -78,12 +88,14 @@ export default function useStores() {
         const sp = new URLSearchParams(searchParams.toString());
         sp.set("page", "1");
         sp.set("per_page", String(per));
-        router.push(`/admin/stores?${sp.toString()}`);
+        const currentPath = window.location.pathname;
+        router.push(`${currentPath}?${sp.toString()}`);
     };
 
     return {
         stores,
         pagination,
+        meta,
         loading,
         err,
         goToPage,

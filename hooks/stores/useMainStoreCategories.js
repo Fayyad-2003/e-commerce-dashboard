@@ -3,15 +3,14 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 
-// Now accepts storeId (Level 3)
-export default function useStoreSubCategories(storeId) {
+export default function useMainStoreCategories() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
 
-    const [data, setData] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [pagination, setPagination] = useState({
         total: 0,
         per_page: 10,
@@ -19,7 +18,6 @@ export default function useStoreSubCategories(storeId) {
         last_page: 1,
     });
 
-    const [meta, setMeta] = useState(null);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
 
@@ -31,16 +29,14 @@ export default function useStoreSubCategories(storeId) {
     }, [searchParams]);
 
     const apiUrl = useMemo(() => {
-        if (!storeId) return null;
         const qs = new URLSearchParams({
             page: String(page),
             per_page: String(perPage),
         });
-        return `/api/stores/${storeId}/sub-categories?${qs.toString()}`;
-    }, [storeId, page, perPage]);
+        return `/api/store-categories?${qs.toString()}`;
+    }, [page, perPage]);
 
     const reload = useCallback(async () => {
-        if (!apiUrl) return;
         setLoading(true);
         setErr("");
         try {
@@ -51,8 +47,7 @@ export default function useStoreSubCategories(storeId) {
             const arr = Array.isArray(json?.data) ? json.data : [];
             const p = json?.meta?.pagination ?? json?.meta ?? {};
 
-            setData(arr);
-            setMeta(json?.meta);
+            setCategories(arr);
             setPagination({
                 total: Number(p.total ?? arr.length),
                 per_page: Number(p.per_page ?? perPage),
@@ -60,7 +55,7 @@ export default function useStoreSubCategories(storeId) {
                 last_page: Number(p.last_page ?? 1),
             });
         } catch (e) {
-            setErr(e?.message || "تعذّر جلب الأقسام الفرعية");
+            setErr(e?.message || "تعذّر جلب تصنيفات المتاجر");
         } finally {
             setLoading(false);
         }
@@ -75,8 +70,7 @@ export default function useStoreSubCategories(storeId) {
         const sp = new URLSearchParams(searchParams.toString());
         sp.set("page", String(nn));
         sp.set("per_page", String(perPage));
-        const currentPath = window.location.pathname;
-        router.push(`${currentPath}?${sp.toString()}`);
+        router.push(`/admin/stores?${sp.toString()}`);
     };
 
     const changePerPage = (newPer) => {
@@ -84,14 +78,12 @@ export default function useStoreSubCategories(storeId) {
         const sp = new URLSearchParams(searchParams.toString());
         sp.set("page", "1");
         sp.set("per_page", String(per));
-        const currentPath = window.location.pathname;
-        router.push(`${currentPath}?${sp.toString()}`);
+        router.push(`/admin/stores?${sp.toString()}`);
     };
 
     return {
-        data,
+        categories,
         pagination,
-        meta,
         loading,
         err,
         goToPage,

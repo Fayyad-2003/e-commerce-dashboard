@@ -1,37 +1,36 @@
 "use client";
 import dynamic from "next/dynamic";
-import Table from "../../../../components/home/Table";
-import { ConditionalRender, SectionLayout } from "../../../../components/common";
-import useStores from "../../../../hooks/stores/useStores";
+import Table from "../../../components/home/Table";
+import { ConditionalRender, SectionLayout } from "../../../components/common";
+import useMainStoreCategories from "../../../hooks/stores/useMainStoreCategories";
 
-function StoresPageClient() {
+function StoreCategoriesPageClient() {
     const {
-        stores,
+        categories,
         pagination,
         loading,
         err,
         goToPage,
         changePerPage,
-    } = useStores();
+    } = useMainStoreCategories();
 
     return (
         <SectionLayout
-            title="المتاجر"
-            addHref="/admin/stores/new"
-            addLabel="إضافة متجر جديد"
+            title="تصنيفات المتاجر"
+            addHref="/admin/store-categories/new"
+            addLabel="إضافة تصنيف جديد"
         >
             <ConditionalRender
                 loading={loading}
                 error={err}
-                loadingText="جاري تحميل المتاجر"
+                loadingText="جاري تحميل التصنيفات"
             >
                 <Table
-                    data={stores}
+                    data={categories}
                     pagination={pagination}
-                    categorie="المتجر"
-                    sub="الأقسام"
-                    url="/admin/stores/categories"
-                    // We redirect to categories on click by using url prop
+                    categorie="التصنيف"
+                    sub="المتاجر"
+                    url="/admin/stores/category" // Links to /admin/stores/category/[id]
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                 />
@@ -40,4 +39,4 @@ function StoresPageClient() {
     );
 }
 
-export default dynamic(() => Promise.resolve(StoresPageClient), { ssr: false });
+export default dynamic(() => Promise.resolve(StoreCategoriesPageClient), { ssr: false });
