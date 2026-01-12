@@ -13,6 +13,5 @@ export {
     DiscountForm,
     BranchForm,
     UnitsOfMeasureForm,
-    ProductForm,
-    AdForm
+    FooterForm
 }

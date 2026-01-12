@@ -1,12 +1,12 @@
 "use client";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import Table from "../../../../../components/home/Table"; // Or a specific ProductsTable if available
+import Table from "../../../../../../components/home/Table"; // Or a specific ProductsTable if available
 import {
     ConditionalRender,
     SectionLayout,
-} from "../../../../../components/common";
-import { useStoreProducts } from "../../../../../hooks";
+} from "../../../../../../components/common";
+import { useStoreProducts } from "../../../../../../hooks";
 
 function StoreProductsPage() {
     const params = useParams();

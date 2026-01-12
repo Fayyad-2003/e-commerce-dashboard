@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 
-export default function useCreateNewAd() {
+export default function useCreateAd() {
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});

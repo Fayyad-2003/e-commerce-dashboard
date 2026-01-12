@@ -1,8 +1,8 @@
 "use client";
 import dynamic from "next/dynamic";
 import { ConditionalRender, SectionLayout } from "../../../../components/common";
-import { useAds } from "../../../../hooks";
-import { AdsTable } from "../../../../components/tables";
+import useAdsList from "../../../../hooks/ads/useAdsList";
+import AdsTable from "../../../../components/features/ads/AdsTable";
 
 function AdsPageClient() {
     const {
@@ -13,7 +13,7 @@ function AdsPageClient() {
         goToPage,
         changePerPage,
         handleDelete,
-    } = useAds();
+    } = useAdsList();
 
     return (
         <SectionLayout

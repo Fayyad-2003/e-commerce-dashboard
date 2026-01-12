@@ -20,6 +20,5 @@ export {
     BundlesTable,
     UnitsOfMeasureTable,
     CustomersTable,
-    FootersTable,
-    AdsTable
+    FootersTable
 }

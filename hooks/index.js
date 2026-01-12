@@ -19,9 +19,6 @@ import useAddMainBranch from "./create/useAddMainBranch";
 import useEditDiscount from "./update/useEditDiscount";
 import useFooters from "./main/useFooters";
 import useBranches from "./main/useBranches";
-import useAds from "./main/useAds";
-import useCreateNewAd from "./create/useCreateNewAd";
-import useEditAd from "./update/useEditAd";
 import useStores from "./stores/useStores";
 import useStoreCategories from "./stores/useStoreCategories";
 import useStoreSubCategories from "./stores/useStoreSubCategories";
@@ -51,9 +48,6 @@ export {
     useEditDiscount,
     useFooters,
     useBranches,
-    useAds,
-    useCreateNewAd,
-    useEditAd,
     useStores,
     useStoreCategories,
     useStoreSubCategories,

@@ -1,11 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { AdForm } from "../../../../../components/forms";
-import useCreateNewAd from "../../../../../hooks/create/useCreateNewAd";
+import AdForm from "../../../../../components/features/ads/AdForm";
+import useCreateAd from "../../../../../hooks/ads/useCreateAd";
 
 export default function NewAdPage() {
 
-    const { handleSubmit, submitting, errors, goBack } = useCreateNewAd();
+    const { handleSubmit, submitting, errors, goBack } = useCreateAd();
     return (
         <div className="container mx-auto p-4">
             <AdForm

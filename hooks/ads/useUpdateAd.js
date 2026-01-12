@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 
-export default function useEditAd() {
+export default function useUpdateAd() {
     const router = useRouter();
     const params = useParams();
     const adId = params?.id;

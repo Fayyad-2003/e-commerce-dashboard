@@ -1,10 +1,10 @@
 "use client";
 import { ConditionalRender } from "../../../../../../components/common";
-import { AdForm } from "../../../../../../components/forms";
-import { useEditAd } from "../../../../../../hooks";
+import AdForm from "../../../../../../components/features/ads/AdForm";
+import useUpdateAd from "../../../../../../hooks/ads/useUpdateAd";
 
 export default function Page() {
-    const { initialData, loading, submitting, errors, handleSubmit, goBack } = useEditAd();
+    const { initialData, loading, submitting, errors, handleSubmit, goBack } = useUpdateAd();
     return (
         <ConditionalRender
             loading={loading}

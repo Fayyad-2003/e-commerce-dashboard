@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { fetchClient } from "../../src/lib/fetchClient";
 
-export default function useAds() {
+export default function useAdsList() {
     const router = useRouter();
     const searchParams = useSearchParams();
 

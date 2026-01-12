@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Pagination } from "../common";
+import { Pagination } from "../../common";
 
 export default function AdsTable({
     ads = [],
