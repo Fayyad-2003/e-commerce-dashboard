@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { fetchClient } from "../../../../lib/fetchClient";
 import { useEffect, useState } from "react";
 import Form from "../../../../../components/products/Form";
+import ProductDetailsSkeleton from "../../../../../components/products/ProductDetailsSkeleton";
 import dynamic from "next/dynamic";
 
 export function Page() {
@@ -42,6 +43,24 @@ export function Page() {
 
     fetchProduct();
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <ProductDetailsSkeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+          <p className="text-red-700 font-medium">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
