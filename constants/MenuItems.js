@@ -1,4 +1,4 @@
-import { Bell, BookOpenTextIcon, Coins, Component, BadgeInfo, ListOrdered, MessagesSquare, Newspaper, RulerIcon, TagsIcon, UsersIcon, MonitorPlay } from "lucide-react";
+import { Bell, BookOpenTextIcon, Coins, Component, BadgeInfo, ListOrdered, MessagesSquare, Newspaper, RulerIcon, TagsIcon, UsersIcon, MonitorPlay, Store } from "lucide-react";
 
 export const MENU_ITEMS = [
   {
@@ -6,6 +6,12 @@ export const MENU_ITEMS = [
     icon: TagsIcon,
     href: "/",
     matchPaths: ["/", "/admin/branches/add", "/admin/branches/"],
+  },
+  {
+    name: "المتاجر",
+    icon: Store,
+    href: "/admin/stores",
+    matchPaths: ["/admin/stores", "/admin/stores/categories", "/admin/stores/sub-categories", "/admin/stores/products"],
   },
   {
     name: "العروض الأسبوعية",

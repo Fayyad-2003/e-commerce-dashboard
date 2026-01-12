@@ -22,6 +22,10 @@ import useBranches from "./main/useBranches";
 import useAds from "./main/useAds";
 import useCreateNewAd from "./create/useCreateNewAd";
 import useEditAd from "./update/useEditAd";
+import useStores from "./stores/useStores";
+import useStoreCategories from "./stores/useStoreCategories";
+import useStoreSubCategories from "./stores/useStoreSubCategories";
+import useStoreProducts from "./stores/useStoreProducts";
 
 
 
@@ -49,5 +53,9 @@ export {
     useBranches,
     useAds,
     useCreateNewAd,
-    useEditAd
+    useEditAd,
+    useStores,
+    useStoreCategories,
+    useStoreSubCategories,
+    useStoreProducts
 }

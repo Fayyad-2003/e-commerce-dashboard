@@ -195,7 +195,7 @@ export default function useOrders() {
     }
 
     try {
-      const res = await fetchClient(`/api/orders/${orderId}`, {
+      const res = await fetchClient(`/api/orders/${orderId}/delete`, {
         method: "DELETE",
       });
       const json = await res.json().catch(() => ({}));
@@ -204,6 +204,34 @@ export default function useOrders() {
       alert(e?.message || "فشل حذف الطلبية");
 
       // revert - restore the order
+      setOrders(previousOrders);
+    }
+  };
+
+  const handleToggleArchive = async (orderId) => {
+    if (!confirm("هل تريد تغيير حالة الأرشفة لهذه الطلبية؟")) return;
+
+    // optimistic - toggle archived status locally
+    const previousOrders = [...orders];
+    setOrders((os) =>
+      os.map((o) =>
+        o.id === orderId ? { ...o, is_archived: !o.is_archived } : o
+      )
+    );
+
+    try {
+      const res = await fetchClient(`/api/orders/${orderId}/toggle-archive`, {
+        method: "POST",
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json?.message || "فشل تغيير حالة الأرشفة");
+
+      // Reload the list to get fresh data
+      await loadList();
+    } catch (e) {
+      alert(e?.message || "فشل تغيير حالة الأرشفة");
+
+      // revert - restore previous state
       setOrders(previousOrders);
     }
   };
@@ -217,6 +245,7 @@ export default function useOrders() {
     goToPage,
     handleComplete,
     handleDelete,
+    handleToggleArchive,
     handleSelectOrder,
     setSelectedOrder,
     changePerPage,
