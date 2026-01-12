@@ -1,8 +1,8 @@
 "use client";
 import dynamic from "next/dynamic";
-import Table from "../../../components/home/Table";
-import { ConditionalRender, SectionLayout } from "../../../components/common";
-import useMainStoreCategories from "../../../hooks/stores/useMainStoreCategories";
+import Table from "../../../../components/home/Table";
+import { ConditionalRender, SectionLayout } from "../../../../components/common";
+import useMainStoreCategories from "../../../../hooks/stores/useMainStoreCategories";
 
 function StoreCategoriesPageClient() {
     const {

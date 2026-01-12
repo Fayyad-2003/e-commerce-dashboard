@@ -20,7 +20,7 @@ import useEditDiscount from "./update/useEditDiscount";
 import useFooters from "./main/useFooters";
 import useBranches from "./main/useBranches";
 import useStores from "./stores/useStores";
-import useStoreCategories from "./stores/useStoreCategories";
+import useMainStoreCategories from "./stores/useMainStoreCategories";
 import useStoreSubCategories from "./stores/useStoreSubCategories";
 import useStoreProducts from "./stores/useStoreProducts";
 
@@ -49,7 +49,7 @@ export {
     useFooters,
     useBranches,
     useStores,
-    useStoreCategories,
+    useMainStoreCategories,
     useStoreSubCategories,
     useStoreProducts
 }
