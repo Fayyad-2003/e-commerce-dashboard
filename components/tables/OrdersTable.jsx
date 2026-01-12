@@ -1,0 +1,71 @@
+// "use client";
+import Link from "next/link";
+import { Pagination } from "../common";
+
+export default function OrdersTable({
+  orders = [],
+  onUpdateStatus,
+  pagination,
+  onPageChange,
+  onPerPageChange,
+}) {
+  return (
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الطلبية</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ الإجمالي</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <tr key={order.id} className="hover:bg-gray-50">
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderNumber}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.date || "—"}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  <span className={`px-2 py-1 rounded-full text-xs ${order.status === "completed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
+                    }`}>
+                    {order.status === "completed" ? "منتهية" : "قيد المعالجة"}
+                  </span>
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {Number(order.total || 0).toFixed(2)} $
+                </td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    التفاصيل
+                  </Link>
+                  {order.status === "pending" && (
+                    <button
+                      onClick={() => onUpdateStatus?.(order.id)}
+                      className="text-green-600 hover:text-green-800 mr-10"
+                    >
+                      تمت
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr><td colSpan={5} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
+          )}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <Pagination
+        pagination={pagination}
+        onPageChange={onPageChange}
+        onPerPageChange={onPerPageChange}
+      />
+    </div>
+  );
+}
