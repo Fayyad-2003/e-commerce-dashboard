@@ -1,13 +1,13 @@
 // FootersTable.jsx
 "use client";
 import React from "react";
-import { Facebook, Instagram, Phone, Mail, MapPin, Globe } from "lucide-react";
+import { Facebook, Instagram, Phone, Mail, MapPin, MessageCircle, Send } from "lucide-react";
 
 const SOCIAL_ICONS = {
   facebook_link: Facebook,
   instagram_link: Instagram,
-  x_link: null, // render X manually
-  google_link: Globe, // added google link
+  x_link: MessageCircle, // WhatsApp
+  google_link: Send, // Telegram
 };
 
 function isProbablyUrl(value) {
@@ -114,17 +114,16 @@ export default function FootersTable({
               <div key={key} className="flex flex-col">
                 <div className="flex items-center gap-3">
                   <div className="w-6 flex-shrink-0">
-                    {Icon ? <Icon size={18} /> : <span className="text-xl font-bold">X</span>}
+                    <Icon size={18} />
                   </div>
 
                   <input
                     type="text"
                     value={footerData?.[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    className={`border px-3 py-2 rounded-md w-full placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                      linkErrors[key] ? "border-red-300 focus:ring-red-200" : "border-gray-200 focus:ring-[#5A443A]"
-                    }`}
-                    placeholder={key === "google_link" ? "أدخل رابط خرائط / صفحة Google" : "أدخل رابط"}
+                    className={`border px-3 py-2 rounded-md w-full placeholder-gray-400 focus:outline-none focus:ring-2 ${linkErrors[key] ? "border-red-300 focus:ring-red-200" : "border-gray-200 focus:ring-[#5A443A]"
+                      }`}
+                    placeholder={key === "google_link" ? "أدخل رابط Telegram" : key === "x_link" ? "أدخل رابط WhatsApp" : "أدخل رابط"}
                   />
                 </div>
                 {linkErrors[key] && (
@@ -154,9 +153,8 @@ export default function FootersTable({
             await handleSave();
           }}
           disabled={saving}
-          className={`px-5 py-2 rounded-md text-white transition ${
-            saving ? "bg-gray-400 cursor-not-allowed" : "bg-[#5A443A] hover:bg-[#402E32]"
-          }`}
+          className={`px-5 py-2 rounded-md text-white transition ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-[#5A443A] hover:bg-[#402E32]"
+            }`}
         >
           {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
         </button>
