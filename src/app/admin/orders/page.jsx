@@ -80,6 +80,7 @@ export function OrdersPage() {
           orders={orders}
           onUpdateStatus={handleComplete}
           onDelete={handleDelete}
+          onToggleArchive={handleToggleArchive}
           pagination={pagination}
           onPageChange={goToPage}
           onPerPageChange={changePerPage}

@@ -4,6 +4,7 @@ import useNotifications from "./main/useNotifications";
 import useDiscounts from "./main/useDiscounts";
 import useBundles from "./main/useBundles";
 import useOrders from "./main/useOrders";
+export { default as useArchivedOrders } from "./main/useArchivedOrders";
 import useArticles from "./main/useArticles";
 import useUnitsOfMeasure from "./main/useUnitsOfMeasure";
 import useProducts from "./main/useProducts";

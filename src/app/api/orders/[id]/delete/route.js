@@ -6,7 +6,7 @@ export async function DELETE(req, { params }) {
     try {
         const { id } = params;
 
-        const res = await serverFetch(`/admin/orders/${id}`, {
+        const res = await serverFetch(`/admin/orders/delete/${id}`, {
             method: "DELETE",
         });
 

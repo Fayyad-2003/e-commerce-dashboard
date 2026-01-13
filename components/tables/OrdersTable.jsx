@@ -7,6 +7,7 @@ export default function OrdersTable({
   orders = [],
   onUpdateStatus,
   onDelete,
+  onToggleArchive,
   pagination,
   onPageChange,
   onPerPageChange,
@@ -16,7 +17,7 @@ export default function OrdersTable({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">أرشفة</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">أرشفة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الطلبية</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم العميل</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
@@ -25,16 +26,17 @@ export default function OrdersTable({
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white divide-y divide-gray-200" dir="rtl">
           {orders.length > 0 ? (
             orders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50">
-                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
                   <button
-                    className="text-gray-600 hover:text-orange-600 transition-colors"
-                    title="أرشفة الطلبية"
+                    onClick={() => onToggleArchive?.(order.id)}
+                    className={`transition-colors ${order.is_archived ? "text-orange-600 hover:text-orange-800" : "text-gray-400 hover:text-orange-600"}`}
+                    title={order.is_archived ? "إلغاء الأرشفة" : "أرشفة الطلبية"}
                   >
-                    <Archive className="w-5 h-5" />
+                    <Archive className="w-5 h-5 mx-auto" />
                   </button>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderNumber}</td>
@@ -51,30 +53,32 @@ export default function OrdersTable({
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                   {Number(order.total || 0).toFixed(2)} $
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    التفاصيل
-                  </Link>
-                  {order.status === "pending" && (
-                    <button
-                      onClick={() => onUpdateStatus?.(order.id)}
-                      className="text-green-600 hover:text-green-800 mr-10"
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="text-blue-600 hover:text-blue-800"
                     >
-                      تمت
-                    </button>
-                  )}
-                  {order.status === "completed" && (
-                    <button
-                      onClick={() => { }}
-                      className="text-red-600 hover:text-red-800 mr-10"
-                      title="حذف الطلبية"
-                    >
-                      <Trash2 className="w-4 h-4 inline" />
-                    </button>
-                  )}
+                      التفاصيل
+                    </Link>
+                    {order.status !== "completed" && (
+                      <button
+                        onClick={() => onUpdateStatus?.(order.id)}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        إتمام
+                      </button>
+                    )}
+                    {(order.status === "completed" || order.is_archived) && (
+                      <button
+                        onClick={() => onDelete?.(order.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="حذف الطلبية"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))
@@ -82,6 +86,7 @@ export default function OrdersTable({
             <tr><td colSpan={7} className="px-4 py-6 text-center text-gray-500">لا توجد طلبيات</td></tr>
           )}
         </tbody>
+
       </table>
 
       {/* Pagination */}
