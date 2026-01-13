@@ -1,0 +1,48 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { fetchClient } from "@/lib/fetchClient";
+import BranchForm from "../../../../../components/forms/BranchForm"; // Components is likely in ROOT based on previous ls
+import { SectionLayout } from "../../../../../components/common";
+
+export default function NewStoreCategoryPage() {
+    const router = useRouter();
+
+    const handleSubmit = async (formData) => {
+        try {
+            // Transform object to FormData for file upload
+            const data = new FormData();
+            data.append("name", formData.name);
+            if (formData.image) {
+                data.append("image", formData.image);
+            }
+
+            const res = await fetchClient("/api/store-categories", {
+                method: "POST",
+                body: data,
+            });
+
+            const json = await res.json();
+            if (!res.ok || json.success === false) {
+                alert(json.message || "فشل إنشاء التصنيف");
+                return;
+            }
+
+            alert("تم إنشاء تصنيف المتجر بنجاح");
+            router.push("/admin/stores"); // Return to list
+            router.refresh();
+        } catch (error) {
+            alert(error.message || "حدث خطأ غير متوقع");
+        }
+    };
+
+    return (
+        <SectionLayout title="إضافة تصنيف متجر جديد">
+            <BranchForm
+                onSubmit={handleSubmit}
+                onCancel={() => router.back()}
+                type="main" // "main" usually means Main Category in BranchForm logic
+            />
+        </SectionLayout>
+    );
+}

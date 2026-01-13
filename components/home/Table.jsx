@@ -173,7 +173,7 @@ export default function Table({
                 <>
                   <div className="text-sm">
                     <span className="font-medium">الفئة:</span>{" "}
-                    {item?.category ?? "—"}
+                    {typeof item?.category === "object" ? item?.category?.name : item?.category ?? "—"}
                   </div>
                   <div className="text-sm">
                     <span className="font-medium">السعر:</span>{" "}
