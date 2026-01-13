@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Check } from "lucide-react";
+import { useMemo, useState, useRef } from "react";
 import { Pagination } from "../common";
 import { fetchClient } from "../../src/lib/fetchClient";
 
@@ -53,6 +54,7 @@ export default function Table({
   isProduct, // explicit override
 }) {
   const safeData = Array.isArray(data) ? data : [];
+  const priorities = useRef({});
 
   // Detect if this is a product list by checking for a 'description' field
   const isProductTable = useMemo(() => {
@@ -70,22 +72,30 @@ export default function Table({
   const [deletingId, setDeletingId] = useState(null);
   const [updatingPriorityId, setUpdatingPriorityId] = useState(null);
 
-  const makeHref = (id) => (url ? `${url.replace(/\/+$/, "")}/${id}` : "#");
-
-  async function handlePriorityChange(item, newPriority) {
+  async function handlePriorityUpdate(item, newPriority) {
     const id = item?.id;
     if (!id) return;
-    if (Number(item.priority) === Number(newPriority)) return;
 
     try {
       setUpdatingPriorityId(id);
-      const res = await fetchClient(`/api/products/${id}/priority`, {
+
+      const data = new FormData();
+      data.append("name", item.name || "");
+      data.append("description", item.description || "");
+      data.append("model_number", item.model_number || "");
+      data.append("store_section_id", item.store_section_id || item.sub_category_id || "");
+      data.append("priority", Number(newPriority));
+      data.append("_method", "PUT");
+
+      const res = await fetchClient(`/api/products/${id}`, {
         method: "POST",
-        body: JSON.stringify({ priority: Number(newPriority) }),
+        body: data,
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
         alert(out?.message || "فشل تحديث الأولوية");
+      } else {
+        alert("تم تحديث الأولوية بنجاح");
       }
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
@@ -200,14 +210,23 @@ export default function Table({
                   <div className="flex items-center gap-2 mt-2">
                     <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
                     <span className="text-gray-300">|</span>
-                    <label className="text-xs text-gray-500 whitespace-nowrap">الأولوية:</label>
-                    <input
-                      type="number"
-                      defaultValue={item.priority ?? 0}
-                      onBlur={(e) => handlePriorityChange(item, e.target.value)}
-                      className={`w-12 px-1 py-0.5 text-xs border rounded text-center ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
-                      disabled={updatingPriorityId === item.id}
-                    />
+                    <div className="relative flex items-center">
+                      <input
+                        type="number"
+                        defaultValue={item.priority ?? 0}
+                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
+                        className={`w-16 h-7 pl-6 pr-1 py-0.5 text-xs border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                        disabled={updatingPriorityId === item.id}
+                      />
+                      <button
+                        onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
+                        disabled={updatingPriorityId === item.id}
+                        className="absolute left-0.5 p-1 text-green-600 hover:text-green-700 disabled:opacity-50"
+                        title="حفظ الأولوية"
+                      >
+                        <Check size={12} />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -424,19 +443,28 @@ export default function Table({
 
                 {isProductTable && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
-                    <input
-                      type="number"
-                      defaultValue={item.priority ?? 0}
-                      onBlur={(e) => handlePriorityChange(item, e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handlePriorityChange(item, e.currentTarget.value);
-                          e.currentTarget.blur();
-                        }
-                      }}
-                      className={`w-16 px-2 py-1 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
-                      disabled={updatingPriorityId === item.id}
-                    />
+                    <div className="relative flex items-center justify-center w-20 mx-auto">
+                      <input
+                        type="number"
+                        defaultValue={item.priority ?? 0}
+                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
+                          }
+                        }}
+                        className={`w-full h-8 pl-8 pr-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
+                        disabled={updatingPriorityId === item.id}
+                      />
+                      <button
+                        onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
+                        disabled={updatingPriorityId === item.id}
+                        className="absolute left-1 p-1 text-green-600 hover:text-green-700 disabled:opacity-50 transition-colors"
+                        title="حفظ الأولوية"
+                      >
+                        <Check size={16} />
+                      </button>
+                    </div>
                   </td>
                 )}
                 <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
