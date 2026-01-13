@@ -68,8 +68,31 @@ export default function Table({
   }, [sub, isProductTable]);
 
   const [deletingId, setDeletingId] = useState(null);
+  const [updatingPriorityId, setUpdatingPriorityId] = useState(null);
 
   const makeHref = (id) => (url ? `${url.replace(/\/+$/, "")}/${id}` : "#");
+
+  async function handlePriorityChange(item, newPriority) {
+    const id = item?.id;
+    if (!id) return;
+    if (Number(item.priority) === Number(newPriority)) return;
+
+    try {
+      setUpdatingPriorityId(id);
+      const res = await fetchClient(`/api/products/${id}/priority`, {
+        method: "POST",
+        body: JSON.stringify({ priority: Number(newPriority) }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || out?.success === false) {
+        alert(out?.message || "فشل تحديث الأولوية");
+      }
+    } catch (e) {
+      alert(`خطأ: ${e?.message || e}`);
+    } finally {
+      setUpdatingPriorityId(null);
+    }
+  }
 
   const getEditHref = (item) => {
     if (!editHref) return null;
@@ -131,6 +154,7 @@ export default function Table({
     if (isProductTable) cols += 1; // details link
     if (showSubCol) cols += 1; // show sub/visit link
     if (subCol === "products") cols += 1; // show products link (for sub-branches)
+    if (isProductTable) cols += 1; // priority
     cols += 1; // edit
     cols += 1; // delete
     return cols || 1;
@@ -173,9 +197,18 @@ export default function Table({
                   </p>
                 )}
                 {isProductTable && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    رقم الموديل: {item?.model_number ?? "—"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
+                    <span className="text-gray-300">|</span>
+                    <label className="text-xs text-gray-500 whitespace-nowrap">الأولوية:</label>
+                    <input
+                      type="number"
+                      defaultValue={item.priority ?? 0}
+                      onBlur={(e) => handlePriorityChange(item, e.target.value)}
+                      className={`w-12 px-1 py-0.5 text-xs border rounded text-center ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                      disabled={updatingPriorityId === item.id}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -296,6 +329,11 @@ export default function Table({
                   عرض المنتجات
                 </th>
               )}
+              {isProductTable && (
+                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  الأولوية
+                </th>
+              )}
               <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 التعديل
               </th>
@@ -384,6 +422,23 @@ export default function Table({
                   </td>
                 )}
 
+                {isProductTable && (
+                  <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
+                    <input
+                      type="number"
+                      defaultValue={item.priority ?? 0}
+                      onBlur={(e) => handlePriorityChange(item, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handlePriorityChange(item, e.currentTarget.value);
+                          e.currentTarget.blur();
+                        }
+                      }}
+                      className={`w-16 px-2 py-1 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
+                      disabled={updatingPriorityId === item.id}
+                    />
+                  </td>
+                )}
                 <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
                   {(() => {
                     const href = getEditHref(item);

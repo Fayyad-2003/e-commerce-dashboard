@@ -236,9 +236,9 @@ export default function ProductForm({
 
   const [formData, setFormData] = useState({
     id: product?.id ?? "",
-    // prefer product.sub_category_id, otherwise use defaultSubCategoryId (create mode)
-    sub_category_id: String(
-      product?.sub_category_id ?? defaultSubCategoryId ?? ""
+    // prefer product.store_section_id, otherwise use defaultSubCategoryId (create mode)
+    store_section_id: String(
+      product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId ?? ""
     ),
     unit_of_measure_id: String(product?.unit_of_measure_id ?? ""),
     name: product?.name ?? "",
@@ -391,7 +391,7 @@ export default function ProductForm({
   // validation (slightly adjusted to allow create-mode without id)
   const validate = () => {
     const newErrors = {};
-    if (!formData.sub_category_id) newErrors.sub_category_id = "مطلوب";
+    if (!formData.store_section_id) newErrors.store_section_id = "مطلوب";
     if (!formData.unit_of_measure_id) newErrors.unit_of_measure_id = "مطلوب";
     if (!formData.name) newErrors.name = "مطلوب";
     if (!formData.model_number) newErrors.model_number = "مطلوب";
@@ -420,7 +420,7 @@ export default function ProductForm({
       if (!isCreate && formData.id)
         fd.append("product_id", String(formData.id));
 
-      fd.append("sub_category_id", String(formData.sub_category_id));
+      fd.append("store_section_id", String(formData.store_section_id));
       fd.append("unit_of_measure_id", String(formData.unit_of_measure_id));
       fd.append("name", formData.name);
       fd.append("model_number", formData.model_number);
@@ -475,7 +475,7 @@ export default function ProductForm({
           out?.product?.id ?? out?.data?.id ?? out?.id ?? formData.id;
         // navigate back to sub-branch products list; if you prefer to go to the created product edit page, change the path below
         router.push(
-          `/admin/products/sub-branch-products/${formData.sub_category_id}`
+          `/admin/products/sub-branch-products/${formData.store_section_id}`
         );
       } else {
         setErrors((p) => ({ ...p, form: out?.message || "فشل الحفظ" }));
@@ -496,7 +496,7 @@ export default function ProductForm({
         <button
           onClick={() =>
             router.push(
-              `/admin/products/sub-branch-products/${product?.sub_category_id ?? defaultSubCategoryId
+              `/admin/products/sub-branch-products/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId
               }`
             )
           }
@@ -541,7 +541,7 @@ export default function ProductForm({
             <p className="text-sm text-gray-600">
               المجموعة الفرعية المختارة:{" "}
               <span className="font-medium text-[#402E32]">
-                {formData.sub_category_id || "لم يتم التحديد"}
+                {formData.store_section_id || "لم يتم التحديد"}
               </span>
             </p>
           </div>
