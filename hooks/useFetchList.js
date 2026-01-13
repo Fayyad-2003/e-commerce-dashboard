@@ -73,22 +73,10 @@ export default function useFetchList({
             }
 
             const json = await res.json();
-
-            let arr = [];
-            let p = json?.meta?.pagination ?? json?.meta ?? {};
-
-            if (Array.isArray(json?.data)) {
-                arr = json.data;
-            } else if (json?.data?.data && Array.isArray(json.data.data)) {
-                // Handle { data: { data: [...], ...meta } } pattern
-                arr = json.data.data;
-                // If standard meta is missing, try using the wrapper object values
-                if (!p.total && !p.current_page) {
-                    p = json.data;
-                }
-            } else if (Array.isArray(json)) {
-                arr = json;
-            }
+            const arr = Array.isArray(json?.data) ? json.data : [];
+            // Handle different meta/pagination structures if necessary.
+            // Adjust based on your API response format.
+            const p = json?.meta?.pagination ?? json?.meta ?? {};
 
             setData(arr);
             setMeta(json?.meta || null);

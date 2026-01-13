@@ -31,7 +31,7 @@ export default function AdsTable({
                     </thead>
 
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {ads.length > 0 ? (
+                        {ads.data.length > 0 ? (
                             ads.map((ad, index) => (
                                 <tr key={ad.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{itemStartIndex + index + 1}</td>
@@ -49,12 +49,8 @@ export default function AdsTable({
                                         {ad.end_date ? new Date(ad.end_date).toLocaleDateString('ar-EG') : '-'}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {ad.image || ad.full_image_url ? (
-                                            <img
-                                                src={ad.full_image_url || ad.image}
-                                                alt={ad.title}
-                                                className="h-10 w-20 object-cover rounded"
-                                            />
+                                        {ad.image ? (
+                                            <img src={ad.image} alt={ad.title} className="h-10 w-20 object-cover rounded" />
                                         ) : (
                                             <span className="text-gray-400">لا توجد صورة</span>
                                         )}
