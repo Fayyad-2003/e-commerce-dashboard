@@ -11,19 +11,22 @@ export default function BranchForm({
   type,
 }) {
   const [name, setName] = useState(initialData.name || "");
+  const [description, setDescription] = useState(initialData.description || "");
   const [image, setImage] = useState(initialData.image || null);
   const [preview, setPreview] = useState(initialData.imageUrl || "");
   const [pending, setPending] = useState(false);
-  const [imageRemoved, setImageRemoved] = useState(false); // NEW: mark that user removed the existing image
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   useEffect(() => {
     setName(initialData.name || "");
+    setDescription(initialData.description || "");
     setImage(initialData.image || null);
     setPreview(initialData.imageUrl || "");
     setImageRemoved(false);
   }, [
     initialData?.id,
     initialData?.name,
+    initialData?.description,
     initialData?.image,
     initialData?.imageUrl,
   ]);
@@ -39,15 +42,12 @@ export default function BranchForm({
     return `${base.replace(/\/+$/, "")}/${String(path).replace(/^\/+/, "")}`;
   };
 
-  // Normalize preview to full path if needed
   useEffect(() => {
     const source = preview || initialData?.imageUrl || initialData?.image || "";
     const normalized = buildFullImagePath(source);
     if (normalized && normalized !== preview) setPreview(normalized);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialData?.imageUrl, initialData?.image]); // avoid infinite loop by not including preview
+  }, [initialData?.imageUrl, initialData?.image]);
 
-  // Revoke blob URL when component unmounts or when we explicitly clear
   useEffect(() => {
     return () => {
       if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
@@ -65,23 +65,17 @@ export default function BranchForm({
       alert("حجم الملف كبير جداً (الحد الأقصى 2MB)");
       return;
     }
-
-    // revoke previous blob URL if any
     if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
-
     setImage(file);
     setPreview(URL.createObjectURL(file));
-    setImageRemoved(false); // selecting a new file cancels "removed" flag
+    setImageRemoved(false);
   };
 
   const handleClearImage = (e) => {
     e?.stopPropagation?.();
-    // revoke blob if created
     if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
-
     setImage(null);
     setPreview("");
-    // if there was an existing image in initialData, mark it as removed
     const hadExisting = Boolean(initialData?.image || initialData?.imageUrl);
     setImageRemoved(hadExisting);
   };
@@ -95,12 +89,12 @@ export default function BranchForm({
     }
     try {
       setPending(true);
-      // pass id so parent knows which branch to update (if edit)
       const payload = {
         id: initialData?.id ?? null,
         name: name.trim(),
-        image, // File or null
-        imageRemoved, // boolean to indicate user removed existing image
+        description: description.trim(),
+        image,
+        imageRemoved,
       };
       await Promise.resolve(onSubmit?.(payload));
     } finally {
@@ -112,29 +106,32 @@ export default function BranchForm({
   const buttonLabel = disabledNow
     ? "جارٍ الحفظ..."
     : isEditMode
-    ? "حفظ التعديلات"
-    : "حفظ القسم";
+      ? "حفظ التعديلات"
+      : "حفظ";
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 text-right">
         {isEditMode
-          ? "تعديل القسم"
+          ? "تعديل"
           : type === "sub"
-          ? "إضافة قسم فرعي جديد"
-          : "إضافة قسم رئيسي جديد"}
+            ? "إضافة قسم فرعي جديد"
+            : type === "store"
+              ? "إضافة متجر جديد"
+              : "إضافة قسم رئيسي جديد"}
       </h1>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md"
+        className="bg-white p-6 rounded-lg shadow-md space-y-6"
+        dir="rtl"
       >
-        <div className="mb-6">
+        <div>
           <label
             htmlFor="name"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            اسم القسم
+            الاسم
           </label>
           <input
             type="text"
@@ -144,8 +141,26 @@ export default function BranchForm({
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#5A443A]"
             required
             minLength={3}
-            maxLength={50}
+            maxLength={100}
             disabled={disabledNow}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            الوصف
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#5A443A] min-h-[100px]"
+            maxLength={500}
+            disabled={disabledNow}
+            placeholder="أدخل وصفاً بسيطاً هنا..."
           />
         </div>
 
@@ -155,11 +170,10 @@ export default function BranchForm({
           </label>
           <div className="flex items-center space-x-4">
             <label
-              className={`flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed rounded-md cursor-pointer hover:border-[#5A443A] ${
-                disabledNow
-                  ? "opacity-60 cursor-not-allowed pointer-events-none"
-                  : "border-gray-300"
-              }`}
+              className={`flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed rounded-md cursor-pointer hover:border-[#5A443A] ${disabledNow
+                ? "opacity-60 cursor-not-allowed pointer-events-none"
+                : "border-gray-300"
+                }`}
             >
               {preview ? (
                 <div className="relative w-full h-full">
@@ -229,10 +243,9 @@ export default function BranchForm({
               type="submit"
               disabled={disabledNow || !name.trim()}
               className={`px-4 py-2 bg-[#5A443A] text-white rounded-md hover:bg-[#402E32] flex items-center
-                ${
-                  disabledNow
-                    ? "opacity-70 cursor-not-allowed pointer-events-none"
-                    : ""
+                ${disabledNow
+                  ? "opacity-70 cursor-not-allowed pointer-events-none"
+                  : ""
                 }`}
             >
               {disabledNow ? (

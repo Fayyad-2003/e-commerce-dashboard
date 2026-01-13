@@ -158,10 +158,20 @@ export default function Table({
                   }
                 />
               </div>
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-gray-900 truncate">
                   {item?.name ?? "-"}
                 </h3>
+                {item?.description && (
+                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                    {item.description}
+                  </p>
+                )}
+                {item?.category?.name && (
+                  <p className="text-[10px] text-[var(--primary-brown)] mt-0.5 font-medium">
+                    التصنيف: {item.category.name}
+                  </p>
+                )}
                 {isProductTable && (
                   <p className="text-xs text-gray-500 mt-1">
                     رقم الموديل: {item?.model_number ?? "—"}
@@ -328,8 +338,18 @@ export default function Table({
                   </td>
                 )}
 
-                <td className="px-3 py-4 text-sm text-gray-900 max-w-xs truncate text-right">
-                  {item?.name ?? "—"}
+                <td className="px-3 py-4 text-sm text-gray-900 max-w-md text-right">
+                  <div className="font-semibold text-gray-800">{item?.name ?? "—"}</div>
+                  {item?.description && (
+                    <div className="text-xs text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
+                      {item.description}
+                    </div>
+                  )}
+                  {item?.category?.name && (
+                    <div className="text-[10px] text-[var(--primary-brown)] mt-1 font-medium bg-gray-50 px-2 py-0.5 rounded-full w-fit">
+                      {item.category.name}
+                    </div>
+                  )}
                 </td>
 
                 {isProductTable && (

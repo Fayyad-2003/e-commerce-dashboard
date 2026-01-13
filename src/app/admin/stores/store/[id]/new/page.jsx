@@ -15,6 +15,7 @@ export default function NewStoreSectionPage() {
         try {
             const formData = new FormData();
             formData.append("name", data.name);
+            formData.append("description", data.description || "");
             formData.append("store_id", storeId);
             if (data.image) {
                 formData.append("image", data.image);

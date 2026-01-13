@@ -1,9 +1,9 @@
-"use client";
+import { useMemo } from "react";
 import useFetchList from "../useFetchList";
 
 export default function useStoreSubCategories(storeId) {
     const {
-        data,
+        data: rawData,
         meta,
         pagination,
         loading,
@@ -18,6 +18,13 @@ export default function useStoreSubCategories(storeId) {
         },
         dependencies: [storeId]
     });
+
+    const data = useMemo(() => {
+        return rawData.map(item => ({
+            ...item,
+            image: item.logo || item.image
+        }));
+    }, [rawData]);
 
     return {
         data,
