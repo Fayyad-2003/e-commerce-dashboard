@@ -5,7 +5,7 @@ import { handleResponse, serverFetch } from "@/lib/api";
 export async function GET(req, { params }) {
     try {
         const { id } = params;
-        const res = await serverFetch(`/admin/ads/${id}`, { method: "GET" });
+        const res = await serverFetch(`/admin/ads/show/${id}`, { method: "GET" });
 
         return handleResponse(res);
     } catch (err) {
@@ -21,7 +21,7 @@ export async function POST(req, { params }) {
         const { id } = params;
         const formData = await req.formData();
 
-        const res = await serverFetch(`/admin/ads/${id}`, {
+        const res = await serverFetch(`/admin/ads/update/${id}`, {
             method: "POST",
             body: formData,
         });
@@ -39,7 +39,7 @@ export async function DELETE(req, { params }) {
     try {
         const { id } = params;
 
-        const res = await serverFetch(`/admin/ads/${id}`, {
+        const res = await serverFetch(`/admin/ads/delete/${id}`, {
             method: "DELETE",
         });
 

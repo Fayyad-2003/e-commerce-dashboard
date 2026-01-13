@@ -20,6 +20,7 @@ export default function AdsTable({
                         <tr>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">الصورة</th>
+                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تعديل</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">حذف</th>
@@ -33,20 +34,25 @@ export default function AdsTable({
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{itemStartIndex + index + 1}</td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {(ad.full_image_url || ad.image) ? (
-                                            <img
-                                                src={ad.full_image_url || ad.image}
-                                                alt="Ad"
-                                                className="h-12 w-24 object-cover rounded border"
-                                            />
+                                            <div className="relative h-12 w-24 rounded border overflow-hidden">
+                                                <img
+                                                    src={ad.full_image_url || ad.image}
+                                                    alt="Ad"
+                                                    className="object-cover w-full h-full"
+                                                />
+                                            </div>
                                         ) : (
                                             <span className="text-gray-400">لا توجد صورة</span>
                                         )}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                        {ad.title || "—"}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {ad.created_at ? new Date(ad.created_at).toLocaleDateString('ar-EG') : '-'}
                                     </td>
 
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <Link
                                             href={`/admin/ads/${ad.id}/update`}
                                             className="text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -55,7 +61,7 @@ export default function AdsTable({
                                         </Link>
                                     </td>
 
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <button
                                             onClick={() => onDelete?.(ad.id)}
                                             className="text-red-600 hover:text-red-800 cursor-pointer"
@@ -67,7 +73,7 @@ export default function AdsTable({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="5" className="text-center py-4 text-gray-500">
+                                <td colSpan="6" className="text-center py-4 text-gray-500">
                                     لا توجد إعلانات
                                 </td>
                             </tr>

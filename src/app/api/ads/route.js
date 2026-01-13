@@ -26,7 +26,7 @@ export async function POST(req) {
     try {
         const formData = await req.formData();
 
-        const res = await serverFetch("/admin/ads", {
+        const res = await serverFetch("/admin/ads/store", {
             method: "POST",
             body: formData,
         });

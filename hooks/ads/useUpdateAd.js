@@ -36,7 +36,7 @@ export default function useUpdateAd() {
                     is_active: ad?.is_active ?? true,
                     start_date: ad?.start_date ?? "",
                     end_date: ad?.end_date ?? "",
-                    image_url: ad?.image ?? "",
+                    image_url: ad?.full_image_url || ad?.image || "",
                 });
             } catch (err) {
                 setErrors({ form: err.message || "فشل جلب البيانات" });
@@ -53,9 +53,10 @@ export default function useUpdateAd() {
 
         try {
             const form = new FormData();
-            for (const key of ["title", "description", "link", "position", "is_active", "start_date", "end_date"]) {
+            for (const key of ["title", "description", "link", "position", "start_date", "end_date"]) {
                 form.append(key, formData[key] ?? "");
             }
+            form.append("is_active", formData.is_active ? "1" : "0");
 
             // Handle image upload (only if new image is provided)
             if (formData.image) {
