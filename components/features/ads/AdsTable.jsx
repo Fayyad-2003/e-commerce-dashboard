@@ -19,41 +19,31 @@ export default function AdsTable({
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">الموقع</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ البدء</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الانتهاء</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">الصورة</th>
+                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تعديل</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">حذف</th>
                         </tr>
                     </thead>
 
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {ads.data.length > 0 ? (
+                        {ads.length > 0 ? (
                             ads.map((ad, index) => (
                                 <tr key={ad.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{itemStartIndex + index + 1}</td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{ad.title}</td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{ad.position}</td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                        <span className={`px-2 py-1 rounded-full text-xs ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                            {ad.is_active ? "نشط" : "غير نشط"}
-                                        </span>
-                                    </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {ad.start_date ? new Date(ad.start_date).toLocaleDateString('ar-EG') : '-'}
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {ad.end_date ? new Date(ad.end_date).toLocaleDateString('ar-EG') : '-'}
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {ad.image ? (
-                                            <img src={ad.image} alt={ad.title} className="h-10 w-20 object-cover rounded" />
+                                        {(ad.full_image_url || ad.image) ? (
+                                            <img
+                                                src={ad.full_image_url || ad.image}
+                                                alt="Ad"
+                                                className="h-12 w-24 object-cover rounded border"
+                                            />
                                         ) : (
                                             <span className="text-gray-400">لا توجد صورة</span>
                                         )}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {ad.created_at ? new Date(ad.created_at).toLocaleDateString('ar-EG') : '-'}
                                     </td>
 
                                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
@@ -77,7 +67,7 @@ export default function AdsTable({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="9" className="text-center py-4 text-gray-500">
+                                <td colSpan="5" className="text-center py-4 text-gray-500">
                                     لا توجد إعلانات
                                 </td>
                             </tr>
