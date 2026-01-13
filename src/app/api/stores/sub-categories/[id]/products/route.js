@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
         const search = searchParams.get("search") || "";
 
         const res = await serverFetch(
-            `/admin/products/getByStoreSection/${params.id}?page=${page}&per_page=${per_page}&search=${search}`,
+            `/admin/store-products/getBySection/${params.id}?page=${page}&per_page=${per_page}&search=${search}`,
             { method: "GET" }
         );
         return handleResponse(res);
