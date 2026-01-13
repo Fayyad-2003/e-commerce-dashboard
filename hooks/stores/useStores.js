@@ -1,9 +1,9 @@
-"use client";
+import { useMemo } from "react";
 import useFetchList from "../useFetchList";
 
 export default function useStores(categoryId = null) {
     const {
-        data: stores,
+        data: rawStores,
         meta,
         pagination,
         loading,
@@ -21,6 +21,13 @@ export default function useStores(categoryId = null) {
         },
         dependencies: [categoryId]
     });
+
+    const stores = useMemo(() => {
+        return rawStores.map(store => ({
+            ...store,
+            image: store.logo || store.image // Ensure Table's getImageSrc finds it
+        }));
+    }, [rawStores]);
 
     return {
         stores,

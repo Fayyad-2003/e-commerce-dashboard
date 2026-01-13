@@ -52,6 +52,7 @@ export function OrdersPage() {
     goToPage,
     handleComplete,
     handleDelete,
+    handleToggleArchive,
     changePerPage,
     selectedStatus,
     changeStatus
