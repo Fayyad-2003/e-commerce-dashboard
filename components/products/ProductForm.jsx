@@ -461,9 +461,15 @@ export default function ProductForm({
       });
 
       // choose endpoint and method
-      const endpoint = isCreate
+      let endpoint = isCreate
         ? `/api/products`
         : `/api/products/${formData.id}`;
+
+      // IF it's a create action AND we have a store_section_id, use the specific store-product endpoint
+      if (isCreate && formData.store_section_id) {
+        endpoint = `/api/admin/store-products/store`;
+      }
+
       const method = "POST"; // use POST for both create and edit (keeps parity with previous behaviour)
 
       const res = await fetchClient(endpoint, { method, body: fd });
