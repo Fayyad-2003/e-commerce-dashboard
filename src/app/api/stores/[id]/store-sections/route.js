@@ -25,3 +25,26 @@ export async function GET(req, { params }) {
         );
     }
 }
+export async function POST(req, { params }) {
+    try {
+        const id = params?.id;
+        const formData = await req.formData();
+
+        // Ensure store_id is set for the backend
+        if (!formData.has("store_id")) {
+            formData.append("store_id", id);
+        }
+
+        const res = await serverFetch("/admin/store-sections/store", {
+            method: "POST",
+            body: formData,
+        });
+
+        return handleResponse(res);
+    } catch (err) {
+        return NextResponse.json(
+            { success: false, message: `استثناء: ${err?.message || err}` },
+            { status: 500 }
+        );
+    }
+}

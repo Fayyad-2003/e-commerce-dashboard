@@ -25,7 +25,14 @@ export async function GET(req) {
 export async function POST(req) {
     try {
         const formData = await req.formData();
-        const res = await serverFetch("/admin/stores", {
+
+        // BranchForm sends 'image', but backend might expect 'logo' for stores
+        if (formData.has("image") && !formData.has("logo")) {
+            const img = formData.get("image");
+            if (img) formData.append("logo", img);
+        }
+
+        const res = await serverFetch("/admin/stores/store", {
             method: "POST",
             body: formData,
         });
