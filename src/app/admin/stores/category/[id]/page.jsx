@@ -39,14 +39,9 @@ function StoreLevel2Page() {
                     categorie="المتجر"
                     sub="الأقسام الفرعية"
                     url="/admin/stores/store" // Links to /admin/stores/store/[id] -> which should redirect to sub-cats
-                    // Or we link directly to sub-cats page if Table supported suffix.
-                    // For now, let's create /admin/stores/store/[id]/page.jsx that redirects?
-                    // Better: /admin/stores/store/[id]/sub-categories/page.jsx is the target.
-                    // But Table links to /admin/stores/store/[id].
-                    // So create that page and have it list sub-categories? 
-                    // YES. /admin/stores/store/[id]/page.jsx will show sub-categories.
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
+                    isProduct={false}
                 />
             </ConditionalRender>
         </SectionLayout>

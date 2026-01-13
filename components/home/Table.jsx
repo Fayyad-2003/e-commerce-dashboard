@@ -50,14 +50,16 @@ export default function Table({
   onPageChange,
   onPerPageChange,
   subCol,
+  isProduct, // explicit override
 }) {
   const safeData = Array.isArray(data) ? data : [];
 
   // Detect if this is a product list by checking for a 'description' field
   const isProductTable = useMemo(() => {
+    if (typeof isProduct === "boolean") return isProduct;
     const first = safeData[0];
     return first && typeof first === "object" && "description" in first;
-  }, [safeData]);
+  }, [safeData, isProduct]);
 
   // Helper: are we rendering "main branches" table? (i.e. it should show a link to sub-branches)
   // This is true when a non-null sub label is provided (and we're NOT in a product table)
