@@ -20,7 +20,6 @@ export default function AdsTable({
                         <tr>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">الصورة</th>
-                            <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">تعديل</th>
                             <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">حذف</th>
@@ -44,9 +43,6 @@ export default function AdsTable({
                                         ) : (
                                             <span className="text-gray-400">لا توجد صورة</span>
                                         )}
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                        {ad.title || "—"}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {ad.created_at ? new Date(ad.created_at).toLocaleDateString('ar-EG') : '-'}
@@ -73,7 +69,7 @@ export default function AdsTable({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="text-center py-4 text-gray-500">
+                                <td colSpan="5" className="text-center py-4 text-gray-500">
                                     لا توجد إعلانات
                                 </td>
                             </tr>

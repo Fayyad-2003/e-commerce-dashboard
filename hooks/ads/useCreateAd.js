@@ -15,11 +15,6 @@ export default function useCreateAd() {
 
         try {
             const form = new FormData();
-            for (const key of ["title", "description", "link", "position", "start_date", "end_date"]) {
-                form.append(key, formData[key] ?? "");
-            }
-            form.append("is_active", formData.is_active ? "1" : "0");
-
             // Handle image upload
             if (formData.image) {
                 form.append("image", formData.image);

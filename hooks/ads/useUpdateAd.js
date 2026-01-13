@@ -29,13 +29,6 @@ export default function useUpdateAd() {
                 const ad = data?.data ?? data;
 
                 setInitialData({
-                    title: ad?.title ?? "",
-                    description: ad?.description ?? "",
-                    link: ad?.link ?? "",
-                    position: ad?.position ?? "",
-                    is_active: ad?.is_active ?? true,
-                    start_date: ad?.start_date ?? "",
-                    end_date: ad?.end_date ?? "",
                     image_url: ad?.full_image_url || ad?.image || "",
                 });
             } catch (err) {
@@ -53,12 +46,6 @@ export default function useUpdateAd() {
 
         try {
             const form = new FormData();
-            for (const key of ["title", "description", "link", "position", "start_date", "end_date"]) {
-                form.append(key, formData[key] ?? "");
-            }
-            form.append("is_active", formData.is_active ? "1" : "0");
-
-            // Handle image upload (only if new image is provided)
             if (formData.image) {
                 form.append("image", formData.image);
             }
