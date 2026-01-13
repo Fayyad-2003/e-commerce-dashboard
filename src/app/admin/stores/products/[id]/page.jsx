@@ -28,7 +28,7 @@ function StoreProductsPage() {
         <SectionLayout
             title={`المتاجر — منتجات ${subName}`}
             backHref="/admin/stores"
-            addHref={`/admin/stores/products/${subById}/new`}
+            addHref={`/admin/products/new?subId=${subById}`}
             addLabel="إضافة منتج جديد"
         >
             <ConditionalRender
@@ -40,11 +40,10 @@ function StoreProductsPage() {
                     data={data}
                     pagination={pagination}
                     categorie="المنتج"
-                    sub="null"
-                    // No deeper level
+                    sub={null}
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
-                    subCol="products" // To indicate product contextual rendering if Table supports it
+                    subCol={null}
                 />
             </ConditionalRender>
         </SectionLayout>
