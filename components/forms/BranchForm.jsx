@@ -113,7 +113,11 @@ export default function BranchForm({
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6 text-right">
         {isEditMode
-          ? "تعديل"
+          ? type === "store"
+            ? "تعديل المتجر"
+            : type === "category"
+              ? "تعديل تصنيف المتجر"
+              : "تعديل القسم"
           : type === "sub"
             ? "إضافة قسم فرعي جديد"
             : type === "store"
