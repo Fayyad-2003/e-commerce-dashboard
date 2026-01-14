@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
-        const res = await serverFetch(`/admin/stores/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/delete/${params.id}`, {
             method: "DELETE",
         });
         return handleResponse(res);
