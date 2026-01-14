@@ -33,7 +33,7 @@ function StoreCategoriesPageClient() {
                     url="/admin/stores/category" // Links to /admin/stores/category/[id]
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
-                    editHref={(item) => `/admin/store-categories/${item.id}/update`}
+                    editHref={(item) => `/admin/store-categories/${item.id}`}
                     deleteHref="/api/store-categories"
                 />
             </ConditionalRender>
