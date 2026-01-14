@@ -3,7 +3,7 @@ import { handleResponse, serverFetch } from "@/lib/api";
 
 export async function GET(req, { params }) {
     try {
-        const res = await serverFetch(`/admin/stores/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/${params.id}/show`, {
             method: "GET"
         });
         return handleResponse(res);
@@ -39,7 +39,7 @@ export async function POST(req, { params }) {
             if (img) formData.append("logo", img);
         }
 
-        const res = await serverFetch(`/admin/stores/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/${params.id}/update`, {
             method: "POST",
             body: formData,
         });

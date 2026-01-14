@@ -41,7 +41,7 @@ export default function UpdateStorePage() {
                 data.append("logo", formData.image); // Backend expects 'logo'
             }
             // For Laravel/PHP updates via FormData, we often need _method=PUT
-            data.append("_method", "PUT");
+            data.append("_method", "POST");
 
             const res = await fetchClient(`/api/stores/${storeId}`, {
                 method: "POST",
