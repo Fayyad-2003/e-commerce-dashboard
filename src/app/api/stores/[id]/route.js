@@ -3,7 +3,7 @@ import { handleResponse, serverFetch } from "@/lib/api";
 
 export async function GET(req, { params }) {
     try {
-        const res = await serverFetch(`/admin/stores/show/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
             method: "GET"
         });
         return handleResponse(res);
@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
-        const res = await serverFetch(`/admin/stores/delete/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
             method: "DELETE",
         });
         return handleResponse(res);
@@ -36,7 +36,7 @@ export async function POST(req, { params }) {
         // Ads update uses POST. Check if backend requires _method=PUT.
         // formData.append("_method", "PUT"); 
 
-        const res = await serverFetch(`/admin/stores/update/${params.id}`, {
+        const res = await serverFetch(`/admin/stores/${params.id}`, {
             method: "POST",
             body: formData,
         });

@@ -6,7 +6,6 @@ export async function GET(req) {
         const { searchParams } = new URL(req.url);
         const page = searchParams.get("page") || "1";
         const per_page = searchParams.get("per_page") || "10";
-        const search = searchParams.get("search") || "";
         const category_id = searchParams.get("category_id") || "";
 
         const endpoint = `/admin/stores/getByCategory/${category_id}?page=${page}&per_page=${per_page}`;
