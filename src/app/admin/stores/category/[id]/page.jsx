@@ -42,7 +42,7 @@ function StoreLevel2Page() {
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     isProduct={false}
-                    deleteHref="/api/stores"
+                    deleteHref={(item) => `/admin/stores/delete/${item.id}`}
                     editHref={(item) => `/admin/stores/store/${item.id}/update`}
                 />
             </ConditionalRender>
