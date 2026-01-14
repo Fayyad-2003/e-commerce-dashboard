@@ -41,8 +41,8 @@ function StoreLevel3Page() {
                     url="/admin/stores/products" // Links to /admin/stores/products/[id]
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
-                    editHref={(item) => `/admin/stores/store-sections/${item.id}/update`}
-                    deleteHref={(item) => `/admin/stores/store-sections/delete/${item.id}`}
+                    editHref={(item) => `/admin/store-sections/${item.id}/update`}
+                    deleteHref={(item) => `/admin/store-sections/delete/${item.id}`}
                 />
             </ConditionalRender>
         </SectionLayout>
