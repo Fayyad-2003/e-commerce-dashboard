@@ -84,6 +84,8 @@ export default function Table({
       data.append("description", item.description || "");
       data.append("model_number", item.model_number || "");
       data.append("store_section_id", item.store_section_id || item.sub_category_id || "");
+      data.append("unit_of_measure_id", item.unit_of_measure_id || "");
+      data.append("base_price", item.base_price || item.basePrice || "");
       data.append("priority", Number(newPriority));
       data.append("_method", "PUT");
 
@@ -210,18 +212,18 @@ export default function Table({
                   <div className="flex items-center gap-2 mt-2">
                     <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
                     <span className="text-gray-300">|</span>
-                    <div className="relative flex items-center">
+                    <div className="flex items-center gap-1">
                       <input
                         type="number"
                         defaultValue={item.priority ?? 0}
                         onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        className={`w-16 h-7 pl-6 pr-1 py-0.5 text-xs border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                        className={`w-14 h-7 px-1 text-xs border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
                         disabled={updatingPriorityId === item.id}
                       />
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
-                        className="absolute left-0.5 p-1 text-green-600 hover:text-green-700 disabled:opacity-50"
+                        className="bg-green-600 text-white p-1 rounded hover:bg-green-700 disabled:opacity-50"
                         title="حفظ الأولوية"
                       >
                         <Check size={12} />
@@ -443,7 +445,7 @@ export default function Table({
 
                 {isProductTable && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
-                    <div className="relative flex items-center justify-center w-20 mx-auto">
+                    <div className="flex items-center justify-center gap-1 w-24 mx-auto">
                       <input
                         type="number"
                         defaultValue={item.priority ?? 0}
@@ -453,16 +455,16 @@ export default function Table({
                             handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
                           }
                         }}
-                        className={`w-full h-8 pl-8 pr-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
+                        className={`w-14 h-8 px-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
                         disabled={updatingPriorityId === item.id}
                       />
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
-                        className="absolute left-1 p-1 text-green-600 hover:text-green-700 disabled:opacity-50 transition-colors"
+                        className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
                         title="حفظ الأولوية"
                       >
-                        <Check size={16} />
+                        <Check size={14} />
                       </button>
                     </div>
                   </td>
