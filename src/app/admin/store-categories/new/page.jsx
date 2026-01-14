@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { fetchClient } from "@/lib/fetchClient";
-import BranchForm from "../../../../../components/forms/BranchForm"; // Components is likely in ROOT based on previous ls
-import { SectionLayout } from "../../../../../components/common";
+import BranchForm from "components/forms/BranchForm"; // Components is likely in ROOT based on previous ls
+import { SectionLayout } from "components/common";
 
 export default function NewStoreCategoryPage() {
     const router = useRouter();

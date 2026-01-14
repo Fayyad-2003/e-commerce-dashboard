@@ -1,9 +1,9 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import BranchForm from "../../../../../components/forms/BranchForm";
+import BranchForm from "components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
-import { ConditionalRender, SectionLayout } from "../../../../../components/common";
+import { ConditionalRender, SectionLayout } from "components/common";
 
 export default function UpdateStoreCategoryPage() {
     const params = useParams();

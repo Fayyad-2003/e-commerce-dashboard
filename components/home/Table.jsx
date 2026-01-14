@@ -172,6 +172,14 @@ export default function Table({
     return cols || 1;
   };
 
+  const makeHref = (id) => {
+    if (id == null) return "#";
+    const base = url || "";
+    // If it's a product link, we might need a different base? 
+    // But usually the 'url' prop is passed correctly from the parent.
+    return `${base.replace(/\/+$/, "")}/${id}`;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden w-full">
       {/* mobile */}
