@@ -150,23 +150,26 @@ export default function BranchForm({
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            الوصف
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#5A443A] min-h-[100px]"
-            maxLength={500}
-            disabled={disabledNow}
-            placeholder="أدخل وصفاً بسيطاً هنا..."
-          />
-        </div>
+        {description && (
+
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              الوصف
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#5A443A] min-h-[100px]"
+              maxLength={500}
+              disabled={disabledNow}
+              placeholder="أدخل وصفاً بسيطاً هنا..."
+            />
+          </div>
+        )}
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
