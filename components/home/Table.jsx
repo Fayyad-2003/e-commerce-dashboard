@@ -48,6 +48,7 @@ export default function Table({
   deleteHref,
   deleteLabel = "هذا العنصر",
   onDelete,
+  onUpdate,
   onPageChange,
   onPerPageChange,
   subCol,
@@ -297,6 +298,16 @@ export default function Table({
 
               <div className="flex justify-between pt-2">
                 {(() => {
+                  if (onUpdate) {
+                    return (
+                      <button
+                        onClick={() => onUpdate(item)}
+                        className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] text-sm"
+                      >
+                        تعديل
+                      </button>
+                    )
+                  }
                   const href = getEditHref(item);
                   return href ? (
                     <Link
@@ -494,6 +505,16 @@ export default function Table({
                 )}
                 <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
                   {(() => {
+                    if (onUpdate) {
+                      return (
+                        <button
+                          onClick={() => onUpdate(item)}
+                          className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] cursor-pointer"
+                        >
+                          تعديل
+                        </button>
+                      )
+                    }
                     const href = getEditHref(item);
                     return href ? (
                       <Link

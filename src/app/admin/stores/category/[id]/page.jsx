@@ -21,6 +21,33 @@ function StoreLevel2Page() {
 
     const categoryName = meta?.category_name || "";
 
+    const handleUpdateStore = async (item) => {
+        const newName = prompt("أدخل الاسم الجديد للمتجر:", item.name);
+        if (!newName || newName === item.name) return;
+
+        try {
+            const formData = new FormData();
+            formData.append("name", newName);
+            formData.append("store_category_id", String(categoryId));
+            formData.append("_method", "PUT");
+
+            const res = await fetchClient(`/api/stores/${item.id}`, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) {
+                const out = await res.json().catch(() => ({}));
+                throw new Error(out.message || "فشل تحديث المتجر");
+            }
+
+            alert("تم التحديث بنجاح");
+            goToPage(pagination.current_page);
+        } catch (err) {
+            alert(`خطأ: ${err.message}`);
+        }
+    };
+
     return (
         <SectionLayout
             title={`المتاجر — تصنيف ${categoryName}`}
@@ -42,8 +69,8 @@ function StoreLevel2Page() {
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     isProduct={false}
+                    onUpdate={handleUpdateStore}
                     deleteHref="/api/stores"
-                    editHref={(item) => `/admin/stores/store/${item.id}/update`}
                 />
             </ConditionalRender>
         </SectionLayout>
