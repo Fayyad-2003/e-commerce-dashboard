@@ -79,19 +79,12 @@ export default function Table({
     try {
       setUpdatingPriorityId(id);
 
-      const data = new FormData();
-      data.append("name", item.name || "");
-      data.append("description", item.description || "");
-      data.append("model_number", item.model_number || "");
-      data.append("store_section_id", item.store_section_id || item.sub_category_id || "");
-      data.append("unit_of_measure_id", item.unit_of_measure_id || "");
-      data.append("base_price", item.base_price || item.basePrice || "");
-      data.append("priority", Number(newPriority));
-      data.append("_method", "POST");
-
-      const res = await fetchClient(`/api/products/${id}`, {
+      const res = await fetchClient(`/api/products/${id}/priority`, {
         method: "POST",
-        body: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priority: Number(newPriority) }),
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
