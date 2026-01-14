@@ -32,9 +32,12 @@ export async function DELETE(req, { params }) {
 export async function POST(req, { params }) {
     try {
         const formData = await req.formData();
-        // Assuming update uses POST or PUT depending on backend. 
-        // Ads update uses POST. Check if backend requires _method=PUT.
-        // formData.append("_method", "PUT"); 
+
+        // BranchForm sends 'image', but backend might expect 'logo' for stores
+        if (formData.has("image") && !formData.has("logo")) {
+            const img = formData.get("image");
+            if (img) formData.append("logo", img);
+        }
 
         const res = await serverFetch(`/admin/stores/${params.id}`, {
             method: "POST",
