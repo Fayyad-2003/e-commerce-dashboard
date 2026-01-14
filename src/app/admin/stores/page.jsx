@@ -34,7 +34,7 @@ function StoreCategoriesPageClient() {
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     editHref={(item) => `/admin/store-categories/${item.id}/update`}
-                    deleteHref="/api/store-categories"
+                    deleteHref="/api/store-categories/delete"
                 />
             </ConditionalRender>
         </SectionLayout>

@@ -87,7 +87,7 @@ export default function Table({
       data.append("unit_of_measure_id", item.unit_of_measure_id || "");
       data.append("base_price", item.base_price || item.basePrice || "");
       data.append("priority", Number(newPriority));
-      data.append("_method", "PUT");
+      data.append("_method", "POST");
 
       const res = await fetchClient(`/api/products/${id}`, {
         method: "POST",
