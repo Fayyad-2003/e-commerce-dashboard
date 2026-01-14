@@ -79,12 +79,34 @@ export default function Table({
     try {
       setUpdatingPriorityId(id);
 
-      const res = await fetchClient(`/api/products/${id}/priority`, {
+      const formData = new FormData();
+      Object.keys(item).forEach((key) => {
+        let value = item[key];
+        if (key === "priority") {
+          value = newPriority;
+        }
+
+        if (value !== null && value !== undefined) {
+          // If the product has a category object, Laravel might prefer category_id
+          // or we just send everything as is.
+          if (typeof value === "object" && !Array.isArray(value) && !(value instanceof File) && !(value instanceof Blob)) {
+            // Special handling for objects if needed, but per request "all attributes without change"
+            // usually means flat attributes. For nested ones, we can stringify or skip if there's a flat ID equivalent.
+            // In this codebase, category is an object with 'id', and there's usually a 'category_id'.
+            // Simple approach: append as is, or stringify if it's a simple object.
+            // formData.append(key, JSON.stringify(value));
+            return; // Skip complex objects for now unless specific ones are needed
+          }
+          formData.append(key, value);
+        }
+      });
+
+      // Ensure the NEW priority is definitely there
+      formData.set("priority", String(newPriority));
+
+      const res = await fetchClient(`/api/products/${id}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ priority: Number(newPriority) }),
+        body: formData,
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
