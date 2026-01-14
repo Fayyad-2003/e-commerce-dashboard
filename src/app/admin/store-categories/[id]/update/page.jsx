@@ -36,11 +36,11 @@ export default function UpdateStoreCategoryPage() {
         try {
             const data = new FormData();
             data.append("name", formData.name);
-            data.append("description", formData.description || "");
+            // data.append("description", formData.description || "");
             if (formData.image) {
                 data.append("image", formData.image);
             }
-            data.append("_method", "PUT");
+            data.append("_method", "POST");
 
             const res = await fetchClient(`/api/store-categories/${categoryId}`, {
                 method: "POST",
