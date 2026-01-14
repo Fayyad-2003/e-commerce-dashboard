@@ -38,12 +38,12 @@ function StoreLevel2Page() {
                     pagination={pagination}
                     categorie="المتجر"
                     sub="الأقسام الفرعية"
-                    url="/admin/stores/store"
+                    url="/admin/stores"
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     isProduct={false}
                     deleteHref="/api/stores"
-                    editHref={(item) => `/admin/stores/store/${item.id}/update`}
+                    editHref={(item) => `/admin/stores/${item.id}`}
                 />
             </ConditionalRender>
         </SectionLayout>

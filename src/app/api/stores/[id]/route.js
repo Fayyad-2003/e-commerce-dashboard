@@ -3,8 +3,7 @@ import { handleResponse, serverFetch } from "@/lib/api";
 
 export async function GET(req, { params }) {
     try {
-        const { id } = await params;
-        const res = await serverFetch(`/admin/stores/show/${id}`, {
+        const res = await serverFetch(`/admin/stores/show/${params.id}`, {
             method: "GET"
         });
         return handleResponse(res);
@@ -18,8 +17,7 @@ export async function GET(req, { params }) {
 
 export async function DELETE(req, { params }) {
     try {
-        const { id } = await params;
-        const res = await serverFetch(`/admin/stores/delete/${id}`, {
+        const res = await serverFetch(`/admin/stores/delete/${params.id}`, {
             method: "DELETE",
         });
         return handleResponse(res);
@@ -33,16 +31,12 @@ export async function DELETE(req, { params }) {
 
 export async function POST(req, { params }) {
     try {
-        const { id } = await params;
         const formData = await req.formData();
+        // Assuming update uses POST or PUT depending on backend. 
+        // Ads update uses POST. Check if backend requires _method=PUT.
+        // formData.append("_method", "PUT"); 
 
-        // BranchForm might send 'image', but backend expects 'logo'
-        if (formData.has("image") && !formData.has("logo")) {
-            const img = formData.get("image");
-            if (img) formData.append("logo", img);
-        }
-
-        const res = await serverFetch(`/admin/stores/update/${id}`, {
+        const res = await serverFetch(`/admin/stores/update/${params.id}`, {
             method: "POST",
             body: formData,
         });
