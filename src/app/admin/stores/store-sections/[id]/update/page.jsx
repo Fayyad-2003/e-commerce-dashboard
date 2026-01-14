@@ -69,7 +69,7 @@ export default function UpdateStoreSectionPage() {
                         initialData={{
                             id: section.id,
                             name: section.name,
-                            description: section.description,
+                            // description: section.description,
                             imageUrl: section.logo || section.image,
                         }}
                         onSubmit={handleSubmit}
