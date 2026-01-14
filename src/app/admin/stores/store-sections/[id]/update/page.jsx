@@ -40,7 +40,7 @@ export default function UpdateStoreSectionPage() {
             if (formData.image) {
                 data.append("logo", formData.image); // Sections often use 'logo' as well in this backend
             }
-            data.append("_method", "PUT");
+            data.append("_method", "POST");
 
             const res = await fetchClient(`/api/store-sections/${sectionId}`, {
                 method: "POST",
