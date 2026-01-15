@@ -30,7 +30,7 @@ function StoreCategoriesPageClient() {
                     pagination={pagination}
                     categorie="التصنيف"
                     sub="المتاجر"
-                    url="/admin/stores/category" // Links to /admin/stores/category/[id]
+                    url="/admin/stores/category"
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     editHref={(item) => `/admin/store-categories/${item.id}/update`}

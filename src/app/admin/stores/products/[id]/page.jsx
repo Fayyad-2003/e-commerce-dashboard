@@ -44,7 +44,7 @@ function StoreProductsPage() {
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     subCol={null}
-                    deleteHref={(item) => `/api/admin/store-products/delete/${item.id}`}
+                    deleteHref={(item) => `/api/store-products/${item.id}`}
                     deleteLabel="هذا المنتج"
                     editHref={(item) => `/admin/stores/products/${item.id}/update`}
                     priorityUpdateUrl={(item) => `/api/store-products/${item.id}`}
