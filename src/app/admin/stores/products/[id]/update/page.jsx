@@ -48,7 +48,7 @@ export default function StoreProductUpdatePage() {
         <div className="p-6">
             <ProductForm
                 product={product}
-                updateBaseUrl="/api/admin/store-products/update"
+                updateBaseUrl={`/api/store-products/${id}`}
             />
         </div>
     );

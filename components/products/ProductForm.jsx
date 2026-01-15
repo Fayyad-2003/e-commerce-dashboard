@@ -464,7 +464,7 @@ export default function ProductForm({
       // choose endpoint and method
       let endpoint = isCreate
         ? `/api/products`
-        : (updateBaseUrl ? `${updateBaseUrl}/${formData.id}` : `/api/products/${formData.id}`);
+        : (updateBaseUrl ? `${updateBaseUrl}` : `/api/products/${formData.id}`);
 
       // IF it's a create action AND we have a store_section_id, use the specific store-product endpoint
       if (isCreate && formData.store_section_id) {
