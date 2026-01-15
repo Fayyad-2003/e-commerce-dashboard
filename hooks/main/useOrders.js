@@ -103,10 +103,20 @@ export default function useOrders() {
   const handleComplete = async (orderId) => {
     if (!confirm("تأكيد: هل تريد وسم هذه الطلبية بأنها مكتملة؟")) return;
 
-    // optimistic
-    setRawOrders((os) =>
-      os.map((o) => (o.id === orderId ? { ...o, status: "completed" } : o))
-    );
+    // Snapshot
+    const previousOrders = [...rawOrders];
+
+    // Optimistic Update
+    // If we are filtering by a specific status (e.g. 'processing'), completing it should remove it from view.
+    // If status is 'all', it just updates the status label.
+    setRawOrders((os) => {
+      if (selectedStatus && selectedStatus !== 'all') {
+        return os.filter(o => o.id !== orderId);
+      }
+      return os.map((o) => (o.id === orderId ? { ...o, status: "completed" } : o));
+    });
+
+    // Also update selected order if it's the one
     setSelectedOrder((o) =>
       o && o.id === orderId ? { ...o, status: "completed" } : o
     );
@@ -117,18 +127,20 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل تحديث الحالة");
-      reload(); // Ensure consistency
+      // No reload() needed if successful
     } catch (e) {
       alert(e?.message || "فشل تحديث الحالة");
-      reload(); // Revert
+      setRawOrders(previousOrders); // Revert
     }
   };
 
   const handleDelete = async (orderId) => {
     if (!confirm("تأكيد: هل تريد حذف هذه الطلبية نهائياً؟")) return;
 
-    // optimistic
+    // Snapshot
     const previousOrders = [...rawOrders];
+
+    // optimistic
     setRawOrders((os) => os.filter((o) => o.id !== orderId));
     if (selectedOrder?.id === orderId) {
       setSelectedOrder(null);
@@ -140,7 +152,7 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل حذف الطلبية");
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(e?.message || "فشل حذف الطلبية");
       setRawOrders(previousOrders); // Revert
@@ -150,13 +162,13 @@ export default function useOrders() {
   const handleToggleArchive = async (orderId) => {
     if (!confirm("هل تريد تغيير حالة الأرشفة لهذه الطلبية؟")) return;
 
-    // optimistic
+    // Snapshot
     const previousOrders = [...rawOrders];
-    setRawOrders((os) =>
-      os.map((o) =>
-        o.id === orderId ? { ...o, is_archived: !o.is_archived } : o
-      )
-    );
+
+    // Optimistic Update
+    // Usually archiving removes it from the main list, or unarchiving removes it from the archive list.
+    // So we filter it out to simulate "moving" to the other list.
+    setRawOrders((os) => os.filter((o) => o.id !== orderId));
 
     try {
       const res = await fetchClient(`/api/orders/${orderId}/toggle-archive`, {
@@ -164,7 +176,7 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل تغيير حالة الأرشفة");
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(e?.message || "فشل تغيير حالة الأرشفة");
       setRawOrders(previousOrders); // Revert
