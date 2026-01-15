@@ -81,6 +81,7 @@ export default function Table({
 
       const formData = new FormData();
       Object.keys(item).forEach((key) => {
+        if (key === "unit_of_measure_id") return;
         let value = item[key];
         if (key === "priority") {
           value = newPriority;

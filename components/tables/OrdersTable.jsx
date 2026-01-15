@@ -69,15 +69,13 @@ export default function OrdersTable({
                         إتمام
                       </button>
                     )}
-                    {(order.status === "completed" || order.is_archived) && (
-                      <button
-                        onClick={() => onDelete?.(order.id)}
-                        className="text-red-600 hover:text-red-800"
-                        title="حذف الطلبية"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => onDelete?.(order.id)}
+                      className="text-red-600 hover:text-red-800"
+                      title="حذف الطلبية"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
