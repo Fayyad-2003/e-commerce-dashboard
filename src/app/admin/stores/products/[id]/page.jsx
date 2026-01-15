@@ -47,6 +47,7 @@ function StoreProductsPage() {
                     deleteHref={(item) => `/api/admin/store-products/delete/${item.id}`}
                     deleteLabel="هذا المنتج"
                     editHref={(item) => `/admin/stores/products/${item.id}/update`}
+                    priorityUpdateUrl={(item) => `/api/store-products/${item.id}`}
                 />
             </ConditionalRender>
         </SectionLayout>

@@ -52,6 +52,7 @@ export default function Table({
   onPerPageChange,
   subCol,
   isProduct, // explicit override
+  priorityUpdateUrl,
 }) {
   const safeData = Array.isArray(data) ? data : [];
   const priorities = useRef({});
@@ -129,7 +130,17 @@ export default function Table({
       // Ensure the NEW priority is definitely there
       formData.set("priority", String(newPriority));
 
-      const res = await fetchClient(`/api/products/${id}`, {
+      // Determine endpoint: use priorityUpdateUrl function/string if provided, else default
+      let target = `/api/products/${id}`;
+      if (priorityUpdateUrl) {
+        if (typeof priorityUpdateUrl === 'function') {
+          target = priorityUpdateUrl(item);
+        } else {
+          target = `${priorityUpdateUrl.replace(/\/+$/, "")}/${id}`;
+        }
+      }
+
+      const res = await fetchClient(target, {
         method: "POST",
         body: formData,
       });
