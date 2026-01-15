@@ -90,20 +90,30 @@ export default function Table({
 
         // Handle Arrays (images, price_tiers, etc.)
         if (Array.isArray(value)) {
-          value.forEach((val, index) => {
-            if (typeof val === "object" && !(val instanceof File) && !(val instanceof Blob)) {
-              // Array of objects results in key[index][subKey]
-              Object.keys(val).forEach((subKey) => {
-                const subVal = val[subKey];
-                if (subVal !== null && subVal !== undefined) {
-                  formData.append(`${key}[${index}][${subKey}]`, subVal);
-                }
-              });
-            } else {
-              // Array of primitives (or Files) results in key[]
-              formData.append(`${key}[]`, val);
-            }
-          });
+          if (key === "images") {
+            value.forEach((val) => {
+              if (val instanceof File || val instanceof Blob) {
+                formData.append("images[]", val);
+              } else {
+                formData.append("existing_images[]", val);
+              }
+            });
+          } else {
+            value.forEach((val, index) => {
+              if (typeof val === "object" && !(val instanceof File) && !(val instanceof Blob)) {
+                // Array of objects results in key[index][subKey]
+                Object.keys(val).forEach((subKey) => {
+                  const subVal = val[subKey];
+                  if (subVal !== null && subVal !== undefined) {
+                    formData.append(`${key}[${index}][${subKey}]`, subVal);
+                  }
+                });
+              } else {
+                // Array of primitives (or Files) results in key[]
+                formData.append(`${key}[]`, val);
+              }
+            });
+          }
           return;
         }
 
