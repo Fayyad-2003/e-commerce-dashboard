@@ -493,7 +493,7 @@ export default function Table({
 
                 {isProductTable && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
-                    <div className="flex items-center justify-center gap-1 w-24 mx-auto">
+                    <div className="flex items-center justify-center gap-2">
                       <input
                         type="number"
                         defaultValue={item.priority ?? 0}
@@ -503,16 +503,16 @@ export default function Table({
                             handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
                           }
                         }}
-                        className={`w-14 h-8 px-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
+                        className={`w-16 h-8 px-2 text-sm font-medium border border-gray-200 rounded-md text-center shadow-sm focus:border-[var(--primary-brown)] focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${updatingPriorityId === item.id ? "bg-gray-50 opacity-50 cursor-wait" : "bg-white"}`}
                         disabled={updatingPriorityId === item.id}
                       />
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
-                        className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
+                        className="flex items-center justify-center w-8 h-8 bg-white border border-gray-200 text-green-600 rounded-md shadow-sm hover:bg-green-50 hover:border-green-200 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
                         title="حفظ الأولوية"
                       >
-                        <Check size={14} />
+                        <Check size={16} strokeWidth={2.5} />
                       </button>
                     </div>
                   </td>
