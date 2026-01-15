@@ -23,7 +23,7 @@ export default function StoreProductUpdatePage() {
         async function load() {
             setLoading(true);
             try {
-                const res = await fetchClient(`/api/admin/store-products/show/${id}`, {
+                const res = await fetchClient(`/api/admin/store-products/${id}`, {
                     credentials: "include",
                     cache: "no-store",
                     headers: { Accept: "application/json" },
