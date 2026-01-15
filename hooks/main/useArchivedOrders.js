@@ -34,8 +34,10 @@ export default function useArchivedOrders() {
     const handleToggleArchive = async (orderId) => {
         if (!confirm("هل تريد إلغاء الأرشفة لهذه الطلبية؟")) return;
 
-        // optimistic remove from this list
+        // Snapshot
         const previousOrders = [...rawOrders];
+
+        // Optimistic Remove
         setRawOrders((os) => os.filter((o) => o.id !== orderId));
 
         try {
@@ -44,7 +46,7 @@ export default function useArchivedOrders() {
             });
             const json = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(json?.message || "فشل إلغاء الأرشفة");
-            reload();
+            // No reload needed
         } catch (e) {
             alert(e?.message || "فشل إلغاء الأرشفة");
             setRawOrders(previousOrders); // Revert
@@ -54,7 +56,10 @@ export default function useArchivedOrders() {
     const handleDelete = async (orderId) => {
         if (!confirm("تأكيد: هل تريد حذف هذه الطلبية نهائياً؟")) return;
 
+        // Snapshot
         const previousOrders = [...rawOrders];
+
+        // Optimistic Remove
         setRawOrders((os) => os.filter((o) => o.id !== orderId));
 
         try {
@@ -63,10 +68,10 @@ export default function useArchivedOrders() {
             });
             const json = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(json?.message || "فشل حذف الطلبية");
-            reload();
+            // No reload needed
         } catch (e) {
             alert(e?.message || "فشل حذف الطلبية");
-            setRawOrders(previousOrders);
+            setRawOrders(previousOrders); // Revert
         }
     };
 

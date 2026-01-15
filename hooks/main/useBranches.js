@@ -15,6 +15,7 @@ export default function useBranches() {
     goToPage,
     changePerPage,
     reload,
+    setData: setBranches
   } = useFetchList({
     url: "/api/categories" // Keeps original endpoint
   });
@@ -23,17 +24,25 @@ export default function useBranches() {
     if (!id) return;
     const ok = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟ لا يمكن التراجع.");
     if (!ok) return;
+    // Snapshot
+    const previous = [...branches];
+
+    // Optimistic
+    setBranches(current => current.filter(b => b.id !== id));
+
     try {
       const res = await fetchClient(`/api/categories/${id}`, { method: "DELETE" });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || json?.success === false) {
         alert(json?.message || `فشل الحذف (HTTP ${res.status})`);
+        setBranches(previous); // Revert
         return;
       }
       alert(json?.message || "تم الحذف بنجاح");
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
+      setBranches(previous); // Revert
     }
   }
 

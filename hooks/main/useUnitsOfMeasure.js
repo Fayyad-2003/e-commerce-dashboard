@@ -15,6 +15,7 @@ export default function useUnitsOfMeasure() {
     goToPage,
     changePerPage,
     reload,
+    setData: setUnits
   } = useFetchList({
     url: "/api/units-of-measure",
     basePath: "/admin/sizetable"
@@ -49,6 +50,12 @@ export default function useUnitsOfMeasure() {
   const handleDelete = async (unitId) => {
     if (!confirm("هل أنت متأكد أنك تريد حذف وحدة القياس هذه؟")) return;
 
+    // Snapshot
+    const previous = [...data];
+
+    // Optimistic
+    setUnits(current => current.filter(u => u.id !== unitId));
+
     try {
       const res = await fetchClient(`/api/units-of-measure/${unitId}`, {
         method: "DELETE",
@@ -56,14 +63,14 @@ export default function useUnitsOfMeasure() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        alert(json.message || "تعذّر حذف وحدة القياس");
-        return;
+        throw new Error(json.message || "تعذّر حذف وحدة القياس");
       }
 
       alert("✅ تم حذف وحدة القياس");
-      await reload();
+      // No reload() needed
     } catch (err) {
       alert(`خطأ: ${err?.message || err}`);
+      setUnits(previous); // Revert
     }
   };
 

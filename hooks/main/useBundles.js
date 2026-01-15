@@ -15,6 +15,7 @@ export default function useBundles() {
     goToPage,
     changePerPage,
     reload,
+    setData: setBundles
   } = useFetchList({
     url: "/api/offers"
   });
@@ -22,6 +23,12 @@ export default function useBundles() {
   /** ✅ Delete handler */
   const handleDelete = async (offer) => {
     if (!confirm(`هل أنت متأكد من حذف العرض "${offer.name}"؟`)) return;
+
+    // Snapshot
+    const previous = [...offers];
+
+    // Optimistic
+    setBundles(current => current.filter(o => o.id !== offer.id));
 
     try {
       const res = await fetchClient(`/api/offers/${offer.id}`, {
@@ -34,9 +41,10 @@ export default function useBundles() {
       }
 
       alert("تم حذف العرض بنجاح ✅");
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(`❌ خطأ أثناء الحذف: ${e.message}`);
+      setBundles(previous); // Revert
     }
   };
 

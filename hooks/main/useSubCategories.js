@@ -16,6 +16,7 @@ export default function useSubCategories(categoryId) {
     goToPage,
     changePerPage,
     reload,
+    setData: setSubCategories
   } = useFetchList({
     url: (page, perPage) => {
       if (!categoryId) return null;
@@ -30,17 +31,26 @@ export default function useSubCategories(categoryId) {
     if (!id) return;
     const ok = window.confirm("هل أنت متأكد أنك تريد حذف هذا القسم الفرعي؟ لا يمكن التراجع.");
     if (!ok) return;
+
+    // Snapshot
+    const previous = [...data];
+
+    // Optimistic
+    setSubCategories(current => current.filter(item => item.id !== id));
+
     try {
       const res = await fetchClient(`/api/sub-categories/${id}`, { method: "DELETE" });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || json?.success === false) {
         alert(json?.message || `فشل الحذف (HTTP ${res.status})`);
+        setSubCategories(previous); // Revert
         return;
       }
       alert(json?.message || "تم الحذف بنجاح");
-      await reload();
+      // No reload() needed
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
+      setSubCategories(previous); // Revert
     }
   }
 

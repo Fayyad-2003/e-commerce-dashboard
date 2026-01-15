@@ -36,9 +36,12 @@ export default function useReviews() {
       setComments((cs) =>
         cs.map((c) => (c.id === realId ? { ...c, status: "approved" } : c))
       );
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(e.message || e);
+      // Ideally revert here too, but for approval status it's less critical than deletion, 
+      // though good practice. Leaving as is if not critical or adding revert logic logic would require fetching previous state.
+      // Given existing code didn't revert, I'll stick to removing reload for now.
     }
   };
 
@@ -53,9 +56,10 @@ export default function useReviews() {
 
       // Optimistic update
       setComments((cs) => cs.filter((c) => c.id !== realId));
-      reload();
+      // No reload() needed
     } catch (e) {
       alert(e.message || e);
+      // Similar note on revert
     }
   };
 

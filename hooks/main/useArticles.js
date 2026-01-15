@@ -15,12 +15,19 @@ export default function useArticles() {
     goToPage,
     changePerPage,
     reload,
+    setData: setArticles
   } = useFetchList({
     url: "/api/articles"
   });
 
   async function handleDelete(articleId) {
     if (!confirm("هل أنت متأكد أنك تريد حذف هذا المقال؟")) return;
+
+    // Snapshot
+    const previous = [...articles];
+
+    // Optimistic
+    setArticles(current => current.filter(a => a.id !== articleId));
 
     try {
       const res = await fetchClient(`/api/articles/${articleId}`, {
@@ -29,14 +36,14 @@ export default function useArticles() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        alert(json.message || "تعذّر حذف المقال");
-        return;
+        throw new Error(json.message || "تعذّر حذف المقال");
       }
 
       alert(json.message || "تم حذف المقال بنجاح");
-      reload();
+      // No reload() needed
     } catch (err) {
       alert(`خطأ: ${err?.message || err}`);
+      setArticles(previous); // Revert
     }
   }
 

@@ -25,6 +25,7 @@ export default function useProductsBySub() {
     goToPage,
     changePerPage,
     reload,
+    setData: setProducts
   } = useFetchList({
     url: (page, perPage) => {
       if (!subId) return null;
@@ -40,17 +41,26 @@ export default function useProductsBySub() {
     if (!id) return;
     const ok = window.confirm("هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع.");
     if (!ok) return;
+
+    // Snapshot
+    const previous = [...data];
+
+    // Optimistic
+    setProducts(current => current.filter(p => p.id !== id));
+
     try {
       const res = await fetchClient(`/api/products/${id}`, { method: "DELETE" });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || json?.success === false) {
         alert(json?.message || `فشل الحذف (HTTP ${res.status})`);
+        setProducts(previous); // Revert
         return;
       }
       alert(json?.message || "تم الحذف بنجاح");
-      await reload();
+      // No reload() needed
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
+      setProducts(previous); // Revert
     }
   }
 

@@ -15,12 +15,19 @@ export default function useDiscounts() {
     goToPage,
     changePerPage,
     reload,
+    setData: setDiscounts
   } = useFetchList({
     url: "/api/discounts"
   });
 
   async function handleDelete(discountId) {
     if (!confirm("هل أنت متأكد أنك تريد حذف هذا الخصم؟")) return;
+
+    // Snapshot
+    const previous = [...discounts];
+
+    // Optimistic
+    setDiscounts(current => current.filter(d => d.id !== discountId));
 
     try {
       const res = await fetchClient(`/api/discounts/${discountId}`, {
@@ -29,14 +36,14 @@ export default function useDiscounts() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        alert(json.message || "تعذّر حذف الخصم");
-        return;
+        throw new Error(json.message || "تعذّر حذف الخصم");
       }
 
       alert(json.message || "تم حذف الخصم بنجاح");
-      reload();
+      // No reload() needed
     } catch (err) {
       alert(`خطأ: ${err?.message || err}`);
+      setDiscounts(previous); // Revert
     }
   }
 
