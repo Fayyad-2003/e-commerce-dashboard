@@ -1,9 +1,9 @@
 "use client";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import Table from "../../../../../../components/home/Table";
-import { ConditionalRender, SectionLayout } from "../../../../../../components/common";
-import useStoreSubCategories from "../../../../../../hooks/stores/useStoreSubCategories";
+import Table from "../../../../../components/home/Table";
+import { ConditionalRender, SectionLayout } from "../../../../../components/common";
+import useStoreSubCategories from "../../../../../hooks/stores/useStoreSubCategories";
 
 function StoreLevel3Page() {
     const params = useParams();

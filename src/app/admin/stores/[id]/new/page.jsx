@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import BranchForm from "../../../../../../../components/forms/BranchForm";
+import BranchForm from "../../../../../../components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
 
 export default function NewStoreSectionPage() {
