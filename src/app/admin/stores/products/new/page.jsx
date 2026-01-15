@@ -1,7 +1,7 @@
 "use client";
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import ProductForm from "../../../../../components/products/ProductForm";
+import ProductForm from "../../../../../../components/products/ProductForm";
 
 function NewStoreProductContent() {
     const searchParams = useSearchParams();
