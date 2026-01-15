@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useBundles() {
   const router = useRouter();
@@ -40,10 +41,10 @@ export default function useBundles() {
         throw new Error(json?.message || "فشل حذف العرض");
       }
 
-      alert("تم حذف العرض بنجاح ✅");
+      toast.success("تم حذف العرض بنجاح ✅");
       // No reload() needed
     } catch (e) {
-      alert(`❌ خطأ أثناء الحذف: ${e.message}`);
+      toast.error(`❌ خطأ أثناء الحذف: ${e.message}`);
       setBundles(previous); // Revert
     }
   };

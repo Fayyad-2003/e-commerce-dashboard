@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useDiscounts() {
   const router = useRouter();
@@ -39,10 +40,10 @@ export default function useDiscounts() {
         throw new Error(json.message || "تعذّر حذف الخصم");
       }
 
-      alert(json.message || "تم حذف الخصم بنجاح");
+      toast.success(json.message || "تم حذف الخصم بنجاح ✅");
       // No reload() needed
     } catch (err) {
-      alert(`خطأ: ${err?.message || err}`);
+      toast.error(`خطأ: ${err?.message || err}`);
       setDiscounts(previous); // Revert
     }
   }

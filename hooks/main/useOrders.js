@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useOrders() {
   const router = useRouter();
@@ -127,9 +128,10 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل تحديث الحالة");
+      toast.success("تم تحديث حالة الطلبية بنجاح");
       // No reload() needed if successful
     } catch (e) {
-      alert(e?.message || "فشل تحديث الحالة");
+      toast.error(e?.message || "فشل تحديث الحالة");
       setRawOrders(previousOrders); // Revert
     }
   };
@@ -152,9 +154,10 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل حذف الطلبية");
+      toast.success("تم حذف الطلبية بنجاح");
       // No reload() needed
     } catch (e) {
-      alert(e?.message || "فشل حذف الطلبية");
+      toast.error(e?.message || "فشل حذف الطلبية");
       setRawOrders(previousOrders); // Revert
     }
   };
@@ -176,9 +179,10 @@ export default function useOrders() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || "فشل تغيير حالة الأرشفة");
+      toast.success("تم تغيير حالة الأرشفة بنجاح");
       // No reload() needed
     } catch (e) {
-      alert(e?.message || "فشل تغيير حالة الأرشفة");
+      toast.error(e?.message || "فشل تغيير حالة الأرشفة");
       setRawOrders(previousOrders); // Revert
     }
   };

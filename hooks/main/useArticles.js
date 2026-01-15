@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useArticles() {
   const router = useRouter();
@@ -39,10 +40,10 @@ export default function useArticles() {
         throw new Error(json.message || "تعذّر حذف المقال");
       }
 
-      alert(json.message || "تم حذف المقال بنجاح");
+      toast.success(json.message || "تم حذف المقال بنجاح ✅");
       // No reload() needed
     } catch (err) {
-      alert(`خطأ: ${err?.message || err}`);
+      toast.error(`خطأ: ${err?.message || err}`);
       setArticles(previous); // Revert
     }
   }

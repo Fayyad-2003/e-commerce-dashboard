@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useSubCategories(categoryId) {
   const router = useRouter();
@@ -42,14 +43,12 @@ export default function useSubCategories(categoryId) {
       const res = await fetchClient(`/api/sub-categories/${id}`, { method: "DELETE" });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || json?.success === false) {
-        alert(json?.message || `فشل الحذف (HTTP ${res.status})`);
-        setSubCategories(previous); // Revert
-        return;
+        throw new Error(json?.message || `فشل الحذف (HTTP ${res.status})`);
       }
-      alert(json?.message || "تم الحذف بنجاح");
+      toast.success(json?.message || "تم الحذف بنجاح ✅");
       // No reload() needed
     } catch (e) {
-      alert(`خطأ: ${e?.message || e}`);
+      toast.error(`خطأ: ${e?.message || e}`);
       setSubCategories(previous); // Revert
     }
   }

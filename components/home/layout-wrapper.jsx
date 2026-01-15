@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { NavBar, SideBar } from "../common";
 import { NotificationsProvider } from "../../context";
+import { Toaster } from "react-hot-toast";
 
 // Remove the Cairo import, as the font class is applied in the Server Component
 
@@ -18,6 +19,7 @@ export default function ClientLayoutWrapper({ children }) {
   return (
     // 👇 Start rendering directly from the content within <body>
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
       {hideChrome ? (
         // ✅ وضع بسيط بدون هيدر/سايدبار لصفحات auth
         <main className="flex-1 overflow-y-auto p-0">{children}</main>

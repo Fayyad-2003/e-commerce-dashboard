@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useUnitsOfMeasure() {
   const router = useRouter();
@@ -34,15 +35,14 @@ export default function useUnitsOfMeasure() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        alert(json.message || "تعذّر إنشاء الوحدة");
-        return false;
+        throw new Error(json.message || "تعذّر إنشاء الوحدة");
       }
 
-      alert("✅ تم إنشاء وحدة القياس بنجاح");
+      toast.success("✅ تم إنشاء وحدة القياس بنجاح");
       await reload();
       return true;
     } catch (err) {
-      alert(`خطأ: ${err?.message || err}`);
+      toast.error(`خطأ: ${err?.message || err}`);
       return false;
     }
   };
@@ -66,10 +66,10 @@ export default function useUnitsOfMeasure() {
         throw new Error(json.message || "تعذّر حذف وحدة القياس");
       }
 
-      alert("✅ تم حذف وحدة القياس");
+      toast.success("✅ تم حذف وحدة القياس");
       // No reload() needed
     } catch (err) {
-      alert(`خطأ: ${err?.message || err}`);
+      toast.error(`خطأ: ${err?.message || err}`);
       setUnits(previous); // Revert
     }
   };

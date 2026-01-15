@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
+import toast from "react-hot-toast";
 
 export default function useArchivedOrders() {
     const {
@@ -46,9 +47,9 @@ export default function useArchivedOrders() {
             });
             const json = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(json?.message || "فشل إلغاء الأرشفة");
-            // No reload needed
+            toast.success("✅ تم إلغاء أرشفة الطلبية");
         } catch (e) {
-            alert(e?.message || "فشل إلغاء الأرشفة");
+            toast.error(e?.message || "فشل إلغاء الأرشفة");
             setRawOrders(previousOrders); // Revert
         }
     };
@@ -68,9 +69,9 @@ export default function useArchivedOrders() {
             });
             const json = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(json?.message || "فشل حذف الطلبية");
-            // No reload needed
+            toast.success("✅ تم حذف الطلبية بنجاح");
         } catch (e) {
-            alert(e?.message || "فشل حذف الطلبية");
+            toast.error(e?.message || "فشل حذف الطلبية");
             setRawOrders(previousOrders); // Revert
         }
     };

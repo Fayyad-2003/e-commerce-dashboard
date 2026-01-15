@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { Pagination } from "../common";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 // simple absolute-URL check
 const isAbsoluteUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u);
@@ -159,13 +160,14 @@ export default function Table({
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
-        alert(out?.message || "فشل تحديث الأولوية");
+        toast.error(out?.message || "فشل تحديث الأولوية");
         setTableData(previousData); // Revert
       } else {
+        toast.success("تم تحديث الأولوية بنجاح");
         // success - keep optimistic update
       }
     } catch (e) {
-      alert(`خطأ: ${e?.message || e}`);
+      toast.error(`خطأ: ${e?.message || e}`);
       setTableData(previousData); // Revert
     } finally {
       setUpdatingPriorityId(null);
@@ -215,13 +217,13 @@ export default function Table({
       const res = await fetchClient(target, { method: "DELETE" });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
-        alert(out?.message || `فشل الحذف (HTTP ${res.status})`);
+        toast.error(out?.message || `فشل الحذف (HTTP ${res.status})`);
         setTableData(previousData); // Revert
         return;
       }
-      // alert(out?.message || "تم الحذف");
+      toast.success(out?.message || "تم الحذف بنجاح ✅");
     } catch (e) {
-      alert(`خطأ: ${e?.message || e}`);
+      toast.error(`خطأ: ${e?.message || e}`);
       setTableData(previousData); // Revert
     } finally {
       setDeletingId(null);
