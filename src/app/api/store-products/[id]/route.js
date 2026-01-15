@@ -31,9 +31,6 @@ export async function DELETE(req, { params }) {
     }
 }
 
-import { NextResponse } from "next/server";
-import { handleResponse, serverFetch } from "@/lib/api";
-
 export async function POST(req, { params }) {
     try {
         const { id } = params;
