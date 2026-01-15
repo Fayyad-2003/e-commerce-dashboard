@@ -55,6 +55,7 @@ export default function Page() {
           categorie="اسم المنتج"
           sub="null"
           url="/admin/products"
+          isProduct={true}
           editHref={(item) => `/admin/products/${item?.id}/update`}
           deleteLabel="هذا المنتج"
           onDelete={(id) => handleDelete(id)} // <-- pass the delete handler here
