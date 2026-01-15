@@ -25,7 +25,7 @@ function StoreLevel3Page() {
         <SectionLayout
             title={`الأقسام الفرعية — متجر ${storeName}`}
             backHref={`/admin/stores`} // Ideally back to category, but strict back logic is complex without context.
-            addHref={`/admin/stores/store/${storeId}/new`}
+            addHref={`/admin/stores/${storeId}/new`}
             addLabel="إضافة قسم فرعي"
         >
             <ConditionalRender

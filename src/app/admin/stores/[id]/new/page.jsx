@@ -32,7 +32,7 @@ export default function NewStoreSectionPage() {
                 return;
             }
 
-            router.push(`/admin/stores/store/${storeId}`);
+            router.push(`/admin/stores/${storeId}`);
         } catch (error) {
             alert("حدث خطأ غير متوقع");
         } finally {
