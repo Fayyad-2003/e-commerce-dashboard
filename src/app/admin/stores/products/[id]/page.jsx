@@ -44,7 +44,7 @@ function StoreProductsPage() {
                     onPageChange={goToPage}
                     onPerPageChange={changePerPage}
                     subCol={null}
-                    deleteHref="/api/store-products/delete"
+                    deleteHref={(item) => `/api/store-products/delete/${item.id}`}
                     deleteLabel="هذا المنتج"
                 />
             </ConditionalRender>
