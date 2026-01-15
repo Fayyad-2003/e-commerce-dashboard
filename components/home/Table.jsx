@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { Pagination } from "../common";
 import { fetchClient } from "../../src/lib/fetchClient";
 
@@ -50,11 +50,15 @@ export default function Table({
   onDelete,
   onPageChange,
   onPerPageChange,
-  subCol,
   isProduct, // explicit override
   priorityUpdateUrl,
 }) {
-  const safeData = Array.isArray(data) ? data : [];
+  const [tableData, setTableData] = useState([]);
+  useEffect(() => {
+    setTableData(Array.isArray(data) ? data : []);
+  }, [data]);
+
+  const safeData = tableData;
   const priorities = useRef({});
 
   // Detect if this is a product list by checking for a 'description' field
@@ -76,6 +80,14 @@ export default function Table({
   async function handlePriorityUpdate(item, newPriority) {
     const id = item?.id;
     if (!id) return;
+
+    // Optimistic Update
+    const previousData = [...tableData];
+    const updatedData = tableData.map(d =>
+      d.id === id ? { ...d, priority: Number(newPriority) } : d
+    ).sort((a, b) => (Number(b.priority) || 0) - (Number(a.priority) || 0));
+
+    setTableData(updatedData);
 
     try {
       setUpdatingPriorityId(id);
@@ -147,11 +159,13 @@ export default function Table({
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
         alert(out?.message || "فشل تحديث الأولوية");
+        setTableData(previousData); // Revert
       } else {
-        alert("تم تحديث الأولوية بنجاح");
+        // success - keep optimistic update
       }
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
+      setTableData(previousData); // Revert
     } finally {
       setUpdatingPriorityId(null);
     }
