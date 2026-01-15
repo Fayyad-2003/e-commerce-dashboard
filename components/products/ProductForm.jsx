@@ -14,8 +14,6 @@ import { fetchClient } from "../../src/lib/fetchClient";
 
 const UPLOADED_SCREENSHOT = "/mnt/data/Screenshot 2025-11-24 145132.png";
 
-// ... keep utility helpers intact (normalizeColors, toColorGroups, appendAttributesToFD, normalizeOldImages, urlToFile) ...
-
 function normalizeColors(raw) {
   if (raw === null || raw === undefined) return [];
 
@@ -218,6 +216,7 @@ export default function ProductForm({
   product = null,
   defaultSubCategoryId = "",
   updateBaseUrl = null,
+  redirectBaseUrl = null,
 }) {
   const router = useRouter();
   // نعتمد فقط على عدم وجود منتج لتحديد وضع الإنشاء
@@ -467,8 +466,8 @@ export default function ProductForm({
         : (updateBaseUrl ? `${updateBaseUrl}` : `/api/products/${formData.id}`);
 
       // IF it's a create action AND we have a store_section_id, use the specific store-product endpoint
-      if (isCreate && formData.store_section_id) {
-        endpoint = `/api/admin/store-products/store`;
+      if (isCreate && formData.store_section_id && !updateBaseUrl) {
+        endpoint = `/api/store-products/store`;
       }
 
       const method = "POST"; // use POST for both create and edit (keeps parity with previous behaviour)
@@ -480,10 +479,14 @@ export default function ProductForm({
         // prefer returned IDs if available
         const newId =
           out?.product?.id ?? out?.data?.id ?? out?.id ?? formData.id;
-        // navigate back to sub-branch products list; if you prefer to go to the created product edit page, change the path below
-        router.push(
-          `/admin/products/sub-branch-products/${formData.store_section_id}`
-        );
+
+        if (redirectBaseUrl) {
+          router.push(`${redirectBaseUrl}/${formData.store_section_id}`);
+        } else {
+          router.push(
+            `/admin/products/sub-branch-products/${formData.store_section_id}`
+          );
+        }
       } else {
         setErrors((p) => ({ ...p, form: out?.message || "فشل الحفظ" }));
       }
@@ -501,12 +504,15 @@ export default function ProductForm({
           {isCreate ? "إنشاء منتج جديد" : `تعديل المنتج #${formData.id}`}
         </h2>
         <button
-          onClick={() =>
-            router.push(
-              `/admin/products/sub-branch-products/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId
-              }`
-            )
-          }
+          onClick={() => {
+            if (redirectBaseUrl) {
+              router.push(`${redirectBaseUrl}/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId}`);
+            } else {
+              router.push(
+                `/admin/products/sub-branch-products/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId}`
+              );
+            }
+          }}
           className="flex items-center text-gray-500 hover:text-gray-700"
         >
           <X size={20} className="ml-1" /> إغلاق

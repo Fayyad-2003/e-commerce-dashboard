@@ -28,7 +28,7 @@ function StoreProductsPage() {
         <SectionLayout
             title={`المتاجر — منتجات ${subName}`}
             backHref="/admin/stores"
-            addHref={`/admin/products/new?subId=${subById}`}
+            addHref={`/admin/stores/products/new?subId=${subById}`}
             addLabel="إضافة منتج جديد"
         >
             <ConditionalRender

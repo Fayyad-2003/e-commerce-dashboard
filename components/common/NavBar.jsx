@@ -3,7 +3,7 @@ import { MenuIcon, UserIcon } from "lucide-react";
 
 export default function NavBar({ sidebarOpen, setSidebarOpen }) {
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center">
           <button

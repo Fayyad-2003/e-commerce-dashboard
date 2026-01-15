@@ -49,6 +49,7 @@ export default function StoreProductUpdatePage() {
             <ProductForm
                 product={product}
                 updateBaseUrl={`/api/store-products/${id}`}
+                redirectBaseUrl="/admin/stores/products"
             />
         </div>
     );
