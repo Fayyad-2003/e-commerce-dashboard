@@ -150,7 +150,7 @@ export default function BranchForm({
           />
         </div>
 
-        {description && (
+        {(description || type === "store") && (
 
           <div>
             <label

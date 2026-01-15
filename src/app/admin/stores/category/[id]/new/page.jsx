@@ -43,7 +43,7 @@ export default function NewStorePage() {
     return (
         <div className="py-8">
             <BranchForm
-                type="main"
+                type="store"
                 onSubmit={handleSubmit}
                 isSubmitting={submitting}
                 onCancel={() => router.back()}
