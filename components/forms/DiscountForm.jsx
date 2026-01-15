@@ -1,5 +1,5 @@
-"use client";
 import { useState, useEffect } from "react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 export default function DiscountForm({ initialData = null, onSubmit, onCancel, submitting = false, errors = {} }) {
   const [formData, setFormData] = useState({
@@ -125,9 +125,16 @@ export default function DiscountForm({ initialData = null, onSubmit, onCancel, s
           <button
             type="submit"
             disabled={submitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
           >
-            {submitting ? "جاري الحفظ…" : (initialData ? "حفظ التعديلات" : "إضافة الخصم")}
+            {submitting ? (
+              <>
+                <LoadingSpinner size={18} className="text-white" />
+                <span>جاري الحفظ…</span>
+              </>
+            ) : (
+              initialData ? "حفظ التعديلات" : "إضافة الخصم"
+            )}
           </button>
         </div>
       </form>

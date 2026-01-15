@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useUnitsOfMeasure } from "../../hooks";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const STORAGE_BASE =
   process.env.NEXT_PUBLIC_IMAGES ||
@@ -30,7 +31,7 @@ export default function ProductForm({
     loading: loadingUnits,
     err: unitError,
   } = useUnitsOfMeasure();
-  
+
   const [form, setForm] = useState({
     id: initialData?.id ?? "",
     name: initialData?.name || "",
@@ -88,9 +89,9 @@ export default function ProductForm({
     setSizes(
       (fromInitSizes && fromInitSizes.length > 0
         ? fromInitSizes.map((s) => ({
-            name: s.name ?? "",
-            colors: s.colors && s.colors.length ? s.colors.slice() : [""],
-          }))
+          name: s.name ?? "",
+          colors: s.colors && s.colors.length ? s.colors.slice() : [""],
+        }))
         : [{ name: "", colors: [""] }]
       )
     );
@@ -99,9 +100,9 @@ export default function ProductForm({
     setPriceTiers(
       (fromInitTiers && fromInitTiers.length > 0
         ? fromInitTiers.map((t) => ({
-            min_quantity: t.min_quantity ?? "",
-            price_per_unit: t.price_per_unit ?? "",
-          }))
+          min_quantity: t.min_quantity ?? "",
+          price_per_unit: t.price_per_unit ?? "",
+        }))
         : [{ min_quantity: "", price_per_unit: "" }]
       )
     );
@@ -114,7 +115,7 @@ export default function ProductForm({
         if (typeof p === "string" && p.startsWith("blob:")) {
           try {
             URL.revokeObjectURL(p);
-          } catch (e) {}
+          } catch (e) { }
         }
       });
     };
@@ -145,7 +146,7 @@ export default function ProductForm({
     if (target?.startsWith?.("blob:")) {
       try {
         URL.revokeObjectURL(target);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     setForm((p) => ({ ...p, images: nextImages }));
@@ -253,10 +254,10 @@ export default function ProductForm({
     fd.append("attributes", JSON.stringify({ sizes }));
 
     // Send price tiers
-priceTiers.forEach((t, i) => {
-  fd.append(`price_tiers[${i}][min_quantity]`, t.min_quantity);
-  fd.append(`price_tiers[${i}][price_per_unit]`, t.price_per_unit);
-});
+    priceTiers.forEach((t, i) => {
+      fd.append(`price_tiers[${i}][min_quantity]`, t.min_quantity);
+      fd.append(`price_tiers[${i}][price_per_unit]`, t.price_per_unit);
+    });
 
     await onSubmit(fd);
   };
@@ -452,9 +453,16 @@ priceTiers.forEach((t, i) => {
           <button
             type="submit"
             disabled={submitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
           >
-            {submitting ? "جاري الحفظ…" : (initialData ? "حفظ التعديلات" : "إضافة المنتج")}
+            {submitting ? (
+              <>
+                <LoadingSpinner size={18} className="text-white" />
+                <span>جاري الحفظ…</span>
+              </>
+            ) : (
+              initialData ? "حفظ التعديلات" : "إضافة المنتج"
+            )}
           </button>
         </div>
       </form>

@@ -1,7 +1,7 @@
-"use client";
 import { useState } from "react";
 import { Check, Store, Lock, LogIn, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
+import LoadingSpinner from "../../../../components/common/LoadingSpinner";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -184,7 +184,7 @@ export function LoginPage() {
                 <span className="absolute inset-0 -z-10 rounded-xl bg-white/0 opacity-0 blur transition duration-300 group-hover:opacity-10" />
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <LoadingSpinner size={20} className="text-white" />
                     جاري الدخول...
                   </span>
                 ) : (

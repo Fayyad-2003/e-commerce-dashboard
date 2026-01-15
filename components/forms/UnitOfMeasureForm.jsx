@@ -1,7 +1,7 @@
-"use client";
 import { MoveLeft, Save } from "lucide-react";
 import useEditUnit from "../../hooks/update/useEditUnitsOfMeasure";
 import { useEffect, useState } from "react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 export default function UnitsOfMeasureForm() {
   const {
@@ -44,7 +44,9 @@ export default function UnitsOfMeasureForm() {
         </h2>
 
         {loading ? (
-          <div className="text-gray-600 text-sm">جارِ التحميل...</div>
+          <div className="flex items-center justify-center p-12">
+            <LoadingSpinner size={48} label="جاري التحميل..." />
+          </div>
         ) : (
           <form onSubmit={onSubmit} className="bg-white p-6 rounded-lg shadow-md">
             {error && (
@@ -90,10 +92,13 @@ export default function UnitsOfMeasureForm() {
                 type="submit"
                 disabled={disabled}
                 className="px-4 py-2 bg-[#5A443A] text-white rounded-md hover:bg-[#402E32]
-                  disabled:opacity-70 flex items-center"
+                   disabled:opacity-70 flex items-center gap-2"
               >
                 {submitting ? (
-                  "جاري الحفظ..."
+                  <>
+                    <LoadingSpinner size={18} className="text-white" />
+                    <span>جاري الحفظ…</span>
+                  </>
                 ) : (
                   <>
                     <Save className="w-5 h-5 ml-2" />

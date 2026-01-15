@@ -1,4 +1,5 @@
-"use client";
+import LoadingSpinner from "./LoadingSpinner";
+
 export default function ConditionalRender({
   loading,
   error,
@@ -9,7 +10,11 @@ export default function ConditionalRender({
   emptyText = "لا توجد بيانات متاحة",
 }) {
   if (loading)
-    return <div className="p-6 text-center text-gray-600">{loadingText}</div>;
+    return (
+      <div className="flex items-center justify-center p-12">
+        <LoadingSpinner size={48} label={loadingText} />
+      </div>
+    );
 
   if (error)
     return (

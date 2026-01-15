@@ -7,6 +7,7 @@ import { Pagination } from "../common";
 import { fetchClient } from "../../src/lib/fetchClient";
 import toast from "react-hot-toast";
 import { showConfirm } from "../../src/lib/confirm";
+import LoadingOverlay from "../common/LoadingOverlay";
 
 // simple absolute-URL check
 const isAbsoluteUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u);
@@ -55,6 +56,7 @@ export default function Table({
   isProduct, // explicit override
   priorityUpdateUrl,
   subCol,
+  loading,
 }) {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
@@ -260,7 +262,8 @@ export default function Table({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden w-full">
+    <div className="bg-white rounded-lg shadow overflow-hidden w-full relative">
+      {loading && <LoadingOverlay />}
       {/* mobile */}
       <div className="md:hidden space-y-4 p-4">
         {safeData.map((item, index) => (

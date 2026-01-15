@@ -1,7 +1,7 @@
-"use client";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const STORAGE_BASE =
   process.env.NEXT_PUBLIC_IMAGES || process.env.NEXT_PUBLIC_STORAGE_URL;
@@ -568,9 +568,16 @@ export default function BundleForm({
         <button
           type="submit"
           disabled={submitting}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
         >
-          {submitting ? "جاري الحفظ..." : "حفظ"}
+          {submitting ? (
+            <>
+              <LoadingSpinner size={18} className="text-white" />
+              <span>جاري الحفظ...</span>
+            </>
+          ) : (
+            "حفظ"
+          )}
         </button>
       </div>
     </form>

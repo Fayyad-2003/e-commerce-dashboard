@@ -1,6 +1,6 @@
-"use client";
 import { useEffect, useState } from "react";
 import { PlusCircle, Image as ImageIcon, Save, Trash2 } from "lucide-react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 export default function BranchForm({
   initialData = { id: null, name: "", image: null, imageUrl: "" },
@@ -256,7 +256,10 @@ export default function BranchForm({
                 }`}
             >
               {disabledNow ? (
-                "جارٍ الحفظ..."
+                <>
+                  <LoadingSpinner size={20} className="text-white ml-2" />
+                  <span>{buttonLabel}</span>
+                </>
               ) : (
                 <>
                   {isEditMode ? (

@@ -1,7 +1,6 @@
-// src/components/articles/ArticleForm.jsx
-"use client";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const STORAGE_BASE =
   process.env.NEXT_PUBLIC_IMAGES || // فضّل هذا إن كان مضبوطًا عندك
@@ -67,7 +66,7 @@ export default function ArticleForm({
     if (preview && preview.startsWith("blob:")) {
       try {
         URL.revokeObjectURL(preview);
-      } catch {}
+      } catch { }
     }
 
     setFormData((p) => ({ ...p, image: file }));
@@ -78,7 +77,7 @@ export default function ArticleForm({
     if (preview && preview.startsWith("blob:")) {
       try {
         URL.revokeObjectURL(preview);
-      } catch {}
+      } catch { }
     }
     setFormData((p) => ({ ...p, image: null }));
     setPreview(null);
@@ -192,13 +191,16 @@ export default function ArticleForm({
           <button
             type="submit"
             disabled={submitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
           >
-            {submitting
-              ? "جاري الحفظ…"
-              : initialData
-              ? "حفظ التعديلات"
-              : "إضافة المقال"}
+            {submitting ? (
+              <>
+                <LoadingSpinner size={18} className="text-white" />
+                <span>جاري الحفظ…</span>
+              </>
+            ) : (
+              initialData ? "حفظ التعديلات" : "إضافة المقال"
+            )}
           </button>
         </div>
       </form>
