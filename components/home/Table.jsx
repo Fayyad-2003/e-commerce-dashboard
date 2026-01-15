@@ -52,6 +52,7 @@ export default function Table({
   onPerPageChange,
   isProduct, // explicit override
   priorityUpdateUrl,
+  subCol,
 }) {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
@@ -204,17 +205,24 @@ export default function Table({
     );
     if (!ok) return;
 
+    // Optimistic Delete
+    const previousData = [...tableData];
+    const updatedData = tableData.filter((d) => d.id !== id);
+    setTableData(updatedData);
+
     try {
       setDeletingId(id);
       const res = await fetchClient(target, { method: "DELETE" });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || out?.success === false) {
         alert(out?.message || `فشل الحذف (HTTP ${res.status})`);
+        setTableData(previousData); // Revert
         return;
       }
-      alert(out?.message || "تم الحذف");
+      // alert(out?.message || "تم الحذف");
     } catch (e) {
       alert(`خطأ: ${e?.message || e}`);
+      setTableData(previousData); // Revert
     } finally {
       setDeletingId(null);
     }
