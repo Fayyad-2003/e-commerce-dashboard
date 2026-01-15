@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useBundles() {
   const router = useRouter();
@@ -23,7 +24,13 @@ export default function useBundles() {
 
   /** ✅ Delete handler */
   const handleDelete = async (offer) => {
-    if (!confirm(`هل أنت متأكد من حذف العرض "${offer.name}"؟`)) return;
+    const ok = await showConfirm({
+      title: "حذف العرض",
+      text: `هل أنت متأكد من حذف العرض "${offer.name}"؟`,
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previous = [...offers];

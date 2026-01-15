@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useOrders() {
   const router = useRouter();
@@ -102,7 +103,13 @@ export default function useOrders() {
   };
 
   const handleComplete = async (orderId) => {
-    if (!confirm("تأكيد: هل تريد وسم هذه الطلبية بأنها مكتملة؟")) return;
+    const ok = await showConfirm({
+      title: "تحديث حالة الطلب",
+      text: "هل أنت متأكد من تمييز هذا الطلب كمكتمل؟",
+      confirmButtonText: "نعم، اكتمل",
+      icon: "question"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previousOrders = [...rawOrders];
@@ -137,7 +144,13 @@ export default function useOrders() {
   };
 
   const handleDelete = async (orderId) => {
-    if (!confirm("تأكيد: هل تريد حذف هذه الطلبية نهائياً؟")) return;
+    const ok = await showConfirm({
+      title: "حذف الطلب",
+      text: "تأكيد: هل تريد حذف هذه الطلبية نهائياً؟",
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previousOrders = [...rawOrders];
@@ -163,7 +176,13 @@ export default function useOrders() {
   };
 
   const handleToggleArchive = async (orderId) => {
-    if (!confirm("هل تريد تغيير حالة الأرشفة لهذه الطلبية؟")) return;
+    const ok = await showConfirm({
+      title: "تغيير حالة الأرشفة",
+      text: "هل تريد تغيير حالة الأرشفة لهذه الطلبية؟",
+      confirmButtonText: "تغيير",
+      icon: "question"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previousOrders = [...rawOrders];

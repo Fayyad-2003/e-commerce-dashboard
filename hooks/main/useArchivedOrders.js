@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useArchivedOrders() {
     const {
@@ -33,7 +34,13 @@ export default function useArchivedOrders() {
     }, [rawOrders]);
 
     const handleToggleArchive = async (orderId) => {
-        if (!confirm("هل تريد إلغاء الأرشفة لهذه الطلبية؟")) return;
+        const ok = await showConfirm({
+            title: "إلغاء الأرشفة",
+            text: "هل تريد إلغاء الأرشفة لهذه الطلبية؟",
+            confirmButtonText: "إلغاء الأرشفة",
+            icon: "question"
+        });
+        if (!ok) return;
 
         // Snapshot
         const previousOrders = [...rawOrders];
@@ -55,7 +62,13 @@ export default function useArchivedOrders() {
     };
 
     const handleDelete = async (orderId) => {
-        if (!confirm("تأكيد: هل تريد حذف هذه الطلبية نهائياً؟")) return;
+        const ok = await showConfirm({
+            title: "حذف الطلب",
+            text: "تأكيد: هل تريد حذف هذه الطلبية نهائياً؟",
+            confirmButtonText: "حذف",
+            icon: "warning"
+        });
+        if (!ok) return;
 
         // Snapshot
         const previousOrders = [...rawOrders];

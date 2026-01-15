@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useArticles() {
   const router = useRouter();
@@ -22,7 +23,13 @@ export default function useArticles() {
   });
 
   async function handleDelete(articleId) {
-    if (!confirm("هل أنت متأكد أنك تريد حذف هذا المقال؟")) return;
+    const ok = await showConfirm({
+      title: "حذف المقال",
+      text: "هل أنت متأكد أنك تريد حذف هذا المقال؟",
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previous = [...articles];

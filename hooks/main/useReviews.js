@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useReviews() {
   const searchParams = useSearchParams();
@@ -46,6 +47,15 @@ export default function useReviews() {
 
   const handleReject = async (id) => {
     const realId = typeof id === "object" ? id.id ?? id : id;
+
+    const ok = await showConfirm({
+      title: "رفض التعليق",
+      text: "هل أنت متأكد من رفض أو حذف هذا التعليق؟",
+      confirmButtonText: "رفض",
+      icon: "warning"
+    });
+    if (!ok) return;
+
     try {
       const res = await fetchClient(`/api/reviews/${realId}/delete`, {
         method: "DELETE",
@@ -82,4 +92,5 @@ export default function useReviews() {
     dynamicBackHref,
   };
 }
+
 

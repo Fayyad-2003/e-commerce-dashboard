@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useSubCategories(categoryId) {
   const router = useRouter();
@@ -30,7 +31,13 @@ export default function useSubCategories(categoryId) {
   // ----- new: delete handler for sub-categories -----
   async function handleDelete(id) {
     if (!id) return;
-    const ok = window.confirm("هل أنت متأكد أنك تريد حذف هذا القسم الفرعي؟ لا يمكن التراجع.");
+
+    const ok = await showConfirm({
+      title: "حذف القسم الفرعي",
+      text: "هل أنت متأكد أنك تريد حذف هذا القسم الفرعي؟ لا يمكن التراجع.",
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
     if (!ok) return;
 
     // Snapshot

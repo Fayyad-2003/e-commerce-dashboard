@@ -19,7 +19,7 @@ export default function ClientLayoutWrapper({ children }) {
   return (
     // 👇 Start rendering directly from the content within <body>
     <>
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster position="bottom-left" reverseOrder={false} />
       {hideChrome ? (
         // ✅ وضع بسيط بدون هيدر/سايدبار لصفحات auth
         <main className="flex-1 overflow-y-auto p-0">{children}</main>
