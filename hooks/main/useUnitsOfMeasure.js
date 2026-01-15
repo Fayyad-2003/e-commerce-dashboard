@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useUnitsOfMeasure() {
   const router = useRouter();
@@ -48,7 +49,13 @@ export default function useUnitsOfMeasure() {
   };
 
   const handleDelete = async (unitId) => {
-    if (!confirm("هل أنت متأكد أنك تريد حذف وحدة القياس هذه؟")) return;
+    const ok = await showConfirm({
+      title: "حذف وحدة القياس",
+      text: "هل أنت متأكد أنك تريد حذف وحدة القياس هذه؟",
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
+    if (!ok) return;
 
     // Snapshot
     const previous = [...data];

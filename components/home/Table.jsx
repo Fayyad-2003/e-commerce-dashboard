@@ -6,6 +6,7 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { Pagination } from "../common";
 import { fetchClient } from "../../src/lib/fetchClient";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 // simple absolute-URL check
 const isAbsoluteUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u);
@@ -202,9 +203,12 @@ export default function Table({
     const target = getDeleteHref(item);
     if (!id || !target) return;
 
-    const ok = window.confirm(
-      `هل أنت متأكد من حذف ${deleteLabel}؟ لا يمكن التراجع.`
-    );
+    const ok = await showConfirm({
+      title: "حذف العنصر",
+      text: `هل أنت متأكد من حذف ${deleteLabel}؟ لا يمكن التراجع.`,
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
     if (!ok) return;
 
     // Optimistic Delete

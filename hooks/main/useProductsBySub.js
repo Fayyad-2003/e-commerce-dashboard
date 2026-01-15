@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
 import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
+import { showConfirm } from "../../src/lib/confirm";
 
 export default function useProductsBySub() {
   const params = useParams();
@@ -40,7 +41,13 @@ export default function useProductsBySub() {
   // ----- new: delete handler for products -----
   async function handleDelete(id) {
     if (!id) return;
-    const ok = window.confirm("هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع.");
+
+    const ok = await showConfirm({
+      title: "حذف المنتج",
+      text: "هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع.",
+      confirmButtonText: "حذف",
+      icon: "warning"
+    });
     if (!ok) return;
 
     // Snapshot
