@@ -1,6 +1,6 @@
 "use client";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils"; // Assuming cn utility is available, if not I'll use standard className
+// Assuming cn utility is available, if not I'll use standard className
 
 export default function LoadingSpinner({ className, size = 24, label }) {
     return (

@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { Check, Store, Lock, LogIn, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
