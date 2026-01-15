@@ -150,7 +150,7 @@ export default function Table({
     if (!editHref) return null;
     if (typeof editHref === "function") {
       const out = editHref(item);
-      if (!out || /(undefined|null|NaN)(\/)?$/.test(String(out))) return null;
+      if (!out) return null;
       return out;
     }
     if (!item?.id && item?.id !== 0) return null;
