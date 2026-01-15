@@ -80,475 +80,488 @@ export default function Table({
       setUpdatingPriorityId(id);
 
       const formData = new FormData();
-      Object.keys(item).forEach((key) => {
-        if (key === "unit_of_measure_id") return;
-        let value = item[key];
-        if (key === "priority") {
-          value = newPriority;
-        }
+      if (key === "unit_of_measure_id") return;
 
-        if (value !== null && value !== undefined) {
-          // If the product has a category object, Laravel might prefer category_id
-          // or we just send everything as is.
-          if (typeof value === "object" && !Array.isArray(value) && !(value instanceof File) && !(value instanceof Blob)) {
-            // Special handling for objects if needed, but per request "all attributes without change"
-            // usually means flat attributes. For nested ones, we can stringify or skip if there's a flat ID equivalent.
-            // In this codebase, category is an object with 'id', and there's usually a 'category_id'.
-            // Simple approach: append as is, or stringify if it's a simple object.
-            // formData.append(key, JSON.stringify(value));
-            return; // Skip complex objects for now unless specific ones are needed
+      // Use the new priority if this is the priority field
+      let value = key === "priority" ? newPriority : item[key];
+
+      if (value === null || value === undefined) return;
+
+      // Handle Arrays (images, price_tiers, etc.)
+      if (Array.isArray(value)) {
+        value.forEach((val, index) => {
+          if (typeof val === "object" && !(val instanceof File) && !(val instanceof Blob)) {
+            // Array of objects results in key[index][subKey]
+            Object.keys(val).forEach((subKey) => {
+              const subVal = val[subKey];
+              if (subVal !== null && subVal !== undefined) {
+                formData.append(`${key}[${index}][${subKey}]`, subVal);
+              }
+            });
+          } else {
+            // Array of primitives (or Files) results in key[]
+            formData.append(`${key}[]`, val);
           }
-          formData.append(key, value);
-        }
-      });
-
-      // Ensure the NEW priority is definitely there
-      formData.set("priority", String(newPriority));
-
-      const res = await fetchClient(`/api/products/${id}`, {
-        method: "POST",
-        body: formData,
-      });
-      const out = await res.json().catch(() => ({}));
-      if (!res.ok || out?.success === false) {
-        alert(out?.message || "فشل تحديث الأولوية");
-      } else {
-        alert("تم تحديث الأولوية بنجاح");
-      }
-    } catch (e) {
-      alert(`خطأ: ${e?.message || e}`);
-    } finally {
-      setUpdatingPriorityId(null);
-    }
-  }
-
-  const getEditHref = (item) => {
-    if (!editHref) return null;
-    if (typeof editHref === "function") {
-      const out = editHref(item);
-      if (!out || /(undefined|null|NaN)(\/)?$/.test(String(out))) return null;
-      return out;
-    }
-    if (!item?.id && item?.id !== 0) return null;
-    return `${editHref.replace(/\/+$/, "")}/${item.id}`;
-  };
-
-  const getDeleteHref = (item) => {
-    if (!deleteHref)
-      return item?.id != null ? `/api/products/${item.id}` : null;
-    if (typeof deleteHref === "function") {
-      const out = deleteHref(item);
-      if (!out || /(undefined|null|NaN)(\/)?$/.test(String(out))) return null;
-      return out;
-    }
-    if (!item?.id && item?.id !== 0) return null;
-    return `${deleteHref.replace(/\/+$/, "")}/${item.id}`;
-  };
-
-  async function internalDelete(item) {
-    const id = item?.id;
-    const target = getDeleteHref(item);
-    if (!id || !target) return;
-
-    const ok = window.confirm(
-      `هل أنت متأكد من حذف ${deleteLabel}؟ لا يمكن التراجع.`
-    );
-    if (!ok) return;
-
-    try {
-      setDeletingId(id);
-      const res = await fetchClient(target, { method: "DELETE" });
-      const out = await res.json().catch(() => ({}));
-      if (!res.ok || out?.success === false) {
-        alert(out?.message || `فشل الحذف (HTTP ${res.status})`);
+        });
         return;
       }
-      alert(out?.message || "تم الحذف");
-    } catch (e) {
-      alert(`خطأ: ${e?.message || e}`);
-    } finally {
-      setDeletingId(null);
+
+      // Skip complex objects (like 'category') unless they are Files/Blobs.
+      // We generally only want to send IDs for relationships (like category_id), not the whole object.
+      if (typeof value === "object" && !(value instanceof File) && !(value instanceof Blob)) {
+        return;
+      }
+
+      formData.append(key, value);
+    });
+
+    // Ensure the NEW priority is definitely there
+    formData.set("priority", String(newPriority));
+
+    const res = await fetchClient(`/api/products/${id}`, {
+      method: "POST",
+      body: formData,
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out?.success === false) {
+      alert(out?.message || "فشل تحديث الأولوية");
+    } else {
+      alert("تم تحديث الأولوية بنجاح");
     }
+  } catch (e) {
+    alert(`خطأ: ${e?.message || e}`);
+  } finally {
+    setUpdatingPriorityId(null);
   }
+}
 
-  const computeColSpan = () => {
-    // Base columns:
-    // possible product id, image, model_number, main title, details, sub/go, products, edit, delete
-    let cols = 0;
-    if (isProductTable) cols += 1; // id
-    cols += 1; // image
-    if (isProductTable) cols += 1; // model_number
-    cols += 1; // main title (categorie)
-    if (isProductTable) cols += 1; // details link
-    if (showSubCol) cols += 1; // show sub/visit link
-    if (subCol === "products") cols += 1; // show products link (for sub-branches)
-    if (isProductTable) cols += 1; // priority
-    cols += 1; // edit
-    cols += 1; // delete
-    return cols || 1;
-  };
+const getEditHref = (item) => {
+  if (!editHref) return null;
+  if (typeof editHref === "function") {
+    const out = editHref(item);
+    if (!out || /(undefined|null|NaN)(\/)?$/.test(String(out))) return null;
+    return out;
+  }
+  if (!item?.id && item?.id !== 0) return null;
+  return `${editHref.replace(/\/+$/, "")}/${item.id}`;
+};
 
-  const makeHref = (id) => {
-    if (id == null) return "#";
-    const base = url || "";
-    // If it's a product link, we might need a different base? 
-    // But usually the 'url' prop is passed correctly from the parent.
-    return `${base.replace(/\/+$/, "")}/${id}`;
-  };
+const getDeleteHref = (item) => {
+  if (!deleteHref)
+    return item?.id != null ? `/api/products/${item.id}` : null;
+  if (typeof deleteHref === "function") {
+    const out = deleteHref(item);
+    if (!out || /(undefined|null|NaN)(\/)?$/.test(String(out))) return null;
+    return out;
+  }
+  if (!item?.id && item?.id !== 0) return null;
+  return `${deleteHref.replace(/\/+$/, "")}/${item.id}`;
+};
 
-  return (
-    <div className="bg-white rounded-lg shadow overflow-hidden w-full">
-      {/* mobile */}
-      <div className="md:hidden space-y-4 p-4">
-        {safeData.map((item, index) => (
-          <div
-            key={item?.id ?? index}
-            className="border rounded-lg p-4 shadow-sm"
-          >
-            <div className="flex items-start gap-4">
-              <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
-                <Image
-                  src={getImageSrc(item)}
-                  alt={item?.name ?? "item"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 64px, 64px"
-                  unoptimized={
-                    getImageSrc(item) === "/placeholder.png" ? true : false
-                  }
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 truncate">
-                  {item?.name ?? "-"}
-                </h3>
+async function internalDelete(item) {
+  const id = item?.id;
+  const target = getDeleteHref(item);
+  if (!id || !target) return;
+
+  const ok = window.confirm(
+    `هل أنت متأكد من حذف ${deleteLabel}؟ لا يمكن التراجع.`
+  );
+  if (!ok) return;
+
+  try {
+    setDeletingId(id);
+    const res = await fetchClient(target, { method: "DELETE" });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out?.success === false) {
+      alert(out?.message || `فشل الحذف (HTTP ${res.status})`);
+      return;
+    }
+    alert(out?.message || "تم الحذف");
+  } catch (e) {
+    alert(`خطأ: ${e?.message || e}`);
+  } finally {
+    setDeletingId(null);
+  }
+}
+
+const computeColSpan = () => {
+  // Base columns:
+  // possible product id, image, model_number, main title, details, sub/go, products, edit, delete
+  let cols = 0;
+  if (isProductTable) cols += 1; // id
+  cols += 1; // image
+  if (isProductTable) cols += 1; // model_number
+  cols += 1; // main title (categorie)
+  if (isProductTable) cols += 1; // details link
+  if (showSubCol) cols += 1; // show sub/visit link
+  if (subCol === "products") cols += 1; // show products link (for sub-branches)
+  if (isProductTable) cols += 1; // priority
+  cols += 1; // edit
+  cols += 1; // delete
+  return cols || 1;
+};
+
+const makeHref = (id) => {
+  if (id == null) return "#";
+  const base = url || "";
+  // If it's a product link, we might need a different base? 
+  // But usually the 'url' prop is passed correctly from the parent.
+  return `${base.replace(/\/+$/, "")}/${id}`;
+};
+
+return (
+  <div className="bg-white rounded-lg shadow overflow-hidden w-full">
+    {/* mobile */}
+    <div className="md:hidden space-y-4 p-4">
+      {safeData.map((item, index) => (
+        <div
+          key={item?.id ?? index}
+          className="border rounded-lg p-4 shadow-sm"
+        >
+          <div className="flex items-start gap-4">
+            <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+              <Image
+                src={getImageSrc(item)}
+                alt={item?.name ?? "item"}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 64px, 64px"
+                unoptimized={
+                  getImageSrc(item) === "/placeholder.png" ? true : false
+                }
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium text-gray-900 truncate">
+                {item?.name ?? "-"}
+              </h3>
+              {item?.description && (
+                <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                  {item.description}
+                </p>
+              )}
+              {item?.category?.name && (
+                <p className="text-[10px] text-[var(--primary-brown)] mt-0.5 font-medium">
+                  التصنيف: {item.category.name}
+                </p>
+              )}
+              {isProductTable && (
+                <div className="flex items-center gap-2 mt-2">
+                  <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
+                  <span className="text-gray-300">|</span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      defaultValue={item.priority ?? 0}
+                      onChange={(e) => (priorities.current[item.id] = e.target.value)}
+                      className={`w-14 h-7 px-1 text-xs border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                      disabled={updatingPriorityId === item.id}
+                    />
+                    <button
+                      onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
+                      disabled={updatingPriorityId === item.id}
+                      className="bg-green-600 text-white p-1 rounded hover:bg-green-700 disabled:opacity-50"
+                      title="حفظ الأولوية"
+                    >
+                      <Check size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 space-y-2">
+            {isProductTable && (
+              <>
+                <div className="text-sm">
+                  <span className="font-medium">الفئة:</span>{" "}
+                  {typeof item?.category === "object" ? item?.category?.name : item?.category ?? "—"}
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium">السعر:</span>{" "}
+                  {item?.basePrice ?? "—"} $
+                </div>
+              </>
+            )}
+
+            {showSubCol && (
+              <Link href={makeHref(item?.id)} className="block">
+                <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] text-sm">
+                  {/** when showing sub column from main branches: label is the 'sub' prop */}
+                  {isProductTable
+                    ? "ذهاب"
+                    : typeof sub === "string"
+                      ? sub
+                      : "عرض"}
+                </span>
+              </Link>
+            )}
+
+            {subCol === "products" && (
+              <Link
+                href={`/admin/products/sub-branch-products/${item.id}`}
+                className="block"
+              >
+                <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] text-sm">
+                  عرض المنتجات
+                </span>
+              </Link>
+            )}
+
+            <div className="flex justify-between pt-2">
+              {(() => {
+                const href = getEditHref(item);
+                return href ? (
+                  <Link
+                    href={href}
+                    className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] text-sm"
+                    role="button"
+                  >
+                    تعديل
+                  </Link>
+                ) : (
+                  <span className="text-gray-400 text-sm cursor-not-allowed">
+                    تعديل
+                  </span>
+                );
+              })()}
+
+              <button
+                onClick={() =>
+                  onDelete ? onDelete(item.id) : internalDelete(item)
+                }
+                disabled={deletingId === item?.id}
+                className={`text-sm ${deletingId === item?.id
+                  ? "text-gray-400 cursor-wait"
+                  : "text-red-600 hover:text-red-900"
+                  }`}
+              >
+                {deletingId === item?.id ? "جارٍ الحذف..." : "حذف"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {safeData.length === 0 && (
+        <div className="text-center text-sm text-gray-500 py-6">
+          لا توجد بيانات للعرض.
+        </div>
+      )}
+    </div>
+
+    {/* desktop table */}
+    <div className="hidden md:block overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            {isProductTable && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                المعرف
+              </th>
+            )}
+            <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              الصورة
+            </th>
+            {isProductTable && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                رقم الموديل
+              </th>
+            )}
+            <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              {categorie}
+            </th>
+            {isProductTable && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                التفاصيل
+              </th>
+            )}
+            {showSubCol && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                {sub}
+              </th>
+            )}
+            {subCol === "products" && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                عرض المنتجات
+              </th>
+            )}
+            {isProductTable && (
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                الأولوية
+              </th>
+            )}
+            <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              التعديل
+            </th>
+            <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              الحذف
+            </th>
+          </tr>
+        </thead>
+
+        <tbody className="bg-white divide-y divide-gray-200">
+          {safeData.map((item, index) => (
+            <tr key={item?.id ?? index} className="hover:bg-gray-50">
+              {isProductTable && (
+                <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap text-center">
+                  {item?.id}
+                </td>
+              )}
+              <td className="px-3 py-4 whitespace-nowrap">
+                <div className="flex justify-center">
+                  <div className="relative h-12 w-12 rounded-md overflow-hidden">
+                    <Image
+                      src={getImageSrc(item)}
+                      alt={item?.name ?? "item"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50px, 50px"
+                      unoptimized={
+                        getImageSrc(item) === "/placeholder.png"
+                          ? true
+                          : false
+                      }
+                    />
+                  </div>
+                </div>
+              </td>
+
+              {isProductTable && (
+                <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap text-center">
+                  {item?.model_number ?? "—"}
+                </td>
+              )}
+
+              <td className="px-3 py-4 text-sm text-gray-900 max-w-md text-right">
+                <div className="font-semibold text-gray-800">{item?.name ?? "—"}</div>
                 {item?.description && (
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                  <div className="text-xs text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
                     {item.description}
-                  </p>
+                  </div>
                 )}
                 {item?.category?.name && (
-                  <p className="text-[10px] text-[var(--primary-brown)] mt-0.5 font-medium">
-                    التصنيف: {item.category.name}
-                  </p>
-                )}
-                {isProductTable && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
-                    <span className="text-gray-300">|</span>
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        defaultValue={item.priority ?? 0}
-                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        className={`w-14 h-7 px-1 text-xs border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
-                        disabled={updatingPriorityId === item.id}
-                      />
-                      <button
-                        onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
-                        disabled={updatingPriorityId === item.id}
-                        className="bg-green-600 text-white p-1 rounded hover:bg-green-700 disabled:opacity-50"
-                        title="حفظ الأولوية"
-                      >
-                        <Check size={12} />
-                      </button>
-                    </div>
+                  <div className="text-[10px] text-[var(--primary-brown)] mt-1 font-medium bg-gray-50 px-2 py-0.5 rounded-full w-fit">
+                    {item.category.name}
                   </div>
                 )}
-              </div>
-            </div>
+              </td>
 
-            <div className="mt-3 space-y-2">
               {isProductTable && (
-                <>
-                  <div className="text-sm">
-                    <span className="font-medium">الفئة:</span>{" "}
-                    {typeof item?.category === "object" ? item?.category?.name : item?.category ?? "—"}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">السعر:</span>{" "}
-                    {item?.basePrice ?? "—"} $
-                  </div>
-                </>
+                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <Link href={`/admin/products/${item?.id}`}>
+                    <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
+                      تفاصيل
+                    </span>
+                  </Link>
+                </td>
               )}
 
               {showSubCol && (
-                <Link href={makeHref(item?.id)} className="block">
-                  <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] text-sm">
-                    {/** when showing sub column from main branches: label is the 'sub' prop */}
-                    {isProductTable
-                      ? "ذهاب"
-                      : typeof sub === "string"
-                        ? sub
-                        : "عرض"}
-                  </span>
-                </Link>
+                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <Link href={makeHref(item?.id)}>
+                    <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
+                      {isProductTable ? "ذهاب" : "ذهاب"}
+                    </span>
+                  </Link>
+                </td>
               )}
 
               {subCol === "products" && (
-                <Link
-                  href={`/admin/products/sub-branch-products/${item.id}`}
-                  className="block"
-                >
-                  <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] text-sm">
-                    عرض المنتجات
-                  </span>
-                </Link>
+                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <Link
+                    href={`/admin/products/sub-branch-products/${item.id}?mainCategoryId=${item?.category_id}`}
+                  >
+                    <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
+                      عرض المنتجات
+                    </span>
+                  </Link>
+                </td>
               )}
 
-              <div className="flex justify-between pt-2">
+              {isProductTable && (
+                <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
+                  <div className="flex items-center justify-center gap-1 w-24 mx-auto">
+                    <input
+                      type="number"
+                      defaultValue={item.priority ?? 0}
+                      onChange={(e) => (priorities.current[item.id] = e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
+                        }
+                      }}
+                      className={`w-14 h-8 px-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
+                      disabled={updatingPriorityId === item.id}
+                    />
+                    <button
+                      onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
+                      disabled={updatingPriorityId === item.id}
+                      className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
+                      title="حفظ الأولوية"
+                    >
+                      <Check size={14} />
+                    </button>
+                  </div>
+                </td>
+              )}
+              <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
                 {(() => {
                   const href = getEditHref(item);
                   return href ? (
                     <Link
                       href={href}
-                      className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] text-sm"
-                      role="button"
+                      className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] cursor-pointer"
                     >
                       تعديل
                     </Link>
                   ) : (
-                    <span className="text-gray-400 text-sm cursor-not-allowed">
+                    <span className="text-gray-400 cursor-not-allowed">
                       تعديل
                     </span>
                   );
                 })()}
+              </td>
 
+              <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
                 <button
                   onClick={() =>
                     onDelete ? onDelete(item.id) : internalDelete(item)
                   }
                   disabled={deletingId === item?.id}
-                  className={`text-sm ${deletingId === item?.id
-                    ? "text-gray-400 cursor-wait"
+                  className={`cursor-pointer ${deletingId === item?.id
+                    ? "text-gray-400"
                     : "text-red-600 hover:text-red-900"
                     }`}
                 >
                   {deletingId === item?.id ? "جارٍ الحذف..." : "حذف"}
                 </button>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {safeData.length === 0 && (
-          <div className="text-center text-sm text-gray-500 py-6">
-            لا توجد بيانات للعرض.
-          </div>
-        )}
-      </div>
-
-      {/* desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {isProductTable && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  المعرف
-                </th>
-              )}
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                الصورة
-              </th>
-              {isProductTable && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  رقم الموديل
-                </th>
-              )}
-              <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                {categorie}
-              </th>
-              {isProductTable && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  التفاصيل
-                </th>
-              )}
-              {showSubCol && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  {sub}
-                </th>
-              )}
-              {subCol === "products" && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  عرض المنتجات
-                </th>
-              )}
-              {isProductTable && (
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                  الأولوية
-                </th>
-              )}
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                التعديل
-              </th>
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                الحذف
-              </th>
+              </td>
             </tr>
-          </thead>
+          ))}
 
-          <tbody className="bg-white divide-y divide-gray-200">
-            {safeData.map((item, index) => (
-              <tr key={item?.id ?? index} className="hover:bg-gray-50">
-                {isProductTable && (
-                  <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap text-center">
-                    {item?.id}
-                  </td>
-                )}
-                <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="flex justify-center">
-                    <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                      <Image
-                        src={getImageSrc(item)}
-                        alt={item?.name ?? "item"}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50px, 50px"
-                        unoptimized={
-                          getImageSrc(item) === "/placeholder.png"
-                            ? true
-                            : false
-                        }
-                      />
-                    </div>
-                  </div>
-                </td>
-
-                {isProductTable && (
-                  <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap text-center">
-                    {item?.model_number ?? "—"}
-                  </td>
-                )}
-
-                <td className="px-3 py-4 text-sm text-gray-900 max-w-md text-right">
-                  <div className="font-semibold text-gray-800">{item?.name ?? "—"}</div>
-                  {item?.description && (
-                    <div className="text-xs text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
-                      {item.description}
-                    </div>
-                  )}
-                  {item?.category?.name && (
-                    <div className="text-[10px] text-[var(--primary-brown)] mt-1 font-medium bg-gray-50 px-2 py-0.5 rounded-full w-fit">
-                      {item.category.name}
-                    </div>
-                  )}
-                </td>
-
-                {isProductTable && (
-                  <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    <Link href={`/admin/products/${item?.id}`}>
-                      <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
-                        تفاصيل
-                      </span>
-                    </Link>
-                  </td>
-                )}
-
-                {showSubCol && (
-                  <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    <Link href={makeHref(item?.id)}>
-                      <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
-                        {isProductTable ? "ذهاب" : "ذهاب"}
-                      </span>
-                    </Link>
-                  </td>
-                )}
-
-                {subCol === "products" && (
-                  <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    <Link
-                      href={`/admin/products/sub-branch-products/${item.id}?mainCategoryId=${item?.category_id}`}
-                    >
-                      <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
-                        عرض المنتجات
-                      </span>
-                    </Link>
-                  </td>
-                )}
-
-                {isProductTable && (
-                  <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
-                    <div className="flex items-center justify-center gap-1 w-24 mx-auto">
-                      <input
-                        type="number"
-                        defaultValue={item.priority ?? 0}
-                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
-                          }
-                        }}
-                        className={`w-14 h-8 px-2 border rounded text-center focus:ring-1 focus:ring-[var(--primary-brown)] outline-none transition-all ${updatingPriorityId === item.id ? "bg-gray-100 animate-pulse" : ""}`}
-                        disabled={updatingPriorityId === item.id}
-                      />
-                      <button
-                        onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
-                        disabled={updatingPriorityId === item.id}
-                        className="p-1.5 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
-                        title="حفظ الأولوية"
-                      >
-                        <Check size={14} />
-                      </button>
-                    </div>
-                  </td>
-                )}
-                <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
-                  {(() => {
-                    const href = getEditHref(item);
-                    return href ? (
-                      <Link
-                        href={href}
-                        className="text-[var(--primary-orange)] hover:text-[var(--secondary-brown)] cursor-pointer"
-                      >
-                        تعديل
-                      </Link>
-                    ) : (
-                      <span className="text-gray-400 cursor-not-allowed">
-                        تعديل
-                      </span>
-                    );
-                  })()}
-                </td>
-
-                <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-center">
-                  <button
-                    onClick={() =>
-                      onDelete ? onDelete(item.id) : internalDelete(item)
-                    }
-                    disabled={deletingId === item?.id}
-                    className={`cursor-pointer ${deletingId === item?.id
-                      ? "text-gray-400"
-                      : "text-red-600 hover:text-red-900"
-                      }`}
-                  >
-                    {deletingId === item?.id ? "جارٍ الحذف..." : "حذف"}
-                  </button>
-                </td>
-              </tr>
-            ))}
-
-            {safeData.length === 0 && (
-              <tr>
-                <td
-                  className="px-3 py-6 text-center text-sm text-gray-500"
-                  colSpan={computeColSpan()}
-                >
-                  لا توجد بيانات للعرض.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      <Pagination
-        pagination={pagination}
-        onPageChange={(n) => onPageChange?.(n)}
-        onPerPageChange={(per) => onPerPageChange?.(per)}
-        perPageOptions={[5, 10, 20, 50]}
-      />
+          {safeData.length === 0 && (
+            <tr>
+              <td
+                className="px-3 py-6 text-center text-sm text-gray-500"
+                colSpan={computeColSpan()}
+              >
+                لا توجد بيانات للعرض.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
-  );
+
+    {/* Pagination */}
+    <Pagination
+      pagination={pagination}
+      onPageChange={(n) => onPageChange?.(n)}
+      onPerPageChange={(per) => onPerPageChange?.(per)}
+      perPageOptions={[5, 10, 20, 50]}
+    />
+  </div>
+);
 }
