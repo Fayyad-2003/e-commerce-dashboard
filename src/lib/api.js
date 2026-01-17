@@ -1,6 +1,7 @@
 // src/lib/api-client.js
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const COOKIE_NAME = process.env.TOKEN_COOKIE || "edu_token";
@@ -118,6 +119,17 @@ export async function serverFetch(endpoint, options = {}) {
         { status: 401 }
       );
     }
+  }
+
+  // 5. Handle 429 (Too Many Requests) -> Clear Token and Redirect to Login
+  if (res.status === 429) {
+    console.log("⚠️ Too many requests (429). Clearing token and redirecting to login...");
+
+    // Clear cookie
+    cookieStore.delete(COOKIE_NAME);
+
+    // Redirect to login page
+    redirect("/auth/login");
   }
 
   return res;
