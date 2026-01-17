@@ -58,6 +58,7 @@ export default function Table({
   subCol,
   loading,
   showImage = true,
+  detailsHref,
 }) {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
@@ -511,7 +512,13 @@ export default function Table({
 
                 {isProductTable && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    <Link href={`/admin/products/${item?.id}`}>
+                    <Link
+                      href={
+                        detailsHref
+                          ? (typeof detailsHref === "function" ? detailsHref(item) : `${detailsHref.replace(/\/+$/, "")}/${item.id}`)
+                          : `/admin/products/${item?.id}`
+                      }
+                    >
                       <span className="text-[var(--primary-brown)] hover:text-[var(--primary-orange)] cursor-pointer">
                         تفاصيل
                       </span>
