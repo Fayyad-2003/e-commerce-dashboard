@@ -61,7 +61,6 @@ export default function Page() {
           onDelete={(id) => handleDelete(id)} // <-- pass the delete handler here
           onPageChange={goToPage}
           onPerPageChange={changePerPage}
-          detailsHref={(item) => `/admin/store-sections/products/${item?.id}`}
         />
       </ConditionalRender>
     </SectionLayout>
