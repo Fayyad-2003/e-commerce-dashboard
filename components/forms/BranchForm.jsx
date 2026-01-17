@@ -115,9 +115,7 @@ export default function BranchForm({
         {isEditMode
           ? type === "store"
             ? "تعديل المتجر"
-            : type === "category"
-              ? "تعديل تصنيف المتجر"
-              : "تعديل القسم"
+            : type === "category" && "تعديل القسم"
           : type === "sub"
             ? "إضافة قسم فرعي جديد"
             : type === "store"

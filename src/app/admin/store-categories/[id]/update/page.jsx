@@ -62,7 +62,7 @@ export default function UpdateStoreCategoryPage() {
     };
 
     return (
-        <SectionLayout backHref="/admin/stores">
+        <SectionLayout title="تعديل تصنيف المتجر" backHref="/admin/stores">
             <ConditionalRender loading={loading} error={error} loadingText="جاري تحميل بيانات التصنيف">
                 {category && (
                     <BranchForm
