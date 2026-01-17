@@ -111,18 +111,6 @@ export default function BranchForm({
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 text-right">
-        {isEditMode
-          ? type === "store"
-            ? "تعديل المتجر"
-            : type === "category" && "تعديل القسم"
-          : type === "sub"
-            ? "إضافة قسم فرعي جديد"
-            : type === "store"
-              ? "إضافة متجر جديد"
-              : "إضافة قسم رئيسي جديد"}
-      </h1>
-
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-md space-y-6"

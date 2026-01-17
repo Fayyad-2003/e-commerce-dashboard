@@ -37,7 +37,7 @@ export default function NewStoreCategoryPage() {
     };
 
     return (
-        <SectionLayout>
+        <SectionLayout title="إضافة تصنيف متجر جديد" backHref="/admin/stores">
             <BranchForm
                 onSubmit={handleSubmit}
                 onCancel={() => router.back()}
