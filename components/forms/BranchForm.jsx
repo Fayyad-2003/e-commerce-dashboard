@@ -93,9 +93,14 @@ export default function BranchForm({
         id: initialData?.id ?? null,
         name: name.trim(),
         description: description.trim(),
-        image,
-        imageRemoved,
       };
+
+      // Only include image fields if not a category
+      if (type !== "category") {
+        payload.image = image;
+        payload.imageRemoved = imageRemoved;
+      }
+
       await Promise.resolve(onSubmit?.(payload));
     } finally {
       setPending(false);
@@ -157,67 +162,69 @@ export default function BranchForm({
           </div>
         )}
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {type === "sub" ? "صورة القسم الفرعي" : "صورة القسم الرئيسي"}
-          </label>
-          <div className="flex items-center space-x-4">
-            <label
-              className={`flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed rounded-md cursor-pointer hover:border-[#5A443A] ${disabledNow
-                ? "opacity-60 cursor-not-allowed pointer-events-none"
-                : "border-gray-300"
-                }`}
-            >
-              {preview ? (
-                <div className="relative w-full h-full">
-                  <img
-                    src={preview}
-                    alt="معاينة الصورة"
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                  {!disabledNow && (
-                    <button
-                      type="button"
-                      onClick={handleClearImage}
-                      className="absolute top-1 left-1 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center p-4 text-gray-500">
-                  <ImageIcon className="w-8 h-8 mb-2" />
-                  <span className="text-sm">اختر صورة</span>
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                disabled={disabledNow}
-              />
+        {type !== "category" && (
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {type === "sub" ? "صورة القسم الفرعي" : "صورة القسم الرئيسي"}
             </label>
+            <div className="flex items-center space-x-4">
+              <label
+                className={`flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed rounded-md cursor-pointer hover:border-[#5A443A] ${disabledNow
+                  ? "opacity-60 cursor-not-allowed pointer-events-none"
+                  : "border-gray-300"
+                  }`}
+              >
+                {preview ? (
+                  <div className="relative w-full h-full">
+                    <img
+                      src={preview}
+                      alt="معاينة الصورة"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                    {!disabledNow && (
+                      <button
+                        type="button"
+                        onClick={handleClearImage}
+                        className="absolute top-1 left-1 bg-red-500 text-white rounded-full p-1"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-4 text-gray-500">
+                    <ImageIcon className="w-8 h-8 mb-2" />
+                    <span className="text-sm">اختر صورة</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  disabled={disabledNow}
+                />
+              </label>
 
-            <div className="text-sm text-gray-500">
-              <p>• يفضل استخدام صورة بحجم 800x800 بكسل</p>
-              <p>• الحد الأقصى لحجم الملف: 2MB</p>
-              <p>• الصيغ المدعومة: JPG, PNG, WEBP</p>
+              <div className="text-sm text-gray-500">
+                <p>• يفضل استخدام صورة بحجم 800x800 بكسل</p>
+                <p>• الحد الأقصى لحجم الملف: 2MB</p>
+                <p>• الصيغ المدعومة: JPG, PNG, WEBP</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="flex justify-between items-center">
           <div className="flex space-x-3">

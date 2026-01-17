@@ -3,6 +3,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import BranchForm from "../../../../../../components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
+import { SectionLayout } from "components/common";
 
 export default function NewStoreSectionPage() {
     const params = useParams();
@@ -41,13 +42,13 @@ export default function NewStoreSectionPage() {
     };
 
     return (
-        <div className="py-8">
+        <SectionLayout title="اضافة متجر جديد">
             <BranchForm
                 type="sub"
                 onSubmit={handleSubmit}
                 isSubmitting={submitting}
                 onCancel={() => router.back()}
             />
-        </div>
+        </SectionLayout>
     );
 }
