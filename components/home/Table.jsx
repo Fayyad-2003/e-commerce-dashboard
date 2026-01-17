@@ -417,9 +417,12 @@ export default function Table({
                   المعرف
                 </th>
               )}
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                الصورة
-              </th>
+
+              {showImage && (
+                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  الصورة
+                </th>
+              )}
               {isProductTable && (
                 <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                   رقم الموديل
