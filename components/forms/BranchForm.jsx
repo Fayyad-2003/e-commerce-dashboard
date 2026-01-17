@@ -9,6 +9,7 @@ export default function BranchForm({
   onCancel,
   isEditMode = false,
   type,
+  hideImage = false,
 }) {
   const [name, setName] = useState(initialData.name || "");
   const [description, setDescription] = useState(initialData.description || "");
@@ -93,14 +94,9 @@ export default function BranchForm({
         id: initialData?.id ?? null,
         name: name.trim(),
         description: description.trim(),
+        image,
+        imageRemoved,
       };
-
-      // Only include image fields if not a category
-      if (type !== "category") {
-        payload.image = image;
-        payload.imageRemoved = imageRemoved;
-      }
-
       await Promise.resolve(onSubmit?.(payload));
     } finally {
       setPending(false);
@@ -162,7 +158,7 @@ export default function BranchForm({
           </div>
         )}
 
-        {type !== "category" && (
+        {!hideImage && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {type === "sub" ? "صورة القسم الفرعي" : "صورة القسم الرئيسي"}

@@ -13,9 +13,10 @@ export default function NewStoreCategoryPage() {
             // Transform object to FormData for file upload
             const data = new FormData();
             data.append("name", formData.name);
-            if (formData.image) {
-                data.append("image", formData.image);
-            }
+            // Image handling removed
+            // if (formData.image) {
+            //     data.append("image", formData.image);
+            // }
 
             const res = await fetchClient("/api/store-categories", {
                 method: "POST",
@@ -42,6 +43,7 @@ export default function NewStoreCategoryPage() {
                 onSubmit={handleSubmit}
                 onCancel={() => router.back()}
                 type="main" // "main" usually means Main Category in BranchForm logic
+                hideImage={true}
             />
         </SectionLayout>
     );

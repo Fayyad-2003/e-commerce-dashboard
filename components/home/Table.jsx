@@ -57,6 +57,7 @@ export default function Table({
   priorityUpdateUrl,
   subCol,
   loading,
+  showImage = true,
 }) {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
@@ -241,7 +242,7 @@ export default function Table({
     // possible product id, image, model_number, main title, details, sub/go, products, edit, delete
     let cols = 0;
     if (isProductTable) cols += 1; // id
-    cols += 1; // image
+    if (showImage) cols += 1; // image
     if (isProductTable) cols += 1; // model_number
     cols += 1; // main title (categorie)
     if (isProductTable) cols += 1; // details link
@@ -272,18 +273,20 @@ export default function Table({
             className="border rounded-lg p-4 shadow-sm"
           >
             <div className="flex items-start gap-4">
-              <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
-                <Image
-                  src={getImageSrc(item)}
-                  alt={item?.name ?? "item"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 64px, 64px"
-                  unoptimized={
-                    getImageSrc(item) === "/placeholder.png" ? true : false
-                  }
-                />
-              </div>
+              {showImage && (
+                <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+                  <Image
+                    src={getImageSrc(item)}
+                    alt={item?.name ?? "item"}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 64px, 64px"
+                    unoptimized={
+                      getImageSrc(item) === "/placeholder.png" ? true : false
+                    }
+                  />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-gray-900 truncate">
                   {item?.name ?? "-"}
@@ -462,24 +465,26 @@ export default function Table({
                     {item?.id}
                   </td>
                 )}
-                <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="flex justify-center">
-                    <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                      <Image
-                        src={getImageSrc(item)}
-                        alt={item?.name ?? "item"}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50px, 50px"
-                        unoptimized={
-                          getImageSrc(item) === "/placeholder.png"
-                            ? true
-                            : false
-                        }
-                      />
+                {showImage && (
+                  <td className="px-3 py-4 whitespace-nowrap">
+                    <div className="flex justify-center">
+                      <div className="relative h-12 w-12 rounded-md overflow-hidden">
+                        <Image
+                          src={getImageSrc(item)}
+                          alt={item?.name ?? "item"}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 50px, 50px"
+                          unoptimized={
+                            getImageSrc(item) === "/placeholder.png"
+                              ? true
+                              : false
+                          }
+                        />
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
+                )}
 
                 {isProductTable && (
                   <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap text-center">

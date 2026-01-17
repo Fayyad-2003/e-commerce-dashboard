@@ -37,9 +37,10 @@ export default function UpdateStoreCategoryPage() {
             const data = new FormData();
             data.append("name", formData.name);
             // data.append("description", formData.description || "");
-            if (formData.image) {
-                data.append("image", formData.image);
-            }
+            // Image handling removed
+            // if (formData.image) {
+            //     data.append("image", formData.image);
+            // }
             data.append("_method", "POST");
 
             const res = await fetchClient(`/api/store-categories/${categoryId}`, {
@@ -76,6 +77,7 @@ export default function UpdateStoreCategoryPage() {
                         onCancel={() => router.back()}
                         isEditMode={true}
                         type="category"
+                        hideImage={true}
                     />
                 )}
             </ConditionalRender>
