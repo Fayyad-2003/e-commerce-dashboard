@@ -17,7 +17,7 @@ export function Page() {
 
         async function fetchProduct() {
             try {
-                const res = await fetchClient(`/api/products/${id}`, {
+                const res = await fetchClient(`/api/store-products/${id}`, {
                     method: "GET",
                 });
 
