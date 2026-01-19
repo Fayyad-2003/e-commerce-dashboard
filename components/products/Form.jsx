@@ -21,12 +21,23 @@ export default function Form(props) {
     description,
     base_price,
     full_image_urls,
+    images: relative_images = [],
+    section,
     attributes = {},
     unit_of_measure,
     price_tiers,
     created_at,
     updated_at,
   } = product;
+
+  // Normalize images: favor full_image_urls if present, otherwise prefix relative images
+  const images = full_image_urls && full_image_urls.length > 0
+    ? full_image_urls
+    : (relative_images || []).map(img =>
+      typeof img === "string" && !img.startsWith("http")
+        ? `${process.env.NEXT_PUBLIC_IMAGES}/${img}`
+        : img
+    );
 
   const normalizeColors = (raw) => {
     if (!raw) return [];
@@ -143,13 +154,13 @@ export default function Form(props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          {full_image_urls && full_image_urls.length > 0 ? (
+          {images && images.length > 0 ? (
             <>
               <div className="relative h-80 bg-gray-100 rounded-lg overflow-hidden">
-                <Image src={full_image_urls[0]} alt={name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                <Image src={images[0]} alt={name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {full_image_urls.map((img, index) => (
+                {images.map((img, index) => (
                   <div key={index} className="h-20 bg-gray-100 rounded-md overflow-hidden">
                     <Image src={img} alt={`thumbnail-${index}`} width={80} height={80} className="w-full h-full object-cover" />
                   </div>
@@ -171,6 +182,23 @@ export default function Form(props) {
             <h3 className="text-lg font-semibold text-[#402E32] mb-2">الوصف</h3>
             <p className="text-gray-700">{description}</p>
           </div>
+
+          {(section || section?.store) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+              {section?.store?.name && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-1">المتجر</h3>
+                  <p className="text-[#402E32] font-medium">{section.store.name}</p>
+                </div>
+              )}
+              {section?.name && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-1">القسم</h3>
+                  <p className="text-[#402E32] font-medium">{section.name}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -182,7 +182,15 @@ function normalizeOldImages(images, fullImageUrls = []) {
   return images
     .map((url, idx) =>
       typeof url === "string"
-        ? { id: -(idx + 1), url, displayUrl: fullImageUrls?.[idx] ?? url }
+        ? {
+          id: -(idx + 1),
+          url,
+          displayUrl:
+            fullImageUrls?.[idx] ??
+            (url.startsWith("http")
+              ? url
+              : `${process.env.NEXT_PUBLIC_IMAGES}/${url}`),
+        }
         : null
     )
     .filter(Boolean);
@@ -550,13 +558,32 @@ export default function ProductForm({
           </div>
 
           {/* visible read-only display of assigned sub-category for clarity */}
-          <div>
-            <p className="text-sm text-gray-600">
-              المجموعة الفرعية المختارة:{" "}
-              <span className="font-medium text-[#402E32]">
-                {formData.store_section_id || "لم يتم التحديد"}
-              </span>
-            </p>
+          {/* visible read-only display of assigned store and section for clarity */}
+          <div className="flex flex-col gap-2">
+            {product?.section?.store?.name && (
+              <p className="text-sm text-gray-600">
+                المتجر:{" "}
+                <span className="font-medium text-[#402E32]">
+                  {product.section.store.name}
+                </span>
+              </p>
+            )}
+            {product?.section?.name && (
+              <p className="text-sm text-gray-600">
+                القسم:{" "}
+                <span className="font-medium text-[#402E32]">
+                  {product.section.name}
+                </span>
+              </p>
+            )}
+            {!product?.section?.name && (
+              <p className="text-sm text-gray-600">
+                المجموعة الفرعية المختارة:{" "}
+                <span className="font-medium text-[#402E32]">
+                  {formData.store_section_id || "لم يتم التحديد"}
+                </span>
+              </p>
+            )}
           </div>
         </div>
 
