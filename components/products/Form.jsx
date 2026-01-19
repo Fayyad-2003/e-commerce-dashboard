@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export default function Form(props) {
@@ -149,7 +149,7 @@ export default function Form(props) {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-[#402E32]">تفاصيل المنتج</h2>
         <button onClick={() => router.back()} className="flex items-center text-gray-500 hover:text-gray-700">
-          <ArrowLeft size={20} className="ml-1" />
+          <ArrowRight size={20} className="ml-1" />
           رجوع
         </button>
       </div>
