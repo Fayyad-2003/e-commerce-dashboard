@@ -267,6 +267,10 @@ export default function ProductForm({
     new_tier: { min_quantity: "", price_per_unit: "" },
   });
 
+  const selectedUnitName = useMemo(() => {
+    return units.items.find(u => String(u.id) === String(formData.unit_of_measure_id))?.name || 'وحدة';
+  }, [units.items, formData.unit_of_measure_id]);
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -616,7 +620,7 @@ export default function ProductForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              السعر الأساسي <span className="text-red-500">*</span>
+              {`سعر ال${selectedUnitName}`} <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -884,7 +888,7 @@ export default function ProductForm({
                   key={idx}
                   className="flex items-center bg-white p-3 rounded-md shadow-sm"
                 >
-                  <span className="flex-1">{`من كمية ${t.min_quantity}+ ${units.items.find(u => u.id == formData.unit_of_measure_id)?.name || 'وحدة'} : سعر الوحدة = ${t.price_per_unit}`}</span>
+                  <span className="flex-1">{`من كمية ${t.min_quantity}+ ${selectedUnitName} : سعر ال${selectedUnitName} = ${t.price_per_unit}`}</span>
                   <button
                     type="button"
                     onClick={() => removeTier(idx)}
@@ -917,7 +921,7 @@ export default function ProductForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                سعر الوحدة
+                {`سعر ال${selectedUnitName}`}
               </label>
               <input
                 type="number"

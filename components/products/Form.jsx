@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -38,6 +38,8 @@ export default function Form(props) {
         ? `${process.env.NEXT_PUBLIC_IMAGES}/${img}`
         : img
     );
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const normalizeColors = (raw) => {
     if (!raw) return [];
@@ -156,14 +158,26 @@ export default function Form(props) {
         <div className="space-y-4">
           {images && images.length > 0 ? (
             <>
-              <div className="relative h-80 bg-gray-100 rounded-lg overflow-hidden">
-                <Image src={images[0]} alt={name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+              <div className="relative h-80 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <Image
+                  src={images[activeImageIndex] || images[0]}
+                  alt={name}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {images.map((img, index) => (
-                  <div key={index} className="h-20 bg-gray-100 rounded-md overflow-hidden">
+                  <button
+                    key={index}
+                    onClick={() => setActiveImageIndex(index)}
+                    className={`h-20 bg-white rounded-md overflow-hidden border-2 transition-all ${activeImageIndex === index ? "border-[#5A443A] shadow-md scale-105" : "border-transparent hover:border-gray-300"
+                      }`}
+                  >
                     <Image src={img} alt={`thumbnail-${index}`} width={80} height={80} className="w-full h-full object-cover" />
-                  </div>
+                  </button>
                 ))}
               </div>
             </>
@@ -202,7 +216,7 @@ export default function Form(props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-[#402E32] mb-2">السعر الأساسي</h3>
+              <h3 className="text-lg font-semibold text-[#402E32] mb-2">{`سعر ال${unit_of_measure?.name || 'وحدة'}`}</h3>
               <p className="text-gray-700">{base_price} $</p>
             </div>
             <div>
@@ -260,7 +274,7 @@ export default function Form(props) {
                 {price_tiers.map((tier, index) => (
                   <div key={index} className="flex justify-between items-center border-b border-gray-200 pb-2">
                     <span className="text-gray-700">من {tier.min_quantity} {unit_of_measure?.name || 'وحدة'}</span>
-                    <span className="text-gray-700">السعر لكل وحدة: {tier.price_per_unit} $</span>
+                    <span className="text-gray-700">{`السعر لكل ${unit_of_measure?.name || 'وحدة'}`}: {tier.price_per_unit} $</span>
                   </div>
                 ))}
               </div>
