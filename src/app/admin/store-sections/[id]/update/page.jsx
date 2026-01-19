@@ -62,7 +62,7 @@ export default function UpdateStoreSectionPage() {
     };
 
     return (
-        <SectionLayout title="تعديل قسم المتجر" backHref="/admin/stores">
+        <SectionLayout title="تعديل قسم المتجر" backHref="back">
             <ConditionalRender loading={loading} error={error} loadingText="جاري تحميل بيانات القسم">
                 {section && (
                     <BranchForm

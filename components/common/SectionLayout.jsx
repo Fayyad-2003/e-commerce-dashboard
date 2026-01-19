@@ -22,17 +22,29 @@ export default function SectionLayout({
   children,
   hideBackButton,
 }) {
+  const router = useRouter();
+
   return (
     <div className="relative font-sans gap-16 px-4 sm:px-10 lg:px-20 py-8 sm:py-16">
       {/* Back Button */}
       {!hideBackButton && (
         <div className="absolute top-4 right-4 sm:right-8">
-          <Link href={backHref}>
-            <div className="flex items-center text-xs sm:text-sm text-[#5A443A] hover:text-[#F7931D] transition-colors">
+          {backHref === "back" ? (
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-xs sm:text-sm text-[#5A443A] hover:text-[#F7931D] transition-colors"
+            >
               <ArrowRight />
               <span className="mr-3">العودة</span>
-            </div>
-          </Link>
+            </button>
+          ) : (
+            <Link href={backHref}>
+              <div className="flex items-center text-xs sm:text-sm text-[#5A443A] hover:text-[#F7931D] transition-colors">
+                <ArrowRight />
+                <span className="mr-3">العودة</span>
+              </div>
+            </Link>
+          )}
         </div>
       )}
 

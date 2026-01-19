@@ -42,7 +42,7 @@ export default function NewStoreSectionPage() {
     };
 
     return (
-        <SectionLayout title="اضافة متجر جديد">
+        <SectionLayout title="اضافة متجر جديد" backHref="back">
             <BranchForm
                 type="sub"
                 onSubmit={handleSubmit}

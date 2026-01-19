@@ -24,7 +24,7 @@ function StoreLevel2Page() {
     return (
         <SectionLayout
             title={`المتاجر — تصنيف ${categoryName}`}
-            backHref="/admin/stores"
+            backHref="back"
             addHref={`/admin/stores/category/${categoryId}/new`}
             addLabel="إضافة متجر جديد"
         >

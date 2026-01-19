@@ -27,7 +27,7 @@ function StoreProductsPage() {
     return (
         <SectionLayout
             title={`المتاجر — منتجات ${subName}`}
-            backHref="/admin/stores"
+            backHref="back"
             addHref={`/admin/stores/products/new?subId=${subById}`}
             addLabel="إضافة منتج جديد"
         >
