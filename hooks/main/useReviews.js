@@ -45,7 +45,7 @@ export default function useReviews() {
 
       // Optimistic update
       setComments((cs) =>
-        cs.map((c) => (c.id === realId ? { ...c, status: "approved" } : c))
+        cs.map((c) => (c.id === realId ? { ...c, is_approved: true } : c))
       );
       toast.success("✅ تم الموافقة على التعليق");
       // No reload() needed

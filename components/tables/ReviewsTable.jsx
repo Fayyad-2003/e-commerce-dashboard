@@ -24,6 +24,82 @@ const formatDate = (d) => {
   }
 };
 
+/**
+ * Return a normalized safe URL string or null if invalid/unsafe.
+ */
+function getSafeSrc(raw) {
+  if (!raw) return null;
+  try {
+    const s = String(raw).trim();
+    if (!s) return null;
+    const lower = s.toLowerCase();
+    if (
+      lower.startsWith("javascript:") ||
+      lower.startsWith("data:") ||
+      lower.startsWith("vbscript:") ||
+      lower.startsWith("//")
+    ) {
+      return null;
+    }
+    const url = new URL(s, window.location.origin);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    url.username = "";
+    url.password = "";
+    return url.toString();
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Build an image URL from a storage path or absolute URL.
+ */
+function resolveImageUrl(path) {
+  if (!path) return null;
+  const raw = String(path).trim();
+  if (!raw) return null;
+  if (
+    raw.startsWith("http://") ||
+    raw.startsWith("https://") ||
+    raw.startsWith("/")
+  ) {
+    return getSafeSrc(raw);
+  }
+  const imgBase =
+    process.env.NEXT_PUBLIC_IMAGES ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    "";
+  if (imgBase) {
+    const base = imgBase.endsWith("/") ? imgBase.slice(0, -1) : imgBase;
+    const candidate = `${base}/${raw.replace(/^\/+/, "")}`;
+    return getSafeSrc(candidate);
+  }
+  return getSafeSrc(`/storage/${raw.replace(/^\/+/, "")}`);
+}
+
+const getReviewImage = (c) => {
+  // New API format: reviewable_image is a JSON string of an array
+  if (c.reviewable_image) {
+    try {
+      const parsed = typeof c.reviewable_image === 'string' ? JSON.parse(c.reviewable_image) : c.reviewable_image;
+      const path = Array.isArray(parsed) ? parsed[0] : parsed;
+      const resolved = resolveImageUrl(path);
+      if (resolved) return resolved;
+    } catch (e) {
+      // Fallback if not JSON or other error
+      const resolved = resolveImageUrl(c.reviewable_image);
+      if (resolved) return resolved;
+    }
+  }
+
+  // Old API format or fallback
+  const oldPath = c.product?.full_image_urls?.[0] ?? c.product?.images?.[0];
+  const resolvedOld = resolveImageUrl(oldPath);
+  if (resolvedOld) return resolvedOld;
+
+  return PLACEHOLDER;
+};
+
 export default function ReviewsTable({
   comments = [],
   onApprove,
@@ -68,22 +144,20 @@ export default function ReviewsTable({
   // NOTE: treat "0"/false for is_approved as pending (not rejected) unless there's
   // an explicit is_rejected / status === 'rejected'
   const normalizeStatus = (c) => {
-    // 1) explicit rejected flag from API (if available) — highest priority
+    // 1) explicit approved flag (boolean or "1")
+    if (typeof c.is_approved !== "undefined") {
+      const val = c.is_approved;
+      if (val === true || val === 1 || String(val).toLowerCase() === "1" || String(val).toLowerCase() === "true") return "approved";
+      // If it's explicitly false/0, we'll check status string or treat as pending
+    }
+
+    // 2) explicit rejected flag from API (if available)
     if (typeof c.is_rejected !== "undefined") {
       const rv = String(c.is_rejected).toLowerCase();
       if (rv === "1" || rv === "true") return "rejected";
-      // explicit false -> continue to other checks
     }
 
-    // 2) explicit approved flag
-    if (typeof c.is_approved !== "undefined") {
-      const val = String(c.is_approved).toLowerCase();
-      if (val === "1" || val === "true") return "approved";
-      // IMPORTANT: if is_approved is "0" or "false" we treat it as pending
-      return "pending";
-    }
-
-    // 3) textual status field (strings like 'approved', 'rejected', 'pending', or localized)
+    // 3) textual status field
     if (typeof c.status !== "undefined" && c.status !== null) {
       const s = String(c.status).trim().toLowerCase();
       if (s === "approved" || s === "مقبول" || s === "1") return "approved";
@@ -101,12 +175,10 @@ export default function ReviewsTable({
       <div className="md:hidden space-y-4 p-4">
         {comments.map((c) => {
           const status = normalizeStatus(c);
-          const reviewer = c.user?.name ?? "غير معروف";
-          const productName = c.product?.name ?? "منتج غير معروف";
-          const img =
-            c.product?.full_image_urls?.[0] ??
-            c.product?.images?.[0] ??
-            PLACEHOLDER;
+          const reviewer = c.reviewer_name ?? c.user?.name ?? "غير معروف";
+          const productName = c.reviewable_name ?? c.product?.name ?? "منتج غير معروف";
+          const img = getReviewImage(c);
+          const isStore = !!c.is_store_product;
           return (
             <div key={String(c.id)} className="border rounded-lg p-4">
               <div className="flex gap-3 items-start">
@@ -125,6 +197,11 @@ export default function ReviewsTable({
                       <p className="text-sm text-gray-600">
                         المراجع: {reviewer}
                       </p>
+                      {c.store_name && (
+                        <p className="text-[10px] text-orange-600 font-bold bg-orange-50 px-1.5 py-0.5 rounded-full inline-block mt-1">
+                          المتجر: {c.store_name}
+                        </p>
+                      )}
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${statusBadge(
@@ -215,12 +292,9 @@ export default function ReviewsTable({
           <tbody className="bg-white divide-y divide-gray-200">
             {comments.map((c) => {
               const status = normalizeStatus(c);
-              const reviewer = c.user?.name ?? "غير معروف";
-              const productName = c.product?.name ?? "منتج غير معروف";
-              const img =
-                c.product?.full_image_urls?.[0] ??
-                c.product?.images?.[0] ??
-                PLACEHOLDER;
+              const reviewer = c.reviewer_name ?? c.user?.name ?? "غير معروف";
+              const productName = c.reviewable_name ?? c.product?.name ?? "منتج غير معروف";
+              const img = getReviewImage(c);
 
               return (
                 <tr key={String(c.id)} className="hover:bg-gray-50">
@@ -230,6 +304,11 @@ export default function ReviewsTable({
 
                   <td className="px-4 py-4 whitespace-nowrap text-sm">
                     <div className="text-gray-900 font-medium">{reviewer}</div>
+                    {c.store_name && (
+                      <div className="text-[10px] text-orange-600 font-bold bg-orange-50 px-1.5 py-0.5 rounded-full inline-block mt-1">
+                        {c.store_name}
+                      </div>
+                    )}
                   </td>
 
                   <td className="px-4 py-4 whitespace-nowrap text-sm max-w-xs">
