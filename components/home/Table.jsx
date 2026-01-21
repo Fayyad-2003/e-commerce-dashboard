@@ -229,7 +229,19 @@ export default function Table({
         setTableData(previousData); // Revert
         return;
       }
-      toast.success(out?.message || "تم الحذف بنجاح ✅");
+
+      let msg = out?.message || "تم الحذف بنجاح ✅";
+      if (msg === "general.store_category_deleted") {
+        msg = "تم حذف تصنيف المتجر بنجاح ✅";
+      } else if (msg === "general.store_deleted") {
+        msg = "تم حذف المتجر بنجاح ✅";
+      } else if (msg === "general.store_section_deleted") {
+        msg = "تم حذف قسم المتجر بنجاح ✅";
+      } else if (msg === "general.store_product_deleted") {
+        msg = "تم حذف منتج المتجر بنجاح ✅";
+      }
+
+      toast.success(msg);
     } catch (e) {
       toast.error(`خطأ: ${e?.message || e}`);
       setTableData(previousData); // Revert
