@@ -29,8 +29,8 @@ function CommentsPageClient() {
       >
         <ReviewsTable
           comments={comments}
-          onApprove={(c) => handleApprove(c.id ?? c)}
-          onReject={(c) => handleReject(c.id ?? c)}
+          onApprove={(c) => handleApprove(c.id ?? c, c.type ?? "product")}
+          onReject={(c) => handleReject(c.id ?? c, c.type ?? "product")}
           pagination={pagination}
           onPageChange={goToPage}
           onPerPageChange={changePerPage}

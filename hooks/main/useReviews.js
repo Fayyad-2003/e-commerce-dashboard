@@ -25,8 +25,9 @@ export default function useReviews() {
     url: "/api/reviews"
   });
 
-  const handleApprove = async (id) => {
+  const handleApprove = async (id, type = "product") => {
     const realId = typeof id === "object" ? id.id ?? id : id;
+    const realType = typeof id === "object" ? id.type ?? type : type;
 
     const ok = await showConfirm({
       title: "الموافقة على التعليق",
@@ -37,7 +38,7 @@ export default function useReviews() {
     if (!ok) return;
 
     try {
-      const res = await fetchClient(`/api/reviews/${realId}/approve`, {
+      const res = await fetchClient(`/api/admin/reviews/${realType}/${realId}/approve`, {
         method: "POST",
       });
       const json = await res.json().catch(() => ({}));
@@ -54,8 +55,9 @@ export default function useReviews() {
     }
   };
 
-  const handleReject = async (id) => {
+  const handleReject = async (id, type = "product") => {
     const realId = typeof id === "object" ? id.id ?? id : id;
+    const realType = typeof id === "object" ? id.type ?? type : type;
 
     const ok = await showConfirm({
       title: "رفض التعليق",
@@ -66,7 +68,7 @@ export default function useReviews() {
     if (!ok) return;
 
     try {
-      const res = await fetchClient(`/api/reviews/${realId}/delete`, {
+      const res = await fetchClient(`/api/admin/reviews/${realType}/${realId}/delete`, {
         method: "DELETE",
       });
       const json = await res.json().catch(() => ({}));
