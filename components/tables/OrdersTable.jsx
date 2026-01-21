@@ -22,7 +22,6 @@ export default function OrdersTable({
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ الإجمالي</th>
-            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">أرشفة</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
           </tr>
         </thead>
@@ -44,23 +43,23 @@ export default function OrdersTable({
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                   {Number(order.total || 0).toFixed(2)} $
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
-                  <button
-                    onClick={() => onToggleArchive?.(order.id)}
-                    className={`transition-colors ${order.is_archived ? "text-orange-600 hover:text-orange-800" : "text-gray-400 hover:text-orange-600"}`}
-                    title={order.is_archived ? "إلغاء الأرشفة" : "أرشفة الطلبية"}
-                  >
-                    <Archive className="w-5 h-5 mx-auto" />
-                  </button>
-                </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <Link
                       href={`/admin/orders/${order.id}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       التفاصيل
                     </Link>
+
+                    <button
+                      onClick={() => onToggleArchive?.(order.id)}
+                      className={`transition-colors ${order.is_archived ? "text-orange-600 hover:text-orange-800" : "text-gray-400 hover:text-orange-600"}`}
+                      title={order.is_archived ? "إلغاء الأرشفة" : "أرشفة الطلبية"}
+                    >
+                      <Archive className="w-4 h-4" />
+                    </button>
+
                     <button
                       onClick={() => onDelete?.(order.id)}
                       className="text-red-600 hover:text-red-800"

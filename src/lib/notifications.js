@@ -30,7 +30,7 @@ export const parseNotification = (notification) => {
     let href = data.url || "#";
     let linkText = "التفاصيل";
 
-    const isReviewLink = href.startsWith("/admin/reviews");
+    const isReviewLink = href.startsWith("/admin/reviews") || href.startsWith("/admin/store-reviews");
     if (isReviewLink) {
         href = "/admin/reviews?backUrl=/admin/notifications";
         linkText = "ذهاب للتقييمات";

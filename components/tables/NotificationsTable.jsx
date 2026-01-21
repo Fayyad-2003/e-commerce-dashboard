@@ -50,10 +50,10 @@ export default function NotificationsTable({
                   {!n.isRead && (
                     <button
                       onClick={() => onMarkRead?.(n.id)}
-                      className="text-gray-400 hover:text-[#F7931D] transition-colors"
+                      className="text-emerald-500 hover:text-emerald-600 transition-colors"
                       title="تعليم كمقروء"
                     >
-                      <CheckCircle size={20} />
+                      <CheckCircle size={22} />
                     </button>
                   )}
                 </div>
@@ -120,10 +120,10 @@ export default function NotificationsTable({
                         {!n.isRead && (
                           <button
                             onClick={() => onMarkRead?.(n.id)}
-                            className="text-gray-300 hover:text-[#F7931D] transition-colors"
+                            className="text-emerald-500 hover:text-emerald-600 transition-colors"
                             title="تعليم كمقروء"
                           >
-                            <CheckCircle size={20} />
+                            <CheckCircle size={22} />
                           </button>
                         )}
                       </div>
