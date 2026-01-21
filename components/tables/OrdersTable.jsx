@@ -61,14 +61,6 @@ export default function OrdersTable({
                     >
                       التفاصيل
                     </Link>
-                    {order.status !== "completed" && (
-                      <button
-                        onClick={() => onUpdateStatus?.(order.id)}
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        إتمام
-                      </button>
-                    )}
                     <button
                       onClick={() => onDelete?.(order.id)}
                       className="text-red-600 hover:text-red-800"

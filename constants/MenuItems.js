@@ -69,7 +69,7 @@ export const MENU_ITEMS = [
     matchPaths: ["/admin/articles/", "/admin/articles/new", "/admin/articles/[id]/edit", "/admin/articles/[id]"],
   },
   {
-    name: "مراجعات المنتجات",
+    name: "المراجعات",
     icon: MessagesSquare,
     href: "/admin/reviews",
     matchPaths: ["/admin/reviews"],
