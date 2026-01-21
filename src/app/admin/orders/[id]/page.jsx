@@ -260,7 +260,9 @@ function ProductGroupRow({
 
   const productHref =
     productExists && product.id
-      ? `/admin/products/${encodeURIComponent(String(product.id))}`
+      ? product.store_section_id
+        ? `/admin/store-products/${encodeURIComponent(String(product.id))}`
+        : `/admin/products/${encodeURIComponent(String(product.id))}`
       : null;
 
   return (
