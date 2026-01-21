@@ -6,33 +6,11 @@ import { fetchClient } from "../../src/lib/fetchClient";
 export default function NotificationsTable({
   items = [],
   pagination = {},
-  reload, // دالة لإعادة الجلب (من الهُوك)
-  onPageChange, // دالة تغيير الصفحة (من الهُوك)
-  onPerPageChange, // دالة تغيير per_page (من الهُوك)
+  reload,
+  onPageChange,
+  onPerPageChange,
+  onMarkRead, // New prop from hook
 }) {
-  const { updateUnreadCount } = useNotificationsContext();
-
-  const handleMarkRead = async (notificationId) => {
-    try {
-      const res = await fetchClient(`/api/notifications/${notificationId}/read`, {
-        method: "POST",
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (!data.success)
-        throw new Error(data.message || "فشل وسم الإشعار كمقروء");
-
-      // خصم عداد الاشعارات غير المقروءة
-      if (typeof updateUnreadCount === "function") updateUnreadCount(-1);
-
-      // أعد تحميل البيانات من الباكند
-      if (typeof reload === "function") await reload();
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "حدث خطأ أثناء تحديث الإشعار");
-    }
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "—";
     const date = new Date(dateString);
@@ -111,7 +89,7 @@ export default function NotificationsTable({
                     <div>
                       <div className="border-t border-gray-200 my-2"></div>
                       <button
-                        onClick={() => handleMarkRead(n.id)}
+                        onClick={() => onMarkRead?.(n.id)}
                         className="text-green-600 hover:text-green-800 text-sm font-medium"
                       >
                         تعليم كمقروء

@@ -14,6 +14,7 @@ function NotificationsPageClient() {
     goToPage,
     reload,
     changePerPage,
+    handleMarkRead,
   } = useNotifications();
 
   return (
@@ -25,6 +26,7 @@ function NotificationsPageClient() {
           reload={reload}
           onPageChange={goToPage}
           onPerPageChange={changePerPage}
+          onMarkRead={handleMarkRead}
         />
       </ConditionalRender>
     </SectionLayout>
