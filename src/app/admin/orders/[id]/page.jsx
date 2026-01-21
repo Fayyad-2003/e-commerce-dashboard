@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { fetchClient } from "../../../../lib/fetchClient";
 import Link from "next/link";
 import Image from "next/image"; // ✅ Next.js Image Component Import
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { ConditionalRender } from "../../../../../components/common";
 
 /* Style-sync with OrderTable:
@@ -214,6 +215,206 @@ function getDiscountLabel(order) {
   return "الخصم";
 }
 
+/**
+ * Groups items by product ID.
+ * If product is null (deleted), each item stays separate (grouped by item id).
+ */
+function groupProducts(items) {
+  const groups = {};
+  items.forEach((it) => {
+    // If product is missing, use item id to keep it separate
+    const productId = it.product?.id ? String(it.product.id) : `item-${it.id}`;
+    if (!groups[productId]) {
+      groups[productId] = {
+        key: productId,
+        product: it.product,
+        items: [],
+        totalQuantity: 0,
+        totalPrice: 0,
+      };
+    }
+    groups[productId].items.push(it);
+    groups[productId].totalQuantity += Number(it.quantity || 0);
+    groups[productId].totalPrice +=
+      Number(it.price_per_unit || 0) * Number(it.quantity || 0);
+  });
+  return Object.values(groups);
+}
+
+/**
+ * Collapsible row for a group of product variants.
+ */
+function ProductGroupRow({
+  group,
+  getProductImage,
+  availableColorsForSize,
+  fmtMoney,
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { product, items, totalQuantity, totalPrice } = group;
+  const productExists = !!product;
+  const title = productExists ? product.name : "منتج محذوف";
+  const imgUrl = items.length > 0 ? getProductImage(items[0]) : null;
+
+  const productHref =
+    productExists && product.id
+      ? `/admin/products/${encodeURIComponent(String(product.id))}`
+      : null;
+
+  return (
+    <div className="border rounded-lg overflow-hidden bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+      {/* Header Row */}
+      <div
+        className="flex flex-col sm:flex-row justify-between items-start p-4 gap-4 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-start gap-4 min-w-0 flex-1">
+          <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center relative border border-gray-100 shadow-inner">
+            {imgUrl ? (
+              <Image
+                src={imgUrl}
+                alt={title}
+                fill
+                className="object-cover"
+                unoptimized={imgUrl.startsWith("http")}
+              />
+            ) : (
+              <div className="text-xs text-gray-400">لا توجد صورة</div>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="font-bold text-[17px] text-[var(--primary-brown)]">
+                {title}
+              </div>
+              {items.length > 1 && (
+                <span className="bg-orange-50 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-orange-100">
+                  {items.length} خيارات مختلفة
+                </span>
+              )}
+            </div>
+            <div className="text-sm text-gray-500 mt-0.5">
+              موديل: <span className="font-medium text-gray-700">{product?.model_number || "-"}</span>
+            </div>
+
+            <div className="mt-3 flex items-center gap-6 text-sm">
+              <div className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
+                الكمية الإجمالية: <span className="font-bold text-gray-900">{totalQuantity}</span>
+              </div>
+              <div className="text-gray-600 font-bold text-[var(--primary-brown)] text-base">
+                {fmtMoney(totalPrice)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 self-end sm:self-center">
+          <button className="p-2 bg-gray-50 hover:bg-gray-200 rounded-full transition-all text-gray-500 border border-gray-200 shadow-sm">
+            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Expanded Content (Variants) */}
+      {isExpanded && (
+        <div className="bg-[#fafafa] border-t divide-y divide-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="px-4 py-2 bg-gray-100/50 text-[10px] font-bold text-gray-400 uppercase tracking-widest flex justify-between">
+            <span>تفاصيل الخيارات</span>
+            {items.length > 1 && <span>{items.length} عنصر</span>}
+          </div>
+          {items.map((it) => {
+            const selectedSize = it.size;
+            const selectedColor = it.color;
+            const availableColors = it.product
+              ? availableColorsForSize(it.product, selectedSize)
+              : [];
+
+            return (
+              <div
+                key={it.id}
+                className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 hover:bg-white transition-colors"
+              >
+                <div className="flex-1 w-full">
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    {selectedSize && (
+                      <div className="bg-white px-3 py-1 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
+                        <span className="text-gray-400 text-xs">المقاس:</span>
+                        <span className="font-bold text-gray-800">
+                          {selectedSize}
+                        </span>
+                      </div>
+                    )}
+                    {selectedColor && (
+                      <div className="bg-white px-3 py-1 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
+                        <span className="text-gray-400 text-xs">اللون:</span>
+                        <span className="font-bold text-gray-800">
+                          {selectedColor}
+                        </span>
+                      </div>
+                    )}
+                    {it.notes && (
+                      <div className="w-full mt-1 text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-100 inline-flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>ملاحظة: {it.notes}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-8 text-sm w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
+                  <div className="text-center sm:text-right">
+                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
+                      سعر الوحدة
+                    </div>
+                    <div className="font-medium text-gray-700">
+                      {fmtMoney(it.price_per_unit)}
+                    </div>
+                  </div>
+                  <div className="text-center sm:text-right">
+                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
+                      الكمية
+                    </div>
+                    <div className="font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
+                      {it.quantity}
+                    </div>
+                  </div>
+                  <div className="text-right min-w-[100px]">
+                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
+                      المجموع
+                    </div>
+                    <div className="font-bold text-[var(--primary-brown)] text-base">
+                      {fmtMoney(
+                        Number(it.price_per_unit) * Number(it.quantity)
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {productHref && (
+            <div className="p-3 bg-white text-center border-t border-gray-100">
+              <Link
+                href={productHref}
+                className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-bold inline-flex items-center gap-1"
+              >
+                عرض صفحة المنتج الأصلية
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function OrderDetailsPage() {
   const { id } = useParams();
 
@@ -368,133 +569,17 @@ export default function OrderDetailsPage() {
               </div>
             </div>
 
-            <div>
+            <div className="space-y-4">
               {products.length ? (
-                products.map((it) => {
-                  const productExists = !!it.product;
-                  const title = productExists
-                    ? it.product?.name || `بند #${it.id}`
-                    : "منتج محذوف";
-                  const imgUrl = getProductImage(it);
-                  const selectedSize = it.size;
-                  const selectedColor = it.color;
-                  const availableColors = it.product
-                    ? availableColorsForSize(it.product, selectedSize)
-                    : [];
-
-                  // safe product link (encode id to avoid path injection)
-                  const productHref =
-                    productExists && it.product?.id
-                      ? `/admin/products/${encodeURIComponent(
-                        String(it.product.id)
-                      )}`
-                      : null;
-
-                  return (
-                    <div
-                      key={it.id}
-                      className="flex flex-col sm:flex-row justify-between items-start py-4 gap-4"
-                    >
-                      <div className="flex items-start gap-4 min-w-0">
-                        {/* ✅ FIX 1: Change to Image component and add 'relative' to container */}
-                        <div className="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-100 flex items-center justify-center relative">
-                          {imgUrl ? (
-                            <Image // <--- Secure component used here
-                              src={imgUrl}
-                              alt={title}
-                              fill // <--- Use fill to cover the fixed-size parent
-                              className="object-cover"
-                              unoptimized={imgUrl.startsWith("http")}
-                            />
-                          ) : (
-                            <div className="text-xs text-gray-400">
-                              لا توجد صورة
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="min-w-0">
-                          <div className="font-medium text-[15px] truncate">
-                            {title}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate">
-                            موديل: {it.product?.model_number || "-"}
-                          </div>
-                          {it.product?.description && (
-                            <div className="text-sm text-gray-700 mt-1 line-clamp-2">
-                              {it.product.description}
-                            </div>
-                          )}
-
-                          <div className="mt-2 text-sm text-gray-600 flex flex-wrap gap-3">
-                            {selectedSize && (
-                              <div className="px-2 py-1 text-xs">
-                                المقاس:{" "}
-                                <span className="font-medium">
-                                  {selectedSize}
-                                </span>
-                              </div>
-                            )}
-                            {selectedColor && (
-                              <div className="px-2 py-1 text-xs">
-                                اللون:{" "}
-                                <span className="font-medium">
-                                  {selectedColor}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          {availableColors.length > 0 && (
-                            <div className="mt-2 px-2 py-1 w-fit bg-gray-50 rounded text-xs">
-                              ألوان متاحة للمقاس:{" "}
-                              <span className="font-medium">
-                                {availableColors.join(", ")}
-                              </span>
-                            </div>
-                          )}
-
-                          {productHref ? (
-                            <Link
-                              className="text-xs text-gray-400 mt-1 line-clamp-2 underline"
-                              href={productHref}
-                            >
-                              معلومات المنتج
-                            </Link>
-                          ) : (
-                            <div className="text-xs text-red-400 mt-1">
-                              غير متاح
-                            </div>
-                          )}
-
-                          {it.notes ? (
-                            <div className="mt-2 text-sm text-gray-700">
-                              ملاحظات العنصر:{" "}
-                              <span className="font-medium">{it.notes}</span>
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div className="text-right mt-2 sm:mt-0">
-                        <div className="text-sm text-gray-500">سعر الوحدة</div>
-                        <div className="font-medium">
-                          {fmtMoney(it.price_per_unit)}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          الكمية: {it.quantity}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          المجموع:{" "}
-                          <span className="font-medium">
-                            {fmtMoney(
-                              Number(it.price_per_unit) * Number(it.quantity)
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
+                groupProducts(products).map((group) => (
+                  <ProductGroupRow
+                    key={group.key}
+                    group={group}
+                    getProductImage={getProductImage}
+                    availableColorsForSize={availableColorsForSize}
+                    fmtMoney={fmtMoney}
+                  />
+                ))
               ) : (
                 <div className="py-4 text-gray-500">
                   لا توجد منتجات فردية في الطلب
