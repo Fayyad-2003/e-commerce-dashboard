@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -211,8 +212,8 @@ export default function BundleForm({
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) return alert("اختر صورة");
-    if (file.size > 2 * 1024 * 1024) return alert("الحد الأقصى 2MB");
+    if (!file.type.startsWith("image/")) return toast.error("اختر صورة");
+    if (file.size > 2 * 1024 * 1024) return toast.error("الحد الأقصى 2MB");
     setForm((p) => ({ ...p, img: file }));
   };
 

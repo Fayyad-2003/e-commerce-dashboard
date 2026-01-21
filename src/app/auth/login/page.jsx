@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Check, Store, Lock, LogIn, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import LoadingSpinner from "../../../../components/common/LoadingSpinner";
@@ -40,14 +41,14 @@ export function LoginPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data?.message || "فشل تسجيل الدخول");
+        toast.error(data?.message || "فشل تسجيل الدخول");
         return;
       }
 
       window.location.href = "/";
     } catch (err) {
       console.error(err);
-      alert("خطأ غير متوقع");
+      toast.error("خطأ غير متوقع");
     } finally {
       setLoading(false);
     }

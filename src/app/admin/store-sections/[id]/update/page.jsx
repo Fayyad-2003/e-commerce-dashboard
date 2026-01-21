@@ -1,5 +1,6 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import BranchForm from "../../../../../../components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
@@ -49,15 +50,15 @@ export default function UpdateStoreSectionPage() {
 
             const json = await res.json();
             if (!res.ok || json.success === false) {
-                alert(json.message || "فشل تحديث القسم");
+                toast.error(json.message || "فشل تحديث القسم");
                 return;
             }
 
-            alert("تم تحديث القسم بنجاح");
+            toast.success("تم تحديث القسم بنجاح");
             router.back();
             router.refresh();
         } catch (error) {
-            alert(error.message || "حدث خطأ غير متوقع");
+            toast.error(error.message || "حدث خطأ غير متوقع");
         }
     };
 

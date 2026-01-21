@@ -11,7 +11,7 @@ export default function useAddMainBranch() {
   async function handleSubmit({ name, image }) {
     const value = name?.trim();
     if (!value) {
-      alert("اسم القسم مطلوب");
+      toast.error("اسم القسم مطلوب");
       return;
     }
 

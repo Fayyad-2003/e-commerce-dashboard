@@ -1,5 +1,6 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useState } from "react";
 import BranchForm from "../../../../../../../components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
@@ -28,13 +29,13 @@ export default function NewStorePage() {
 
             if (!res.ok) {
                 const err = await res.json().catch(() => ({}));
-                alert(err.message || "فشل إنشاء المتجر");
+                toast.error(err.message || "فشل إنشاء المتجر");
                 return;
             }
-
+            toast.success("تم إنشاء المتجر بنجاح");
             router.push(`/admin/stores/category/${categoryId}`);
         } catch (error) {
-            alert("حدث خطأ غير متوقع");
+            toast.error("حدث خطأ غير متوقع");
         } finally {
             setSubmitting(false);
         }

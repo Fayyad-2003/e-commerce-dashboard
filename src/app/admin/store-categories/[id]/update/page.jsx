@@ -1,5 +1,6 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import BranchForm from "components/forms/BranchForm";
 import { fetchClient } from "@/lib/fetchClient";
@@ -50,15 +51,14 @@ export default function UpdateStoreCategoryPage() {
 
             const json = await res.json();
             if (!res.ok || json.success === false) {
-                alert(json.message || "فشل تحديث التصنيف");
+                toast.error(json.message || "فشل تحديث التصنيف");
                 return;
             }
-
-            alert("تم تحديث التصنيف بنجاح");
+            toast.success("تم تحديث التصنيف بنجاح");
             router.back();
             router.refresh();
         } catch (error) {
-            alert(error.message || "حدث خطأ غير متوقع");
+            toast.error(error.message || "حدث خطأ غير متوقع");
         }
     };
 

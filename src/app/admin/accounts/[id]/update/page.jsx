@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { MoveLeft } from "lucide-react";
 import { ConditionalRender } from "../../../../../../components/common";
@@ -84,14 +85,14 @@ export default function UpdateCustomerPage() {
       const data = await res.json();
 
       if (data.success) {
-        alert("✅ تم تحديث بيانات الزبون بنجاح");
+        toast.success("✅ تم تحديث بيانات الزبون بنجاح");
         router.push(`/admin/accounts/${id}`);
       } else {
-        alert(data.message || "فشل التحديث");
+        toast.error(data.message || "فشل التحديث");
       }
     } catch (err) {
       console.error(err);
-      alert("تعذر الإرسال");
+      toast.error("تعذر الإرسال");
     }
 
     setSaving(false);

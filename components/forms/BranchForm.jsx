@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import toast from "react-hot-toast";
 import { PlusCircle, Image as ImageIcon, Save, Trash2 } from "lucide-react";
 import LoadingSpinner from "../common/LoadingSpinner";
 
@@ -58,14 +59,8 @@ export default function BranchForm({
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("الرجاء اختيار ملف صورة فقط");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      alert("حجم الملف كبير جداً (الحد الأقصى 2MB)");
-      return;
-    }
+    if (!file.type.startsWith("image/")) return toast.error("اختر صورة");
+    if (file.size > 2 * 1024 * 1024) return toast.error("الحد الأقصى 2MB");
     if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
     setImage(file);
     setPreview(URL.createObjectURL(file));
@@ -85,7 +80,7 @@ export default function BranchForm({
     e.preventDefault();
     if (pending || isSubmitting) return;
     if (type === "sub" && !image && !isEditMode) {
-      alert("صورة القسم الفرعي مطلوبة");
+      toast.error("صورة القسم الفرعي مطلوبة");
       return;
     }
     try {

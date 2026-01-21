@@ -1,6 +1,7 @@
 // FootersTable.jsx
 "use client";
 import React from "react";
+import toast from "react-hot-toast";
 import { Facebook, Instagram, Phone, Mail, MapPin, MessageCircle, Send } from "lucide-react";
 
 const SOCIAL_ICONS = {
@@ -46,23 +47,6 @@ export default function FootersTable({
     <footer className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 py-10">
       <div className="container px-6 grid grid-cols-1 gap-6">
 
-        {/* Global alerts (error / success) */}
-        {(error || successMessage) && (
-          <div className="col-span-1">
-            {error && (
-              <div className="rounded-md bg-red-50 border border-red-200 p-3 text-red-800">
-                <strong className="block font-semibold">حدث خطأ</strong>
-                <div className="mt-1 text-sm">{error}</div>
-              </div>
-            )}
-            {!error && successMessage && (
-              <div className="rounded-md bg-green-50 border border-green-200 p-3 text-green-800">
-                <strong className="block font-semibold">نجاح</strong>
-                <div className="mt-1 text-sm">{successMessage}</div>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Address */}
         <div className="bg-gray-50 rounded-lg p-4">
@@ -146,7 +130,7 @@ export default function FootersTable({
               // we surface UI message by invoking browser alert (keeps it simple) and return
               // but we also return early to avoid saving invalid values.
               // Better: you could trigger a state in this component to show a nicer banner.
-              alert("الرجاء تصحيح الروابط غير الصالحة قبل الحفظ.");
+              toast.error("الرجاء تصحيح الروابط غير الصالحة قبل الحفظ.");
               return;
             }
 

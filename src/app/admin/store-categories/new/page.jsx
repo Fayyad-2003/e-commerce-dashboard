@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { fetchClient } from "@/lib/fetchClient";
 import BranchForm from "components/forms/BranchForm"; // Components is likely in ROOT based on previous ls
 import { SectionLayout } from "components/common";
@@ -25,15 +26,15 @@ export default function NewStoreCategoryPage() {
 
             const json = await res.json();
             if (!res.ok || json.success === false) {
-                alert(json.message || "فشل إنشاء التصنيف");
+                toast.error(json.message || "فشل إنشاء التصنيف");
                 return;
             }
 
-            alert("تم إنشاء تصنيف المتجر بنجاح");
+            toast.success("تم إنشاء تصنيف المتجر بنجاح");
             router.push("/admin/stores"); // Return to list
             router.refresh();
         } catch (error) {
-            alert(error.message || "حدث خطأ غير متوقع");
+            toast.error(error.message || "حدث خطأ غير متوقع");
         }
     };
 

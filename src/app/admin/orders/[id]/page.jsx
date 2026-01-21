@@ -7,6 +7,8 @@ import Link from "next/link";
 import Image from "next/image"; // ✅ Next.js Image Component Import
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ConditionalRender } from "../../../../../components/common";
+import toast from "react-hot-toast";
+import { showConfirm } from "../../../../lib/confirm";
 
 /* Style-sync with OrderTable:
    - container: bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto
@@ -471,13 +473,13 @@ export default function OrderDetailsPage() {
 
   async function handleChangeStatus(newStatus) {
     if (!order) return;
-    if (
-      !confirm(
-        `هل أنت متأكد من تغيير حالة الطلب إلى "${STATUS_MAP[newStatus]?.label || newStatus
-        }"؟`
-      )
-    )
-      return;
+    const ok = await showConfirm({
+      title: "تحديث الحالة",
+      text: `هل أنت متأكد من تغيير حالة الطلب إلى "${STATUS_MAP[newStatus]?.label || newStatus}"؟`,
+      confirmButtonText: "نعم، متأكد",
+      icon: "question"
+    });
+    if (!ok) return;
     setSaving(true);
     const prev = order.status;
     setOrder({ ...order, status: newStatus }); // optimistic
@@ -492,7 +494,7 @@ export default function OrderDetailsPage() {
       }
       await fetchOrder();
     } catch (err) {
-      alert(`تعذر تحديث الحالة: ${err?.message || err}`);
+      toast.error(`تعذر تحديث الحالة: ${err?.message || err}`);
       setOrder({ ...order, status: prev });
     } finally {
       setSaving(false);
