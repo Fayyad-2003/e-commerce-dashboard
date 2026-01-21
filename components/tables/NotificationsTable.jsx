@@ -1,26 +1,14 @@
 import { Pagination } from "../common";
-import { MessageSquare, Bell, ExternalLink, CheckCircle, Calendar, Package, Tag } from "lucide-react";
+import { MessageSquare, Bell, ExternalLink, CheckCircle, Calendar, Package } from "lucide-react";
+import { parseNotification } from "@/lib/notifications";
 
 export default function NotificationsTable({
   items = [],
   pagination = {},
-  reload,
   onPageChange,
   onPerPageChange,
   onMarkRead,
 }) {
-  const formatDate = (dateString) => {
-    if (!dateString) return "—";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("ar-EG", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const getNotificationIcon = (type, isRead) => {
     const colorClass = isRead ? "text-gray-300" : type?.includes("Review") ? "text-[#F7931D]" : "text-[#F7931D]";
     if (type?.includes("Review")) return <MessageSquare size={14} className={colorClass} />;
@@ -34,32 +22,30 @@ export default function NotificationsTable({
         {items?.length === 0 ? (
           <div className="p-12 text-center text-gray-400 text-sm">لا توجد إشعارات</div>
         ) : (
-          items.map((n) => {
-            const isRead = !!n.read_at;
-            const isReviewLink = n.data?.url?.startsWith("/admin/reviews") ?? false;
-            const href = isReviewLink ? "/admin/reviews?backUrl=/admin/notifications" : n.data.url;
+          items.map((item) => {
+            const n = parseNotification(item);
             return (
               <div key={n.id} className="p-4 relative">
                 <div className="flex gap-3">
-                  <div className="mt-1">{getNotificationIcon(n.type, isRead)}</div>
+                  <div className="mt-1">{getNotificationIcon(n.type, n.isRead)}</div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-[13px] leading-relaxed ${!isRead ? "text-gray-900 font-medium" : "text-gray-500"}`}>
-                      {n.data?.message ?? "—"}
+                    <p className={`text-[13px] leading-relaxed ${!n.isRead ? "text-gray-900 font-medium" : "text-gray-500"}`}>
+                      {n.message}
                     </p>
                     <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-400">
-                      <span className="flex items-center gap-1"><Calendar size={10} /> {formatDate(n.created_at)}</span>
-                      {n.data?.product_name && <span className="flex items-center gap-1"><Package size={10} /> {n.data.product_name}</span>}
+                      <span className="flex items-center gap-1"><Calendar size={10} /> {n.createdAt}</span>
+                      {n.productName && <span className="flex items-center gap-1"><Package size={10} /> {n.productName}</span>}
                     </div>
                   </div>
-                  {!isRead && <span className="w-1.5 h-1.5 bg-[#F7931D] rounded-full shrink-0" />}
+                  {!n.isRead && <span className="w-1.5 h-1.5 bg-[#F7931D] rounded-full shrink-0" />}
                 </div>
                 <div className="mt-3 flex justify-end gap-3 items-center pt-3 border-t border-gray-50">
-                  {n.data?.url && (
-                    <a href={href} className="text-[#F7931D] hover:underline text-[11px] font-medium flex items-center gap-1">
+                  {n.href !== "#" && (
+                    <a href={n.href} className="text-[#F7931D] hover:underline text-[11px] font-medium flex items-center gap-1">
                       تفاصيل <ExternalLink size={10} />
                     </a>
                   )}
-                  {!isRead && (
+                  {!n.isRead && (
                     <button onClick={() => onMarkRead?.(n.id)} className="text-gray-400 hover:text-[#F7931D] text-[11px] font-medium flex items-center gap-1">
                       <CheckCircle size={12} /> تعليم كمقروء
                     </button>
@@ -88,46 +74,44 @@ export default function NotificationsTable({
                 <td colSpan={4} className="px-5 py-12 text-center text-gray-400 text-[13px]">لا توجد إشعارات للعرض</td>
               </tr>
             ) : (
-              items.map((n) => {
-                const isRead = !!n.read_at;
-                const isReviewLink = n.data?.url?.startsWith("/admin/reviews") ?? false;
-                const href = isReviewLink ? "/admin/reviews?backUrl=/admin/notifications" : n.data.url;
+              items.map((item) => {
+                const n = parseNotification(item);
                 return (
                   <tr key={n.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        {!isRead ? (
+                        {!n.isRead ? (
                           <span className="w-1.5 h-1.5 bg-[#F7931D] rounded-full" />
                         ) : (
                           <div className="w-1.5 h-1.5" />
                         )}
-                        <div className="opacity-60">{getNotificationIcon(n.type, isRead)}</div>
+                        <div className="opacity-60">{getNotificationIcon(n.type, n.isRead)}</div>
                       </div>
                     </td>
                     <td className="px-5 py-4">
                       <div className="max-w-xl">
-                        <p className={`text-[13px] leading-relaxed ${!isRead ? "text-gray-900 font-medium" : "text-gray-500"}`}>
-                          {n.data?.message ?? "—"}
+                        <p className={`text-[13px] leading-relaxed ${!n.isRead ? "text-gray-900 font-medium" : "text-gray-500"}`}>
+                          {n.message}
                         </p>
-                        {n.data?.product_name && (
+                        {n.productName && (
                           <div className="mt-1 text-[10px] text-gray-400 flex items-center gap-1">
                             <Package size={10} className="opacity-50" />
-                            <span>{n.data.product_name}</span>
+                            <span>{n.productName}</span>
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-[11px] text-gray-400">
-                      {formatDate(n.created_at)}
+                      {n.createdAt}
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-4">
-                        {n.data?.url && (
-                          <a href={href} className="text-gray-400 hover:text-[#F7931D] transition-colors" title="التفاصيل">
+                        {n.href !== "#" && (
+                          <a href={n.href} className="text-gray-400 hover:text-[#F7931D] transition-colors" title="التفاصيل">
                             <ExternalLink size={14} />
                           </a>
                         )}
-                        {!isRead && (
+                        {!n.isRead && (
                           <button
                             onClick={() => onMarkRead?.(n.id)}
                             className="text-gray-300 hover:text-[#F7931D] transition-colors"
