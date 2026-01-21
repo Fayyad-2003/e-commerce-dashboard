@@ -65,7 +65,7 @@ export function OrdersPage() {
 
         <Link
           href="/admin/orders/archived"
-          className="flex items-center gap-2 px-4 py-2 text-[#F7931D] rounded-md hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-[#F7931D] rounded-md hover:text-[#F7931D]/80 transition-colors"
         >
           <span>الطلبيات المؤرشفة</span>
           <ArrowLeft size={18} />

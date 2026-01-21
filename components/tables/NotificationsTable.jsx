@@ -41,21 +41,23 @@ export default function NotificationsTable({
                 </div>
                 <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-50">
                   <div className="flex gap-3">
-                    {n.href !== "#" && (
+                    {n.href !== "#" ? (
                       <a href={n.href} className="text-[#F7931D] hover:underline text-xs font-semibold">
                         {n.linkText}
                       </a>
+                    ) : (
+                      <div className="w-16" /> // Placeholder to maintain link space
                     )}
                   </div>
-                  {!n.isRead && (
-                    <button
-                      onClick={() => onMarkRead?.(n.id)}
-                      className="text-emerald-500 hover:text-emerald-600 transition-colors"
-                      title="تعليم كمقروء"
-                    >
-                      <CheckCircle size={22} />
-                    </button>
-                  )}
+
+                  <button
+                    onClick={() => !n.isRead && onMarkRead?.(n.id)}
+                    className={`text-emerald-500 transition-colors ${n.isRead ? "invisible" : "hover:text-emerald-600"}`}
+                    title="تعليم كمقروء"
+                    disabled={n.isRead}
+                  >
+                    <CheckCircle size={22} />
+                  </button>
                 </div>
               </div>
             );
@@ -112,20 +114,22 @@ export default function NotificationsTable({
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-6">
-                        {n.href !== "#" && (
+                        {n.href !== "#" ? (
                           <a href={n.href} className="text-[#F7931D] hover:underline text-xs font-bold transition-colors">
                             {n.linkText}
                           </a>
+                        ) : (
+                          <div className="w-16" /> // Placeholder for link
                         )}
-                        {!n.isRead && (
-                          <button
-                            onClick={() => onMarkRead?.(n.id)}
-                            className="text-emerald-500 hover:text-emerald-600 transition-colors"
-                            title="تعليم كمقروء"
-                          >
-                            <CheckCircle size={22} />
-                          </button>
-                        )}
+
+                        <button
+                          onClick={() => !n.isRead && onMarkRead?.(n.id)}
+                          className={`text-emerald-500 transition-colors ${n.isRead ? "invisible" : "hover:text-emerald-600"}`}
+                          title="تعليم كمقروء"
+                          disabled={n.isRead}
+                        >
+                          <CheckCircle size={22} />
+                        </button>
                       </div>
                     </td>
                   </tr>
