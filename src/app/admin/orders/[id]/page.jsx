@@ -262,20 +262,23 @@ function ProductGroupRow({
       : null;
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+    <div
+      className={`group border rounded-2xl overflow-hidden bg-white transition-all duration-500 ${isExpanded ? "shadow-md border-gray-200" : "shadow-sm border-gray-100"
+        }`}
+    >
       {/* Header Row */}
       <div
-        className="flex flex-col sm:flex-row justify-between items-start p-4 gap-4 cursor-pointer hover:bg-gray-50 transition-colors"
+        className="flex flex-col sm:flex-row justify-between items-start p-5 gap-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-start gap-4 min-w-0 flex-1">
-          <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center relative border border-gray-100 shadow-inner">
+        <div className="flex items-start gap-5 min-w-0 flex-1">
+          <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center relative border border-gray-100 shadow-sm">
             {imgUrl ? (
               <Image
                 src={imgUrl}
                 alt={title}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 unoptimized={imgUrl.startsWith("http")}
               />
             ) : (
@@ -284,133 +287,142 @@ function ProductGroupRow({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="font-bold text-[17px] text-[var(--primary-brown)]">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <div className="font-bold text-[18px] text-gray-800 tracking-tight">
                 {title}
               </div>
               {items.length > 1 && (
-                <span className="bg-orange-50 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-orange-100">
-                  {items.length} خيارات مختلفة
+                <span className="bg-orange-50 text-orange-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold border border-orange-100/50">
+                  {items.length} خيارات
                 </span>
               )}
             </div>
-            <div className="text-sm text-gray-500 mt-0.5">
-              موديل: <span className="font-medium text-gray-700">{product?.model_number || "-"}</span>
+            <div className="text-sm text-gray-400 font-medium">
+              موديل: <span className="text-gray-600 font-semibold">{product?.model_number || "-"}</span>
             </div>
 
-            <div className="mt-3 flex items-center gap-6 text-sm">
-              <div className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-                الكمية الإجمالية: <span className="font-bold text-gray-900">{totalQuantity}</span>
+            <div className="mt-4 flex items-center gap-6 text-sm">
+              <div className="text-gray-500 bg-gray-50/80 px-3 py-1 rounded-lg border border-gray-100/50 flex items-center gap-2">
+                <span>الكمية:</span>
+                <span className="font-bold text-gray-900">{totalQuantity}</span>
               </div>
-              <div className="text-gray-600 font-bold text-[var(--primary-brown)] text-base">
-                {fmtMoney(totalPrice)}
+              <div className="text-gray-800 font-black text-lg">
+                <span className="text-xs font-bold text-gray-400 ml-1">إجمالي:</span>
+                {fmtMoney(totalPrice)} $
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3 self-end sm:self-center">
-          <button className="p-2 bg-gray-50 hover:bg-gray-200 rounded-full transition-all text-gray-500 border border-gray-200 shadow-sm">
-            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </button>
+          <div className={`p-2.5 rounded-xl transition-all duration-500 ${isExpanded ? "bg-[var(--primary-brown)] text-white rotate-180" : "bg-gray-50 text-gray-400 border border-gray-100"
+            }`}>
+            <ChevronDown size={20} className="transition-transform duration-500" />
+          </div>
         </div>
       </div>
 
-      {/* Expanded Content (Variants) */}
-      {isExpanded && (
-        <div className="bg-[#fafafa] border-t divide-y divide-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="px-4 py-2 bg-gray-100/50 text-[10px] font-bold text-gray-400 uppercase tracking-widest flex justify-between">
-            <span>تفاصيل الخيارات</span>
-            {items.length > 1 && <span>{items.length} عنصر</span>}
-          </div>
-          {items.map((it) => {
-            const selectedSize = it.size;
-            const selectedColor = it.color;
-            const availableColors = it.product
-              ? availableColorsForSize(it.product, selectedSize)
-              : [];
+      {/* Expanded Content Wrapper (Grid technique for height animation) */}
+      <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? "grid-template-rows-[1fr] opacity-100" : "grid-template-rows-[0fr] opacity-0"
+        }`} style={{ gridTemplateRows: isExpanded ? '1fr' : '0fr' }}>
+        <div className="overflow-hidden">
+          <div className="bg-[#fcfcfc] border-t border-gray-50 divide-y divide-gray-100/50">
+            <div className="px-5 py-3 bg-gray-50/30 text-[11px] font-bold text-gray-400 uppercase tracking-widest flex justify-between items-center">
+              <span className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                تفاصيل المتغيرات المشتراة
+              </span>
+              {items.length > 1 && <span className="text-[10px] bg-white px-2 py-0.5 rounded border border-gray-100">{items.length} عناصر</span>}
+            </div>
+            {items.map((it) => {
+              const selectedSize = it.size;
+              const selectedColor = it.color;
+              const availableColors = it.product
+                ? availableColorsForSize(it.product, selectedSize)
+                : [];
 
-            return (
-              <div
-                key={it.id}
-                className="p-4 flex flex-col sm:flex-row justify-between items-center gap-4 hover:bg-white transition-colors"
-              >
-                <div className="flex-1 w-full">
-                  <div className="flex flex-wrap gap-3 text-sm">
-                    {selectedSize && (
-                      <div className="bg-white px-3 py-1 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
-                        <span className="text-gray-400 text-xs">المقاس:</span>
-                        <span className="font-bold text-gray-800">
-                          {selectedSize}
-                        </span>
-                      </div>
-                    )}
-                    {selectedColor && (
-                      <div className="bg-white px-3 py-1 rounded-md border border-gray-200 shadow-sm flex items-center gap-2">
-                        <span className="text-gray-400 text-xs">اللون:</span>
-                        <span className="font-bold text-gray-800">
-                          {selectedColor}
-                        </span>
-                      </div>
-                    )}
-                    {it.notes && (
-                      <div className="w-full mt-1 text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-100 inline-flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>ملاحظة: {it.notes}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between sm:justify-end gap-8 text-sm w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
-                  <div className="text-center sm:text-right">
-                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
-                      سعر الوحدة
-                    </div>
-                    <div className="font-medium text-gray-700">
-                      {fmtMoney(it.price_per_unit)}
-                    </div>
-                  </div>
-                  <div className="text-center sm:text-right">
-                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
-                      الكمية
-                    </div>
-                    <div className="font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
-                      {it.quantity}
-                    </div>
-                  </div>
-                  <div className="text-right min-w-[100px]">
-                    <div className="text-gray-400 text-[10px] uppercase font-bold mb-1">
-                      المجموع
-                    </div>
-                    <div className="font-bold text-[var(--primary-brown)] text-base">
-                      {fmtMoney(
-                        Number(it.price_per_unit) * Number(it.quantity)
+              return (
+                <div
+                  key={it.id}
+                  className="p-5 flex flex-col sm:flex-row justify-between items-center gap-6 hover:bg-white transition-colors"
+                >
+                  <div className="flex-1 w-full flex flex-col gap-3">
+                    <div className="flex flex-wrap gap-3">
+                      {selectedSize && (
+                        <div className="bg-white px-3.5 py-1.5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-2.5 group/tag hover:border-blue-100 transition-colors">
+                          <span className="text-gray-400 text-[11px] font-bold group-hover/tag:text-blue-400 transition-colors">المقاس</span>
+                          <span className="font-bold text-gray-700">
+                            {selectedSize}
+                          </span>
+                        </div>
+                      )}
+                      {selectedColor && (
+                        <div className="bg-white px-3.5 py-1.5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-2.5 group/tag hover:border-green-100 transition-colors">
+                          <span className="text-gray-400 text-[11px] font-bold group-hover/tag:text-green-400 transition-colors">اللون</span>
+                          <span className="font-bold text-gray-700">
+                            {selectedColor}
+                          </span>
+                        </div>
                       )}
                     </div>
+                    {it.notes && (
+                      <div className="text-xs text-orange-600 bg-orange-50/50 p-2.5 rounded-xl border border-orange-100/30 flex items-start gap-2.5">
+                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="leading-relaxed">ملاحظة: {it.notes}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-10 text-sm w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
+                    <div className="text-center sm:text-right">
+                      <div className="text-gray-400 text-[10px] uppercase font-bold mb-1 tracking-wider">
+                        سعر الوحدة
+                      </div>
+                      <div className="font-semibold text-gray-600">
+                        {fmtMoney(it.price_per_unit)}
+                      </div>
+                    </div>
+                    <div className="text-center sm:text-right">
+                      <div className="text-gray-400 text-[10px] uppercase font-bold mb-1 tracking-wider">
+                        الكمية
+                      </div>
+                      <div className="font-black text-gray-800 bg-gray-100/50 px-2.5 py-1 rounded-lg">
+                        {it.quantity}
+                      </div>
+                    </div>
+                    <div className="text-right min-w-[110px]">
+                      <div className="text-gray-400 text-[10px] uppercase font-bold mb-1 tracking-wider">
+                        المجموع الفرعي
+                      </div>
+                      <div className="font-black text-gray-900 text-base">
+                        {fmtMoney(
+                          Number(it.price_per_unit) * Number(it.quantity)
+                        )} $
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          {productHref && (
-            <div className="p-3 bg-white text-center border-t border-gray-100">
-              <Link
-                href={productHref}
-                className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-bold inline-flex items-center gap-1"
-              >
-                عرض صفحة المنتج الأصلية
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </Link>
-            </div>
-          )}
+            {productHref && (
+              <div className="px-5 py-4 bg-gray-50/30 text-center border-t border-gray-100/50">
+                <Link
+                  href={productHref}
+                  className="text-[11px] text-blue-500 hover:text-blue-700 transition-colors font-bold uppercase tracking-wider inline-flex items-center gap-2 group/link"
+                >
+                  انتقل إلى تفاصيل المنتج
+                  <svg className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
