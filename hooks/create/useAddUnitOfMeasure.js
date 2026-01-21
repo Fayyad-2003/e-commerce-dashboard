@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useAddUnitOfMeasure() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function useAddUnitOfMeasure() {
         throw new Error(json.message || `HTTP ${res.status}`);
       }
 
+      toast.success("تم إضافة الوحدة بنجاح");
       router.push("/admin/sizetable");
     } catch (err) {
       console.error("Error adding size:", err);

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useEditSubBranch() {
   const { id } = useParams();
@@ -78,9 +79,10 @@ export default function useEditSubBranch() {
         throw new Error(out?.message || `HTTP ${res.status}`);
       }
 
+      toast.success("تم تعديل القسم الفرعي بنجاح!");
       router.push(`/admin/branches/sub-branch/${categoryId}`);
     } catch (e) {
-      alert(`فشل التعديل: ${e?.message || e}`);
+      toast.error(`فشل التعديل: ${e?.message || e}`);
     }
   }
 

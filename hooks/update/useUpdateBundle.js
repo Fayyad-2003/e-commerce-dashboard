@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 /**
  * useUpdateBundle
@@ -189,6 +190,7 @@ export default function useUpdateBundle() {
       }
 
       // success -> navigate back to listing
+      toast.success("تم تعديل الباندل بنجاح");
       router.push("/admin/bundles");
     } catch (err) {
       console.error("useUpdateBundle submit error:", err);

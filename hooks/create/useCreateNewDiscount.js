@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useCreateNewDiscount() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function useCreateNewDiscount() {
         return;
       }
 
+      toast.success("تم إنشاء الخصم بنجاح");
       router.push("/admin/discounts");
     } catch (err) {
       setErrors({ form: err.message || "حدث خطأ أثناء إنشاء الخصم" });

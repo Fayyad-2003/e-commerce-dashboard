@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useEditArticle() {
   const router = useRouter();
@@ -71,6 +72,7 @@ export default function useEditArticle() {
       }
 
       // ✅ success
+      toast.success("تم تعديل المقال بنجاح");
       router.push("/admin/articles");
     } catch (err) {
       setError(err.message || "فشل الحفظ");

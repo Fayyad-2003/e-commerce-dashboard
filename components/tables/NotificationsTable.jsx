@@ -22,7 +22,7 @@ export default function NotificationsTable({
   };
 
   const getNotificationIcon = (type, isRead) => {
-    const colorClass = isRead ? "text-gray-300" : type?.includes("Review") ? "text-blue-500" : "text-orange-500";
+    const colorClass = isRead ? "text-gray-300" : type?.includes("Review") ? "text-[#F7931D]" : "text-[#F7931D]";
     if (type?.includes("Review")) return <MessageSquare size={14} className={colorClass} />;
     return <Bell size={14} className={colorClass} />;
   };
@@ -51,16 +51,16 @@ export default function NotificationsTable({
                       {n.data?.product_name && <span className="flex items-center gap-1"><Package size={10} /> {n.data.product_name}</span>}
                     </div>
                   </div>
-                  {!isRead && <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />}
+                  {!isRead && <span className="w-1.5 h-1.5 bg-[#F7931D] rounded-full shrink-0" />}
                 </div>
                 <div className="mt-3 flex justify-end gap-3 items-center pt-3 border-t border-gray-50">
                   {n.data?.url && (
-                    <a href={href} className="text-blue-600 text-[11px] font-medium flex items-center gap-1">
+                    <a href={href} className="text-[#F7931D] hover:underline text-[11px] font-medium flex items-center gap-1">
                       تفاصيل <ExternalLink size={10} />
                     </a>
                   )}
                   {!isRead && (
-                    <button onClick={() => onMarkRead?.(n.id)} className="text-gray-400 hover:text-blue-600 text-[11px] font-medium flex items-center gap-1">
+                    <button onClick={() => onMarkRead?.(n.id)} className="text-gray-400 hover:text-[#F7931D] text-[11px] font-medium flex items-center gap-1">
                       <CheckCircle size={12} /> تعليم كمقروء
                     </button>
                   )}
@@ -97,7 +97,7 @@ export default function NotificationsTable({
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         {!isRead ? (
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                          <span className="w-1.5 h-1.5 bg-[#F7931D] rounded-full" />
                         ) : (
                           <div className="w-1.5 h-1.5" />
                         )}
@@ -123,14 +123,14 @@ export default function NotificationsTable({
                     <td className="px-5 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-4">
                         {n.data?.url && (
-                          <a href={href} className="text-gray-400 hover:text-blue-600 transition-colors" title="التفاصيل">
+                          <a href={href} className="text-gray-400 hover:text-[#F7931D] transition-colors" title="التفاصيل">
                             <ExternalLink size={14} />
                           </a>
                         )}
                         {!isRead && (
                           <button
                             onClick={() => onMarkRead?.(n.id)}
-                            className="text-gray-300 hover:text-blue-500 transition-colors"
+                            className="text-gray-300 hover:text-[#F7931D] transition-colors"
                             title="تعليم كمقروء"
                           >
                             <CheckCircle size={16} />

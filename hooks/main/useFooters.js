@@ -2,13 +2,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useFooters() {
   const [footerData, setFooterData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null); // string | null
-  const [successMessage, setSuccessMessage] = useState(null); // string | null
 
   useEffect(() => {
     async function fetchFooter() {
@@ -35,8 +35,8 @@ export default function useFooters() {
   }, []);
 
   const handleChange = (key, value) => {
-    // Clear previous success when user modifies anything
-    setSuccessMessage(null);
+    // Clear previous error when user modifies anything
+    setError(null);
     setFooterData((prev) => (prev ? { ...prev, [key]: value } : { [key]: value }));
   };
 
@@ -48,7 +48,6 @@ export default function useFooters() {
     }
     setSaving(true);
     setError(null);
-    setSuccessMessage(null);
 
     try {
       const formData = new FormData();
@@ -70,7 +69,7 @@ export default function useFooters() {
       const data = await res.json();
       if (!data.success) throw new Error(data.message || "خطأ أثناء الحفظ");
 
-      setSuccessMessage("تم حفظ التغييرات بنجاح.");
+      toast.success("تم حفظ التغييرات بنجاح.");
       return { success: true };
     } catch (err) {
       const message = err?.message || "حدث خطأ أثناء الحفظ. الرجاء المحاولة لاحقاً.";
@@ -87,7 +86,6 @@ export default function useFooters() {
     loading,
     saving,
     error, // string|null
-    successMessage, // string|null
     handleChange,
     handleSave,
   };

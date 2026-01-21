@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export function useNewArticle() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export function useNewArticle() {
         throw new Error(json?.message || `HTTP ${res.status}`);
       }
 
+      toast.success("تم اضافة المقال بنجاح");
       router.push("/admin/articles");
     } catch (err) {
       console.error(err);

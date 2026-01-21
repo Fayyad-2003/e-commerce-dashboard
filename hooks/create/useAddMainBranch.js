@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useAddMainBranch() {
   const router = useRouter();
@@ -31,11 +32,11 @@ export default function useAddMainBranch() {
         throw new Error(json?.message || `HTTP ${res.status}`);
       }
 
-      alert("تم إنشاء القسم بنجاح!");
+      toast.success("تم إنشاء القسم بنجاح!");
       router.push("/");
     } catch (error) {
       console.error(error);
-      alert(error.message || "حدث خطأ أثناء إنشاء القسم");
+      toast.error(error.message || "حدث خطأ أثناء إنشاء القسم");
     } finally {
       setIsSubmitting(false);
     }

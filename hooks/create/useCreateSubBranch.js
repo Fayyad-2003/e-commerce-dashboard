@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useCreateSubBranch() {
   const router = useRouter();
@@ -24,8 +25,8 @@ export default function useCreateSubBranch() {
   }, [params, pathname]);
 
   const handleSubmitSub = async ({ name, image }) => {
-    if (!categoryId) return alert("لا يوجد category_id في المسار");
-    if (!name?.trim()) return alert("اسم القسم الفرعي مطلوب");
+    if (!categoryId) return toast.error("لا يوجد category_id في المسار");
+    if (!name?.trim()) return toast.error("اسم القسم الفرعي مطلوب");
 
     setIsSubmittingSub(true);
 
@@ -43,11 +44,11 @@ export default function useCreateSubBranch() {
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.message || `HTTP ${res.status}`);
 
-      alert("تم إنشاء القسم الفرعي بنجاح!");
+      toast.success("تم إنشاء القسم الفرعي بنجاح!");
       router.push(`/admin/branches/sub-branch/${categoryId}`);
     } catch (error) {
       console.log(error);
-      alert(error.message || "حدث خطأ أثناء إنشاء القسم الفرعي");
+      toast.error(error.message || "حدث خطأ أثناء إنشاء القسم الفرعي");
     } finally {
       setIsSubmittingSub(false);
     }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 /**
  * useCreateNewBundle
@@ -78,6 +79,7 @@ export default function useCreateNewBundle() {
       }
 
       // optionally return created bundle to caller by resolving; but maintain navigation like before
+      toast.success("تم إنشاء الباندل بنجاح");
       router.push("/admin/bundles");
       return out?.data ?? out;
     } catch (err) {

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useEditDiscount() {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function useEditDiscount() {
         return;
       }
 
+      toast.success("تم تعديل الخصم بنجاح");
       router.push("/admin/discounts");
     } catch (err) {
       setErrors({ form: err.message || "فشل الحفظ" });

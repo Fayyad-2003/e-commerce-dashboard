@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import toast from "react-hot-toast";
 
 export default function useEditUnit() {
   const router = useRouter();
@@ -68,6 +69,7 @@ export default function useEditUnit() {
         throw new Error(out?.message || `HTTP ${res.status}`);
       }
 
+      toast.success(isUpdate ? "تم تعديل الوحدة بنجاح" : "تم إضافة الوحدة بنجاح");
       router.push("/admin/sizetable");
     } catch (err) {
       setError(err?.message || String(err) || "فشل الحفظ");
