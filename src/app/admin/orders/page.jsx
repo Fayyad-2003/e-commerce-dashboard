@@ -1,7 +1,7 @@
 "use client"
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Archive } from "lucide-react";
+import { Archive, ArrowLeft } from "lucide-react";
 import { ConditionalRender, SectionLayout } from "../../../../components/common";
 import { OrdersTable } from "../../../../components/tables";
 import { useOrders } from "../../../../hooks";
@@ -65,10 +65,10 @@ export function OrdersPage() {
 
         <Link
           href="/admin/orders/archived"
-          className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-[#F7931D] rounded-md hover:bg-gray-700 transition-colors"
         >
-          <Archive size={18} />
           <span>الطلبيات المؤرشفة</span>
+          <ArrowLeft size={18} />
         </Link>
       </div>
 
