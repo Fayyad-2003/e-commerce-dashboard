@@ -149,8 +149,8 @@ export default function ReviewsTable({
                         onClick={() => onApprove?.(c)}
                         disabled={status === "approved"}
                         className={`px-3 py-1 text-xs rounded ${status === "approved"
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-green-50 text-green-600 hover:bg-green-100"
+                          ? "bg-gray-100 text-gray-400"
+                          : "bg-green-50 text-green-600 hover:bg-green-100"
                           }`}
                       >
                         قبول
@@ -159,8 +159,8 @@ export default function ReviewsTable({
                         onClick={() => onReject?.(c)}
                         disabled={status === "rejected"}
                         className={`px-3 py-1 text-xs rounded ${status === "rejected"
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-red-50 text-red-600 hover:bg-red-100"
+                          ? "bg-gray-100 text-gray-400"
+                          : "bg-red-50 text-red-600 hover:bg-red-100"
                           }`}
                       >
                         رفض
@@ -276,27 +276,19 @@ export default function ReviewsTable({
                         onClick={() => onApprove?.(c)}
                         disabled={status === "approved"}
                         className={`text-green-600 hover:text-green-800 px-2 py-1 rounded hover:bg-green-50 ${status === "approved"
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
                           }`}
                       >
                         قبول
                       </button>
 
                       <button
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "هل أنت متأكد أنك تريد رفض هذا التعليق؟"
-                            )
-                          ) {
-                            onReject?.(c);
-                          }
-                        }}
+                        onClick={() => onReject?.(c)}
                         disabled={status === "rejected"}
                         className={`px-3 py-1 text-xs rounded ${status === "rejected"
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-red-50 text-red-600 hover:bg-red-100"
+                          ? "bg-gray-100 text-gray-400"
+                          : "bg-red-50 text-red-600 hover:bg-red-100"
                           }`}
                       >
                         رفض

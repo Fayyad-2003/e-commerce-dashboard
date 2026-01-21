@@ -27,6 +27,15 @@ export default function useReviews() {
 
   const handleApprove = async (id) => {
     const realId = typeof id === "object" ? id.id ?? id : id;
+
+    const ok = await showConfirm({
+      title: "الموافقة على التعليق",
+      text: "هل أنت متأكد من الموافقة على هذا التعليق؟ سيظهر للجميع.",
+      confirmButtonText: "موافقة",
+      icon: "question"
+    });
+    if (!ok) return;
+
     try {
       const res = await fetchClient(`/api/reviews/${realId}/approve`, {
         method: "POST",
