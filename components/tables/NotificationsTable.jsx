@@ -1,5 +1,5 @@
 import { Pagination } from "../common";
-import { MessageSquare, Bell, Calendar, Package } from "lucide-react";
+import { MessageSquare, Bell, Calendar, Package, CheckCircle } from "lucide-react";
 import { parseNotification } from "@/lib/notifications";
 
 export default function NotificationsTable({
@@ -39,15 +39,21 @@ export default function NotificationsTable({
                   </div>
                   {!n.isRead && <span className="w-2 h-2 bg-[#F7931D] rounded-full shrink-0" />}
                 </div>
-                <div className="mt-4 flex justify-end gap-3 items-center pt-4 border-t border-gray-50">
-                  {n.href !== "#" && (
-                    <a href={n.href} className="text-[#F7931D] hover:underline text-xs font-semibold">
-                      التفاصيل
-                    </a>
-                  )}
+                <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-50">
+                  <div className="flex gap-3">
+                    {n.href !== "#" && (
+                      <a href={n.href} className="text-[#F7931D] hover:underline text-xs font-semibold">
+                        {n.linkText}
+                      </a>
+                    )}
+                  </div>
                   {!n.isRead && (
-                    <button onClick={() => onMarkRead?.(n.id)} className="text-gray-500 hover:text-[#F7931D] text-xs font-semibold">
-                      تعليم كمقروء
+                    <button
+                      onClick={() => onMarkRead?.(n.id)}
+                      className="text-gray-400 hover:text-[#F7931D] transition-colors"
+                      title="تعليم كمقروء"
+                    >
+                      <CheckCircle size={20} />
                     </button>
                   )}
                 </div>
@@ -105,18 +111,19 @@ export default function NotificationsTable({
                       {n.createdAt}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-5">
+                      <div className="flex items-center justify-center gap-6">
                         {n.href !== "#" && (
                           <a href={n.href} className="text-[#F7931D] hover:underline text-xs font-bold transition-colors">
-                            التفاصيل
+                            {n.linkText}
                           </a>
                         )}
                         {!n.isRead && (
                           <button
                             onClick={() => onMarkRead?.(n.id)}
-                            className="text-gray-500 hover:text-[#F7931D] text-xs font-bold transition-colors"
+                            className="text-gray-300 hover:text-[#F7931D] transition-colors"
+                            title="تعليم كمقروء"
                           >
-                            تعليم كمقروء
+                            <CheckCircle size={20} />
                           </button>
                         )}
                       </div>

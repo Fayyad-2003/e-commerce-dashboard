@@ -26,11 +26,14 @@ export const parseNotification = (notification) => {
     const data = notification.data || {};
     const isRead = !!notification.read_at;
 
-    // Determine the URL/Href
+    // Determine the URL/Href and link text
     let href = data.url || "#";
+    let linkText = "التفاصيل";
+
     const isReviewLink = href.startsWith("/admin/reviews");
     if (isReviewLink) {
         href = "/admin/reviews?backUrl=/admin/notifications";
+        linkText = "ذهاب للتقييمات";
     }
 
     return {
@@ -40,6 +43,7 @@ export const parseNotification = (notification) => {
         productName: data.product_name || null,
         type: notification.type,
         href,
+        linkText,
         createdAt: formatNotificationDate(notification.created_at),
         raw: notification // Keep raw data if needed for specific actions
     };
