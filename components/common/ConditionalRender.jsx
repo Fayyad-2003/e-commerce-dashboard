@@ -11,8 +11,8 @@ export default function ConditionalRender({
 }) {
   if (loading)
     return (
-      <div className="flex items-center justify-center p-12">
-        <LoadingSpinner size={48} label={loadingText} />
+      <div className="flex items-center justify-center py-20 px-8">
+        <LoadingSpinner size={64} label={loadingText} />
       </div>
     );
 
