@@ -22,7 +22,13 @@ export default function useAdsList() {
     });
 
     async function handleDelete(adId) {
-        if (!confirm("هل أنت متأكد أنك تريد حذف هذا الإعلان؟")) return;
+        const ok = await showConfirm({
+            title: "حذف الإعلان",
+            text: "هل أنت متأكد أنك تريد حذف هذا الإعلان؟",
+            confirmButtonText: "حذف",
+            icon: "warning"
+        });
+        if (!ok) return;
 
         try {
             const res = await fetchClient(`/api/ads/${adId}`, {
@@ -31,25 +37,16 @@ export default function useAdsList() {
             const json = await res.json();
 
             if (!res.ok || !json.success) {
-                alert(json.message || "تعذّر حذف الإعلان");
+                toast.error(json.message || "تعذّر حذف الإعلان");
                 return;
             }
 
-            alert(json.message || "تم حذف الإعلان بنجاح");
+            toast.success(json.message || "تم حذف الإعلان بنجاح");
 
             // Reload list using generic reload
             reload();
-
-            // Note: Router push logic from before was mostly to refresh server components or URL params.
-            // Since useFetchList handles URL and Reload fetches new data, we might not need to push explicitly 
-            // unless we want to strip other params or specific behavior. 
-            // The existing behavior kept query params. useFetchList reload fetches based on current params.
-            // So reload() is sufficient. But purely keeping original behavior:
-            // const sp = new URLSearchParams(searchParams.toString());
-            // router.push(`/admin/ads?${sp.toString()}`); 
-            // ^ This actually does nothing if params haven't changed.
         } catch (err) {
-            alert(`خطأ: ${err?.message || err}`);
+            toast.error(`خطأ: ${err?.message || err}`);
         }
     }
 
