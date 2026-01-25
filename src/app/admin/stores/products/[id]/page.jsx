@@ -38,6 +38,7 @@ function StoreProductsPage() {
             >
                 <Table
                     data={data}
+                    isProduct={true} // Explicitly identify as product table
                     pagination={pagination}
                     categorie="المنتج"
                     sub={null}

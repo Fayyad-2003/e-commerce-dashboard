@@ -101,8 +101,59 @@ export default function Table({
       setUpdatingPriorityId(id);
 
       const formData = new FormData();
-      formData.append("priority", String(newPriority));
-      formData.append("_method", "POST"); // Explicitly using PUT is safer for partial updates in Laravel
+
+      // If it's a product table, we send the FULL payload (Legacy behavior)
+      if (isProductTable) {
+        Object.keys(item).forEach((key) => {
+          if (key === "unit_of_measure_id") return;
+
+          // Use the new priority if this is the priority field
+          let value = key === "priority" ? newPriority : item[key];
+
+          if (value === null || value === undefined) return;
+
+          // Handle Arrays (images, price_tiers, etc.)
+          if (Array.isArray(value)) {
+            if (key === "images") {
+              value.forEach((val) => {
+                if (val instanceof File || val instanceof Blob) {
+                  formData.append("images[]", val);
+                } else {
+                  formData.append("existing_images[]", val);
+                }
+              });
+            } else {
+              value.forEach((val, index) => {
+                if (typeof val === "object" && !(val instanceof File) && !(val instanceof Blob)) {
+                  Object.keys(val).forEach((subKey) => {
+                    const subVal = val[subKey];
+                    if (subVal !== null && subVal !== undefined) {
+                      formData.append(`${key}[${index}][${subKey}]`, subVal);
+                    }
+                  });
+                } else {
+                  formData.append(`${key}[]`, val);
+                }
+              });
+            }
+            return;
+          }
+
+          if (typeof value === "object" && !(value instanceof File) && !(value instanceof Blob)) {
+            return;
+          }
+
+          formData.append(key, value);
+        });
+
+        // Ensure priority is set
+        formData.set("priority", String(newPriority));
+
+      } else {
+        // Optimized behavior for Categories, Stores, etc.
+        formData.append("priority", String(newPriority));
+        formData.append("_method", "POST");
+      }
 
       // Priority already added above
 

@@ -32,7 +32,7 @@ export const MENU_ITEMS = [
     matchPaths: ["/admin/ads", "/admin/ads/new", "/admin/ads/[id]/update"],
   },
   {
-    name: "محتوى الهيرو",
+    name: "محتوى الواجهة",
     icon: ImageIcon,
     href: "/admin/hero-contents",
     matchPaths: ["/admin/hero-contents"],
