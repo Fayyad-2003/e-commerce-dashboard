@@ -1,5 +1,5 @@
 "use client";
-import Table from "../../components/home/Table"; 
+import Table from "../../components/home/Table";
 import { ConditionalRender, SectionLayout } from "../../components/common";
 import { useBranches } from "../../hooks";
 import dynamic from "next/dynamic";
@@ -34,6 +34,8 @@ export function Home() {
           onDelete={(id) => handleDelete(id)}
           onPageChange={(n) => goToPage(n)}
           onPerPageChange={(per) => changePerPage(per)}
+          showPriority={true}
+          priorityUpdateUrl="/api/categories"
         />
       </ConditionalRender>
     </SectionLayout>

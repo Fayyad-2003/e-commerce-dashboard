@@ -58,6 +58,7 @@ export default function Table({
   subCol,
   loading,
   showImage = true,
+  showPriority = false,
   detailsHref,
 }) {
   const [tableData, setTableData] = useState([]);
@@ -261,7 +262,7 @@ export default function Table({
     if (isProductTable) cols += 1; // details link
     if (showSubCol) cols += 1; // show sub/visit link
     if (subCol === "products") cols += 1; // show products link (for sub-branches)
-    if (isProductTable) cols += 1; // priority
+    if (showPriority) cols += 1; // priority
     cols += 1; // edit
     cols += 1; // delete
     return cols || 1;
@@ -314,10 +315,9 @@ export default function Table({
                     التصنيف: {item.category.name}
                   </p>
                 )}
-                {isProductTable && (
+                {showPriority && (
                   <div className="flex items-center gap-2 mt-2">
-                    <p className="text-xs text-gray-500">رقم الموديل: {item?.model_number ?? "—"}</p>
-                    <span className="text-gray-300">|</span>
+                    <p className="text-xs text-gray-500">الأولوية:</p>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -459,7 +459,7 @@ export default function Table({
                   عرض المنتجات
                 </th>
               )}
-              {isProductTable && (
+              {showPriority && (
                 <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                   الأولوية
                 </th>
@@ -560,7 +560,7 @@ export default function Table({
                   </td>
                 )}
 
-                {isProductTable && (
+                {showPriority && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
                       <input

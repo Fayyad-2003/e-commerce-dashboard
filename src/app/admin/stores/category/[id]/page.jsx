@@ -44,6 +44,8 @@ function StoreLevel2Page() {
                     isProduct={false}
                     deleteHref={(item) => `/api/stores/${item.id}`}
                     editHref={(item) => `/admin/stores/${item.id}/update`}
+                    showPriority={true}
+                    priorityUpdateUrl="/api/stores"
                 />
             </ConditionalRender>
         </SectionLayout>

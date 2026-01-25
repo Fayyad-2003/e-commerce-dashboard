@@ -64,6 +64,8 @@ export function Page() {
           onPageChange={(n) => goToPage(n)}
           onPerPageChange={(per) => changePerPage(per)}
           subCol="products"
+          showPriority={true}
+          priorityUpdateUrl="/api/sub-categories/edit"
         />
       </ConditionalRender>
     </SectionLayout>

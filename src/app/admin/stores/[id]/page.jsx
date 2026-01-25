@@ -43,6 +43,8 @@ function StoreLevel3Page() {
                     onPerPageChange={changePerPage}
                     editHref={(item) => `/admin/store-sections/${item.id}/update`}
                     deleteHref={(item) => `/api/store-sections/${item.id}`}
+                    showPriority={true}
+                    priorityUpdateUrl="/api/store-sections"
                 />
             </ConditionalRender>
         </SectionLayout>

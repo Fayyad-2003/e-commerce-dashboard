@@ -36,6 +36,8 @@ function StoreCategoriesPageClient() {
                     editHref={(item) => `/admin/store-categories/${item.id}/update`}
                     deleteHref="/api/store-categories"
                     showImage={false}
+                    showPriority={true}
+                    priorityUpdateUrl="/api/store-categories"
                 />
             </ConditionalRender>
         </SectionLayout>

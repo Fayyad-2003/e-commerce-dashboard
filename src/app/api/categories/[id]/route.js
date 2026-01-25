@@ -21,7 +21,7 @@ export async function GET(req, { params }) {
     }
 
     const url = `/admin/categories/show/${id}`;
-    
+
     // Use `serverFetch` to fetch the category details
     const res = await serverFetch(url, { method: "GET" });
 
@@ -33,7 +33,10 @@ export async function GET(req, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
+export async function PUT(req, { params }) { return updateHandler(req, params); }
+export async function POST(req, { params }) { return updateHandler(req, params); }
+
+async function updateHandler(req, params) {
   try {
     const { id } = params;
     if (!id) {
@@ -45,7 +48,7 @@ export async function PUT(req, { params }) {
 
     const form = await req.formData();  // Handle form data
     const url = `/admin/categories/update/${id}`;
-    
+
     // Use `serverFetch` to send the update request
     const res = await serverFetch(url, { method: "POST", body: form });
 
@@ -68,7 +71,7 @@ export async function DELETE(req, { params }) {
     }
 
     const url = `/admin/categories/delete/${id}`;
-    
+
     // Use `serverFetch` to send the delete request
     const res = await serverFetch(url, { method: "DELETE" });
 

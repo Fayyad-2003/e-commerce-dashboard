@@ -55,10 +55,10 @@ export async function GET(req, { params } = {}) {
       Array.isArray(payload?.data)
         ? payload.data
         : Array.isArray(payload)
-        ? payload
-        : Array.isArray(payload?.data?.data)
-        ? payload.data.data
-        : [];
+          ? payload
+          : Array.isArray(payload?.data?.data)
+            ? payload.data.data
+            : [];
 
     const meta = payload?.meta || payload?.data?.meta || null;
 
@@ -103,7 +103,7 @@ export async function DELETE(req, { params } = {}) {
     let payload = null;
     try {
       payload = rawText ? JSON.parse(rawText) : null;
-    } catch {}
+    } catch { }
 
     if (!res.ok) {
       return NextResponse.json(
@@ -120,6 +120,52 @@ export async function DELETE(req, { params } = {}) {
       {
         success: payload?.success ?? true,
         message: payload?.message ?? "تم حذف التصنيف الفرعي بنجاح",
+        data: payload?.data ?? null,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { success: false, message: `استثناء غير متوقع: ${err?.message || err}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req, { params }) { return updateHandler(req, params); }
+export async function POST(req, { params }) { return updateHandler(req, params); }
+
+async function updateHandler(req, { params } = {}) {
+  try {
+    const subCategoryId = params?.id;
+    if (!subCategoryId) {
+      return NextResponse.json({ success: false, message: "subCategory id مفقود" }, { status: 400 });
+    }
+
+    const form = await req.formData();
+    const res = await serverFetch(`/admin/sub-categories/update/${subCategoryId}`, { method: "POST", body: form });
+
+    const rawText = await res.clone().text();
+    let payload = null;
+    try {
+      payload = rawText ? JSON.parse(rawText) : null;
+    } catch { }
+
+    if (!res.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: payload?.message || `خطأ من السيرفر الخارجي: ${res.status} ${res.statusText}`,
+          upstream: payload ?? rawText ?? null,
+        },
+        { status: res.status || 502 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: payload?.success ?? true,
+        message: payload?.message ?? "تم تعديل التصنيف الفرعي بنجاح",
         data: payload?.data ?? null,
       },
       { status: 200 }
