@@ -101,54 +101,10 @@ export default function Table({
       setUpdatingPriorityId(id);
 
       const formData = new FormData();
-      Object.keys(item).forEach((key) => {
-        if (key === "unit_of_measure_id") return;
+      formData.append("priority", String(newPriority));
+      formData.append("_method", "POST"); // Explicitly using PUT is safer for partial updates in Laravel
 
-        // Use the new priority if this is the priority field
-        let value = key === "priority" ? newPriority : item[key];
-
-        if (value === null || value === undefined) return;
-
-        // Handle Arrays (images, price_tiers, etc.)
-        if (Array.isArray(value)) {
-          if (key === "images") {
-            value.forEach((val) => {
-              if (val instanceof File || val instanceof Blob) {
-                formData.append("images[]", val);
-              } else {
-                formData.append("existing_images[]", val);
-              }
-            });
-          } else {
-            value.forEach((val, index) => {
-              if (typeof val === "object" && !(val instanceof File) && !(val instanceof Blob)) {
-                // Array of objects results in key[index][subKey]
-                Object.keys(val).forEach((subKey) => {
-                  const subVal = val[subKey];
-                  if (subVal !== null && subVal !== undefined) {
-                    formData.append(`${key}[${index}][${subKey}]`, subVal);
-                  }
-                });
-              } else {
-                // Array of primitives (or Files) results in key[]
-                formData.append(`${key}[]`, val);
-              }
-            });
-          }
-          return;
-        }
-
-        // Skip complex objects (like 'category') unless they are Files/Blobs.
-        // We generally only want to send IDs for relationships (like category_id), not the whole object.
-        if (typeof value === "object" && !(value instanceof File) && !(value instanceof Blob)) {
-          return;
-        }
-
-        formData.append(key, value);
-      });
-
-      // Ensure the NEW priority is definitely there
-      formData.set("priority", String(newPriority));
+      // Priority already added above
 
       // Determine endpoint: use priorityUpdateUrl function/string if provided, else default
       let target = `/api/products/${id}`;
