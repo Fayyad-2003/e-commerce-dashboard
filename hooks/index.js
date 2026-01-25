@@ -24,6 +24,7 @@ import useStores from "./stores/useStores";
 import useMainStoreCategories from "./stores/useMainStoreCategories";
 import useStoreSubCategories from "./stores/useStoreSubCategories";
 import useStoreProducts from "./stores/useStoreProducts";
+import useHeroContent from "./main/useHeroContent";
 
 
 
@@ -52,5 +53,6 @@ export {
     useStores,
     useMainStoreCategories,
     useStoreSubCategories,
-    useStoreProducts
+    useStoreProducts,
+    useHeroContent
 }

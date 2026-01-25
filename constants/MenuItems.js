@@ -1,4 +1,4 @@
-import { Bell, BookOpenTextIcon, Coins, Component, BadgeInfo, ListOrdered, MessagesSquare, Newspaper, RulerIcon, TagsIcon, UsersIcon, MonitorPlay, Store } from "lucide-react";
+import { Bell, BookOpenTextIcon, Coins, Component, BadgeInfo, ListOrdered, MessagesSquare, Newspaper, RulerIcon, TagsIcon, UsersIcon, MonitorPlay, Store, ImageIcon } from "lucide-react";
 
 export const MENU_ITEMS = [
   {
@@ -30,6 +30,12 @@ export const MENU_ITEMS = [
     icon: MonitorPlay,
     href: "/admin/ads",
     matchPaths: ["/admin/ads", "/admin/ads/new", "/admin/ads/[id]/update"],
+  },
+  {
+    name: "محتوى الهيرو",
+    icon: ImageIcon,
+    href: "/admin/hero-contents",
+    matchPaths: ["/admin/hero-contents"],
   },
   {
     name: "الاشعارات",
