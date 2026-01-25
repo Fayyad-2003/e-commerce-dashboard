@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react"; // Added useState
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { ConditionalRender, SectionLayout } from "../../../../components/common";
 import { useHeroContent } from "../../../../hooks";
-import { toast } from "react-hot-toast";
 
 function HeroContentPageClient() {
     const {
@@ -16,25 +15,18 @@ function HeroContentPageClient() {
 
     const [formData, setFormData] = useState({
         title: "",
-        subtitle: "",
-        buttonText: "",
-        buttonLink: "",
+        sub_title: "",
         image: null,
     });
 
     // Populate form when data is loaded
     useEffect(() => {
         if (heroContent && heroContent.length > 0) {
-            // Assuming heroContent is an array, take the first item or specific structure logic
-            // If it's a single object, adjust accordingly. 
-            // Based on useFetchList, data is usually an array.
             const data = heroContent[0] || {};
             setFormData({
                 title: data.title || "",
-                subtitle: data.subtitle || "",
-                buttonText: data.buttonText || "",
-                buttonLink: data.buttonLink || "",
-                image: null, // Don't pre-fill file input
+                sub_title: data.sub_title || "",
+                image: null,
             });
         }
     }, [heroContent]);
@@ -52,9 +44,7 @@ function HeroContentPageClient() {
         e.preventDefault();
         const data = new FormData();
         data.append("title", formData.title);
-        data.append("subtitle", formData.subtitle);
-        data.append("buttonText", formData.buttonText);
-        data.append("buttonLink", formData.buttonLink);
+        data.append("sub_title", formData.sub_title);
         if (formData.image) {
             data.append("image", formData.image);
         }
@@ -63,74 +53,55 @@ function HeroContentPageClient() {
     };
 
     return (
-        <SectionLayout title="Hero Content">
+        <SectionLayout title="محتوى الهيرو">
             <ConditionalRender
                 loading={loading}
                 error={err}
-                loadingText="Loading hero content..."
+                loadingText="جاري تحميل المحتوى..."
             >
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">العنوان</label>
                             <input
                                 type="text"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter hero title"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5A443A] focus:outline-none transition-all"
+                                placeholder="مثال: منتجات حرفية مميزة لمنزلك"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">العنوان الفرعي</label>
                             <textarea
-                                name="subtitle"
-                                value={formData.subtitle}
+                                name="sub_title"
+                                value={formData.sub_title}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter hero subtitle"
-                                rows="3"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5A443A] focus:outline-none transition-all"
+                                placeholder="مثال: اكتشف منتجات حرفية فريدة تضيف دفئاً وشخصية لمساحة معيشتك"
+                                rows="4"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                            <input
-                                type="text"
-                                name="buttonText"
-                                value={formData.buttonText}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="e.g. Shop Now"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Button Link</label>
-                            <input
-                                type="text"
-                                name="buttonLink"
-                                value={formData.buttonLink}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="/shop"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">الصورة</label>
                             <input
                                 type="file"
                                 name="image"
                                 accept="image/*"
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5A443A] focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#F7931D] file:text-white hover:file:bg-[#e0851a]"
                             />
                             {heroContent?.[0]?.image && !formData.image && (
-                                <div className="mt-2 text-sm text-gray-500">
-                                    Current image: {heroContent[0].image}
+                                <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                                    <p className="text-sm text-gray-500 mb-2">الصورة الحالية:</p>
+                                    <img
+                                        src={heroContent[0].image}
+                                        alt="Current Hero"
+                                        className="max-h-40 rounded shadow-sm object-contain"
+                                    />
                                 </div>
                             )}
                         </div>
@@ -138,10 +109,10 @@ function HeroContentPageClient() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className={`w-full py-2 px-4 rounded-lg text-white font-semibold transition-colors
-                ${saving ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                            className={`w-full py-3 px-6 rounded-lg text-white font-semibold transform transition-all duration-200
+                ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-[#5A443A] hover:bg-[#4a3830] hover:shadow-lg active:scale-95"}`}
                         >
-                            {saving ? "Saving..." : "Update Hero Content"}
+                            {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
                         </button>
                     </form>
                 </div>
