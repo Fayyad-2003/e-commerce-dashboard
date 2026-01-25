@@ -3,7 +3,7 @@ import { serverFetch, handleResponse } from "@/lib/api";
 
 export async function GET() {
     try {
-        const url = `/admin/hero-contents/index`;
+        const url = `/admin/hero-contents`;
         const res = await serverFetch(url, { method: "GET" });
         return handleResponse(res);
     } catch (e) {
