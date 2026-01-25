@@ -38,7 +38,8 @@ function StoreProductsPage() {
             >
                 <Table
                     data={data}
-                    isProduct={true} // Explicitly identify as product table
+                    isProduct={true}
+                    showPriority={true} // Enable priority column
                     pagination={pagination}
                     categorie="المنتج"
                     sub={null}

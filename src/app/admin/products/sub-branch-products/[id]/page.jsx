@@ -56,6 +56,8 @@ export default function Page() {
           sub="null"
           url="/admin/products"
           isProduct={true}
+          showPriority={true}
+          priorityUpdateUrl={(item) => `/api/products/${item?.id}`}
           editHref={(item) => `/admin/products/${item?.id}/update`}
           deleteLabel="هذا المنتج"
           onDelete={(id) => handleDelete(id)} // <-- pass the delete handler here
