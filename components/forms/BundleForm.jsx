@@ -592,7 +592,6 @@ export default function BundleForm({
         </div>
       </div>
 
-      {/* submit */}
       <div className="flex justify-end gap-2 mt-2">
         <button
           type="button"
@@ -615,6 +614,7 @@ export default function BundleForm({
             "حفظ"
           )}
         </button>
+      </div>
       </div>
     </form>
   );
