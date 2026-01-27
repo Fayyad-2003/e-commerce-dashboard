@@ -499,7 +499,21 @@ export default function BundleForm({
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-1 block">المنتجات</label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-sm font-medium">المنتجات</label>
+            {(selectedMainCategoryId || selectedSubCategoryId) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedMainCategoryId("");
+                  setSelectedSubCategoryId("");
+                }}
+                className="text-xs text-red-500 hover:text-red-700 underline"
+              >
+                مسح الفلاتر
+              </button>
+            )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
             <div>
               <label className="text-xs text-gray-600 mb-1 block">القسم الرئيسي</label>
