@@ -8,6 +8,7 @@ export { default as useArchivedOrders } from "./main/useArchivedOrders";
 import useArticles from "./main/useArticles";
 import useUnitsOfMeasure from "./main/useUnitsOfMeasure";
 import useProducts from "./main/useProducts";
+import useCategories from "./main/useCategories";
 import useSubCategories from "./main/useSubCategories";
 import useCreateSubBranch from "./create/useCreateSubBranch";
 import useEditMainBranch from "./update/useEditMainBranch";
@@ -38,6 +39,7 @@ export {
     useArticles,
     useUnitsOfMeasure,
     useProducts,
+    useCategories,
     useSubCategories,
     useCreateSubBranch,
     useAddMainBranch,

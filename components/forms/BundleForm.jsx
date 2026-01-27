@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
+import { useCategories, useSubCategories } from "../../hooks";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const STORAGE_BASE =
@@ -118,8 +119,6 @@ export default function BundleForm({
   const [productsList, setProductsList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [mainCategories, setMainCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
   const [selectedMainCategoryId, setSelectedMainCategoryId] = useState("");
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
 
@@ -188,50 +187,8 @@ export default function BundleForm({
     fetchProducts();
   }, []);
 
-  /** Load main categories once */
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const res = await fetchClient("/api/categories?per_page=100", { cache: "no-store" });
-        const j = await res.json().catch(() => ({}));
-        const items = Array.isArray(j?.data) ? j.data : Array.isArray(j) ? j : [];
-        if (!alive) return;
-        setMainCategories(items.map(c => ({ id: c.id, name: c.name })));
-      } catch (e) {
-        console.error("fetch categories:", e);
-      }
-    })();
-    return () => { alive = false; };
-  }, []);
-
-  /** When main category changes, fetch related sub-categories */
-  useEffect(() => {
-    let alive = true;
-    async function loadSubs() {
-      if (!selectedMainCategoryId) {
-        setSubCategories([]);
-        setSelectedSubCategoryId("");
-        return;
-      }
-      try {
-        const res = await fetchClient(`/api/sub-categories/by-category?category_id=${encodeURIComponent(selectedMainCategoryId)}&per_page=100`, { cache: "no-store" });
-        const j = await res.json().catch(() => ({}));
-        const items = Array.isArray(j?.data) ? j.data : [];
-        if (!alive) return;
-        setSubCategories(items.map(s => ({ id: s.id, name: s.name })));
-        setSelectedSubCategoryId("");
-      } catch (e) {
-        console.error("fetch sub-categories:", e);
-        if (alive) {
-          setSubCategories([]);
-          setSelectedSubCategoryId("");
-        }
-      }
-    }
-    loadSubs();
-    return () => { alive = false; };
-  }, [selectedMainCategoryId]);
+  const { categories } = useCategories();
+  const { data: subCategories } = useSubCategories(selectedMainCategoryId || null);
 
   /** Image preview lifecycle */
   useEffect(() => {
@@ -399,8 +356,9 @@ export default function BundleForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-6 rounded-lg shadow max-w-3xl mx-auto space-y-4"
+      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl mx-auto"
     >
+      <div className="p-6 space-y-4">
       <style>{`
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -411,13 +369,11 @@ export default function BundleForm({
           -moz-appearance: textfield;
         }
       `}</style>
-      {/* Image */}
       <div>
         <label className="text-sm font-medium mb-1 block">صورة العرض</label>
         <div className="flex items-center gap-4">
           {preview ? (
             <div className="relative group">
-              {/* ✅ USE SAFE COMPONENT */}
               <SafeImage
                 src={preview}
                 className="w-20 h-20 object-cover rounded"
@@ -454,19 +410,17 @@ export default function BundleForm({
         </div>
       </div>
 
-      {/* NAME */}
       <div>
         <label className="text-sm font-medium mb-1 block">اسم العرض</label>
         <input
           type="text"
           value={form.name}
           onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-          className="w-full border rounded px-2 py-1"
+          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
           required
         />
       </div>
 
-      {/* PRICE */}
       <div>
         <label className="text-sm font-medium mb-1 block">
           السعر (الحد الأقصى: {totalProductsPrice})
@@ -478,12 +432,11 @@ export default function BundleForm({
           max={totalProductsPrice}
           step="0.01"
           onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
-          className="w-full border rounded px-2 py-1"
+          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
           required
         />
       </div>
 
-      {/* DATES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div>
           <label className="text-sm mb-1 block">تاريخ البداية</label>
@@ -493,7 +446,7 @@ export default function BundleForm({
             onChange={(e) =>
               setForm((p) => ({ ...p, start_date: e.target.value }))
             }
-            className="w-full border rounded px-2 py-1"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
           />
         </div>
         <div>
@@ -504,17 +457,15 @@ export default function BundleForm({
             onChange={(e) =>
               setForm((p) => ({ ...p, end_date: e.target.value }))
             }
-            className="w-full border rounded px-2 py-1"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
           />
         </div>
       </div>
 
-      {/* COUNT */}
       <div className="mb-2">
         <strong>إجمالي عدد المنتجات:</strong> {totalProductsCount}
       </div>
 
-      {/* PRODUCTS */}
       <div>
         <label className="text-sm font-medium mb-1 block">المنتجات</label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
@@ -523,10 +474,10 @@ export default function BundleForm({
             <select
               value={selectedMainCategoryId}
               onChange={(e) => setSelectedMainCategoryId(e.target.value)}
-              className="w-full border rounded px-2 py-1"
+              className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
             >
               <option value="">اختر القسم الرئيسي</option>
-              {mainCategories.map((c) => (
+              {(categories || []).map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
@@ -536,11 +487,11 @@ export default function BundleForm({
             <select
               value={selectedSubCategoryId}
               onChange={(e) => setSelectedSubCategoryId(e.target.value)}
-              className="w-full border rounded px-2 py-1"
+              className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
               disabled={!selectedMainCategoryId}
             >
               <option value="">اختر المجموعة الفرعية</option>
-              {subCategories.map((s) => (
+              {(subCategories || []).map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
@@ -551,10 +502,10 @@ export default function BundleForm({
           placeholder="ابحث عن منتج..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full border rounded px-2 py-1 mb-2"
+          className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
         />
 
-        <div className="max-h-64 overflow-y-auto border rounded">
+        <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100">
           {loadingProducts ? (
             <div className="text-center py-2">جارِ التحميل...</div>
           ) : filteredProducts.length === 0 ? (
