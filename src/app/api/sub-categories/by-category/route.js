@@ -18,9 +18,7 @@ export async function GET(req) {
     }
 
     const res = await serverFetch(
-      `/admin/sub-categories/getByCategory/${encodeURIComponent(categoryId)}?page=${encodeURIComponent(
-        page
-      )}&per_page=${encodeURIComponent(per_page)}`,
+      `/admin/sub-categories/getByCategory/${encodeURIComponent(categoryId)} ${per_page === "all" ? "" : `?page=${page}&per_page=${per_page}`}`,
       { method: "GET" }
     );
 
@@ -36,12 +34,12 @@ export async function GET(req) {
       message: payload?.message ?? "",
       data: Array.isArray(payload?.data)
         ? payload.data.map((s) => ({
-            id: s.id,
-            name: s.name,
-            image: s.full_image_url || s.image || "",
-            category_id: s.category_id,
-            created_at: s.created_at,
-          }))
+          id: s.id,
+          name: s.name,
+          image: s.full_image_url || s.image || "",
+          category_id: s.category_id,
+          created_at: s.created_at,
+        }))
         : [],
       meta: payload?.meta ?? null,
     };

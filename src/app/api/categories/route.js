@@ -12,7 +12,7 @@ export async function GET(req) {
     const page = searchParams.get("page") || "1";
     const per_page = searchParams.get("per_page") || "100";
 
-    const url = `/admin/categories/index?page=${page}&per_page=${per_page}`;
+    const url = `/admin/categories/index${per_page === "all" ? "" : `?page=${page}&per_page=${per_page}`}`;
 
     // Use the serverFetch utility to fetch data
     const res = await serverFetch(url, { method: "GET" });
