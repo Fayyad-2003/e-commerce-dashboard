@@ -326,39 +326,39 @@ export default function Table({
                   <div className="flex items-center gap-2 mt-2">
                     <p className="text-xs text-gray-500">الأولوية:</p>
                     <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                          const next = cur - 1;
-                          priorities.current[item.id] = String(next);
-                        }}
-                        disabled={updatingPriorityId === item.id}
-                        className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                        title="إنقاص"
-                      >
-                        -
-                      </button>
                       <input
                         type="number"
                         defaultValue={item.priority ?? 0}
                         onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        className={`w-14 h-7 px-1 text-xs border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                        className={`w-12 h-7 px-1 text-xs border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
                         disabled={updatingPriorityId === item.id}
                       />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                          const next = cur + 1;
-                          priorities.current[item.id] = String(next);
-                        }}
-                        disabled={updatingPriorityId === item.id}
-                        className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                        title="زيادة"
-                      >
-                        +
-                      </button>
+                      <div className="flex flex-col gap-0.5 ml-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
+                            const next = cur + 1;
+                            priorities.current[item.id] = String(next);
+                          }}
+                          className="w-6 h-3.5 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          title="زيادة"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
+                            const next = cur - 1;
+                            priorities.current[item.id] = String(next);
+                          }}
+                          className="w-6 h-3.5 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          title="إنقاص"
+                        >
+                          -
+                        </button>
+                      </div>
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
@@ -596,19 +596,6 @@ export default function Table({
                 {showPriority && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                          const next = cur - 1;
-                          priorities.current[item.id] = String(next);
-                        }}
-                        disabled={updatingPriorityId === item.id}
-                        className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                        title="إنقاص"
-                      >
-                        -
-                      </button>
                       <input
                         type="number"
                         defaultValue={item.priority ?? 0}
@@ -618,22 +605,35 @@ export default function Table({
                             handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
                           }
                         }}
-                        className={`w-16 h-8 px-2 text-sm font-medium border border-gray-300 rounded-md text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${updatingPriorityId === item.id ? "bg-gray-50 opacity-50 cursor-wait" : "bg-white"}`}
+                        className={`w-14 h-8 px-2 text-sm font-medium border border-gray-300 rounded-md text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${updatingPriorityId === item.id ? "bg-gray-50 opacity-50 cursor-wait" : "bg-white"}`}
                         disabled={updatingPriorityId === item.id}
                       />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                          const next = cur + 1;
-                          priorities.current[item.id] = String(next);
-                        }}
-                        disabled={updatingPriorityId === item.id}
-                        className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                        title="زيادة"
-                      >
-                        +
-                      </button>
+                      <div className="flex flex-col gap-0.5 ml-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
+                            const next = cur + 1;
+                            priorities.current[item.id] = String(next);
+                          }}
+                          className="w-7 h-4 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          title="زيادة"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
+                            const next = cur - 1;
+                            priorities.current[item.id] = String(next);
+                          }}
+                          className="w-7 h-4 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          title="إنقاص"
+                        >
+                          -
+                        </button>
+                      </div>
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
