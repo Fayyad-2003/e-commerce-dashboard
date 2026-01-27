@@ -168,29 +168,34 @@ export default function BundleForm({
 
         console.log("Raw API Response:", data);
 
-        let list = [];
-        if (data && (data.products || data.store_products)) {
-          list = [
-            ...(Array.isArray(data.products) ? data.products : []),
-            ...(Array.isArray(data.store_products) ? data.store_products : [])
-          ];
-        } else {
-          list = Array.isArray(data) ? data : data?.data || [];
-        }
+        // Robust extraction: check root and nested 'data' property
+        const products = Array.isArray(data?.products) ? data.products : (Array.isArray(data?.data?.products) ? data.data.products : []);
+        const storeProducts = Array.isArray(data?.store_products) ? data.store_products : (Array.isArray(data?.data?.store_products) ? data.data.store_products : []);
 
-        const normalized = list.map((p) => ({
-          id: p.id,
-          name: p.name,
-          description: p.description || "",
-          unit_of_measure: p.unit_of_measure?.name || p.unit_of_measure || "",
-          base_price: Number(p.base_price ?? 0),
-          image:
-            (p.full_image_urls && p.full_image_urls[0]) ||
-            p.image ||
-            (p.images && p.images[0]) ||
-            "",
-          sub_category_id: p.sub_category_id ?? p.subId ?? null,
-        }));
+        // Merge both lists
+        const list = [...products, ...storeProducts];
+
+        const normalized = list.map((p) => {
+          // If it's a store_product, the product info might be nested under 'product'
+          const item = p.product || p;
+
+          return {
+            id: p.id, // Use the unique ID (usually the link ID for store products)
+            name: item.name || p.name || "",
+            description: item.description || p.description || "",
+            unit_of_measure: item.unit_of_measure?.name || item.unit_of_measure || p.unit_of_measure || "",
+            base_price: Number(item.base_price ?? p.base_price ?? 0),
+            image:
+              (item.full_image_urls && item.full_image_urls[0]) ||
+              item.image ||
+              (item.images && item.images[0]) ||
+              (p.full_image_urls && p.full_image_urls[0]) ||
+              p.image ||
+              (p.images && p.images[0]) ||
+              "",
+            sub_category_id: item.sub_category_id ?? p.sub_category_id ?? item.subId ?? p.subId ?? null,
+          };
+        });
         setProductsList(normalized);
       } catch (err) {
         console.error(err);
