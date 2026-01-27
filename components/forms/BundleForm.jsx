@@ -121,6 +121,7 @@ export default function BundleForm({
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [selectedMainCategoryId, setSelectedMainCategoryId] = useState("");
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
+  const [withStoreProduct, setWithStoreProduct] = useState(false);
 
   const fileRef = useRef(null);
   const objectUrlRef = useRef(null);
@@ -161,7 +162,8 @@ export default function BundleForm({
     async function fetchProducts() {
       setLoadingProducts(true);
       try {
-        const res = await fetchClient("/api/products");
+        const url = withStoreProduct ? "/api/products?with_store_product=true" : "/api/products";
+        const res = await fetchClient(url);
         const data = await res.json();
         const list = Array.isArray(data) ? data : data?.data || [];
         const normalized = list.map((p) => ({
@@ -185,7 +187,7 @@ export default function BundleForm({
       }
     }
     fetchProducts();
-  }, []);
+  }, [withStoreProduct]);
 
   const { categories } = useCategories();
   const { data: subCategories } = useSubCategories(selectedMainCategoryId || null);
@@ -504,6 +506,15 @@ export default function BundleForm({
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
         />
+        <label className="inline-flex items-center gap-2 text-sm mb-2">
+          <input
+            type="checkbox"
+            checked={withStoreProduct}
+            onChange={(e) => setWithStoreProduct(e.target.checked)}
+            className="h-4 w-4 border border-gray-300 rounded"
+          />
+          <span>عرض منتجات المتجر</span>
+        </label>
 
         <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100">
           {loadingProducts ? (

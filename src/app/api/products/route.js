@@ -15,7 +15,9 @@ export async function POST(req) {
 /** GET — list products with query params */
 export async function GET(req) {
   try {
-    const res = await serverFetch(`/admin/products/index`, { method: "GET" });
+    const qs = req.nextUrl?.searchParams?.toString?.() || "";
+    const url = `/admin/products/index${qs ? `?${qs}` : ""}`;
+    const res = await serverFetch(url, { method: "GET" });
     return handleResponse(res);
   } catch (e) {
     return NextResponse.json({ success: false, message: e?.message || "فشل جلب المنتجات" }, { status: 500 });
