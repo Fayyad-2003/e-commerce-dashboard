@@ -326,22 +326,16 @@ export default function Table({
                   <div className="flex items-center gap-2 mt-2">
                     <p className="text-xs text-gray-500">الأولوية:</p>
                     <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        defaultValue={item.priority ?? 0}
-                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        className={`w-12 h-7 px-1 text-xs border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
-                        disabled={updatingPriorityId === item.id}
-                      />
-                      <div className="flex flex-col gap-0.5 ml-1">
+                      <div className="flex gap-1 ml-1">
                         <button
                           type="button"
                           onClick={() => {
                             const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
                             const next = cur + 1;
                             priorities.current[item.id] = String(next);
+                            setTableData([...tableData]);
                           }}
-                          className="w-6 h-3.5 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          className="w-6 h-7 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 pointer-events-auto"
                           title="زيادة"
                         >
                           +
@@ -350,15 +344,26 @@ export default function Table({
                           type="button"
                           onClick={() => {
                             const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                            const next = cur - 1;
+                            const next = Math.max(cur - 1, 0);
                             priorities.current[item.id] = String(next);
+                            setTableData([...tableData]);
                           }}
-                          className="w-6 h-3.5 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          className="w-6 h-7 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50 pointer-events-auto"
                           title="إنقاص"
                         >
                           -
                         </button>
                       </div>
+                      <input
+                        type="number"
+                        value={String(priorities.current[item.id] ?? item.priority ?? 0)}
+                        onChange={(e) => {
+                          priorities.current[item.id] = e.target.value;
+                          setTableData([...tableData]);
+                        }}
+                        className={`w-12 h-7 px-1 text-xs border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] ${updatingPriorityId === item.id ? "opacity-50" : ""}`}
+                        disabled={updatingPriorityId === item.id}
+                      />
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
@@ -596,27 +601,16 @@ export default function Table({
                 {showPriority && (
                   <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <input
-                        type="number"
-                        defaultValue={item.priority ?? 0}
-                        onChange={(e) => (priorities.current[item.id] = e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
-                          }
-                        }}
-                        className={`w-14 h-8 px-2 text-sm font-medium border border-gray-300 rounded-md text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${updatingPriorityId === item.id ? "bg-gray-50 opacity-50 cursor-wait" : "bg-white"}`}
-                        disabled={updatingPriorityId === item.id}
-                      />
-                      <div className="flex flex-col gap-0.5 ml-1">
+                      <div className="flex gap-1">
                         <button
                           type="button"
                           onClick={() => {
                             const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
                             const next = cur + 1;
                             priorities.current[item.id] = String(next);
+                            setTableData([...tableData]);
                           }}
-                          className="w-7 h-4 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 pointer-events-auto"
                           title="زيادة"
                         >
                           +
@@ -625,15 +619,31 @@ export default function Table({
                           type="button"
                           onClick={() => {
                             const cur = Number(priorities.current[item.id] ?? item.priority ?? 0);
-                            const next = cur - 1;
+                            const next = Math.max(cur - 1, 0);
                             priorities.current[item.id] = String(next);
+                            setTableData([...tableData]);
                           }}
-                          className="w-7 h-4 flex items-center justify-center border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                          className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 pointer-events-auto"
                           title="إنقاص"
                         >
                           -
                         </button>
                       </div>
+                      <input
+                        type="number"
+                        value={String(priorities.current[item.id] ?? item.priority ?? 0)}
+                        onChange={(e) => {
+                          priorities.current[item.id] = e.target.value;
+                          setTableData([...tableData]);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority);
+                          }
+                        }}
+                        className={`w-14 h-8 px-2 text-sm font-medium border border-gray-300 rounded-md text-center focus:outline-none focus:ring-1 focus:ring-[var(--primary-brown)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${updatingPriorityId === item.id ? "bg-gray-50 opacity-50 cursor-wait" : "bg-white"}`}
+                        disabled={updatingPriorityId === item.id}
+                      />
                       <button
                         onClick={() => handlePriorityUpdate(item, priorities.current[item.id] ?? item.priority)}
                         disabled={updatingPriorityId === item.id}
