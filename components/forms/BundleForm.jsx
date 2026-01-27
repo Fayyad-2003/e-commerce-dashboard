@@ -380,8 +380,9 @@ export default function BundleForm({
     })
     .filter((p) => {
       const name = normalizeArabic(p.name.toLowerCase());
+      const description = normalizeArabic((p.description || "").toLowerCase());
       const term = normalizeArabic(searchTerm.toLowerCase());
-      return name.includes(term);
+      return name.includes(term) || description.includes(term);
     });
 
   return (
