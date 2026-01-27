@@ -169,7 +169,17 @@ export default function BundleForm({
         console.log("Raw API Response:", data);
 
         // Robust extraction: check root and nested 'data' property
-        const products = Array.isArray(data?.products) ? data.products : (Array.isArray(data?.data?.products) ? data.data.products : []);
+        let products = [];
+        if (Array.isArray(data?.products)) {
+          products = data.products;
+        } else if (Array.isArray(data?.data?.products)) {
+          products = data.data.products;
+        } else if (Array.isArray(data?.data)) {
+          products = data.data; // Fallback for standard Laravel resource
+        } else if (Array.isArray(data)) {
+          products = data; // Fallback for direct array
+        }
+
         const storeProducts = Array.isArray(data?.store_products) ? data.store_products : (Array.isArray(data?.data?.store_products) ? data.data.store_products : []);
 
         // Merge both lists
