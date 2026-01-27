@@ -346,6 +346,7 @@ export default function BundleForm({
 
   const filteredProducts = productsList
     .filter((p) => {
+      if (withStoreProduct) return true;
       if (!selectedSubCategoryId) return true;
       return String(p.sub_category_id || "") === String(selectedSubCategoryId);
     })
@@ -361,7 +362,7 @@ export default function BundleForm({
       className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl mx-auto"
     >
       <div className="p-6 space-y-4">
-      <style>{`
+        <style>{`
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
           -webkit-appearance: none;
@@ -371,261 +372,261 @@ export default function BundleForm({
           -moz-appearance: textfield;
         }
       `}</style>
-      <div>
-        <label className="text-sm font-medium mb-1 block">صورة العرض</label>
-        <div className="flex items-center gap-4">
-          {preview ? (
-            <div className="relative group">
-              <SafeImage
-                src={preview}
-                className="w-20 h-20 object-cover rounded"
-                alt="Bundle Preview"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"
-              >
-                ×
-              </button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed rounded p-4 text-center text-gray-500">
-              لا توجد صورة
-            </div>
-          )}
-
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageChange}
-            id="bundle-image"
-          />
-          <label
-            htmlFor="bundle-image"
-            className="cursor-pointer bg-gray-100 px-3 py-1 rounded text-sm"
-          >
-            {preview ? "تغيير الصورة" : "اختر صورة"}
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium mb-1 block">اسم العرض</label>
-        <input
-          type="text"
-          value={form.name}
-          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium mb-1 block">
-          السعر (الحد الأقصى: {totalProductsPrice})
-        </label>
-        <input
-          type="number"
-          value={form.price}
-          min="0"
-          max={totalProductsPrice}
-          step="0.01"
-          onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
-          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div>
-          <label className="text-sm mb-1 block">تاريخ البداية</label>
-          <input
-            type="date"
-            value={form.start_date}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, start_date: e.target.value }))
-            }
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-          />
-        </div>
-        <div>
-          <label className="text-sm mb-1 block">تاريخ النهاية</label>
-          <input
-            type="date"
-            value={form.end_date}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, end_date: e.target.value }))
-            }
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-          />
-        </div>
-      </div>
-
-      <div className="mb-2">
-        <strong>إجمالي عدد المنتجات:</strong> {totalProductsCount}
-      </div>
-
-      <div>
-        <label className="text-sm font-medium mb-1 block">المنتجات</label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-          <div>
-            <label className="text-xs text-gray-600 mb-1 block">القسم الرئيسي</label>
-            <select
-              value={selectedMainCategoryId}
-              onChange={(e) => setSelectedMainCategoryId(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-            >
-              <option value="">اختر القسم الرئيسي</option>
-              {(categories || []).map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-gray-600 mb-1 block">المجموعة الفرعية</label>
-            <select
-              value={selectedSubCategoryId}
-              onChange={(e) => setSelectedSubCategoryId(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-              disabled={!selectedMainCategoryId}
-            >
-              <option value="">اختر المجموعة الفرعية</option>
-              {(subCategories || []).map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <input
-          type="text"
-          placeholder="ابحث عن منتج..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
-        />
-        <label className="inline-flex items-center gap-2 text-sm mb-2">
-          <input
-            type="checkbox"
-            checked={withStoreProduct}
-            onChange={(e) => setWithStoreProduct(e.target.checked)}
-            className="h-4 w-4 border border-gray-300 rounded"
-          />
-          <span>عرض منتجات المتجر</span>
-        </label>
-
-        <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100">
-          {loadingProducts ? (
-            <div className="text-center py-2">جارِ التحميل...</div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-2 text-gray-500">لا توجد منتجات</div>
-          ) : (
-            filteredProducts.map((p) => {
-              const qty = qtyOf(p.id);
-
-              return (
-                <div
-                  key={p.id}
-                  className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+          <label className="text-sm font-medium mb-1 block">صورة العرض</label>
+          <div className="flex items-center gap-4">
+            {preview ? (
+              <div className="relative group">
+                <SafeImage
+                  src={preview}
+                  className="w-20 h-20 object-cover rounded"
+                  alt="Bundle Preview"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"
                 >
-                  <div className="flex items-center gap-2">
-                    {/* ✅ USE SAFE COMPONENT HERE */}
-                    {/* If no image, fallback is handled inside or via conditional */}
-                    <SafeImage
-                      src={p.image}
-                      className="w-12 h-12 rounded object-cover"
-                      alt={p.name}
-                      fallback={
-                        <div className="w-12 h-12 bg-gray-100 text-xs text-center flex items-center justify-center text-gray-400">
-                          لا صورة
-                        </div>
-                      }
-                    />
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed rounded p-4 text-center text-gray-500">
+                لا توجد صورة
+              </div>
+            )}
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex gap-2 items-start">
-                        <span className="font-semibold truncate">{p.name}</span>
-                        <span className="text-gray-600 font-bold ml-2">
-                          {p.base_price} $
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-500 truncate" title={p.description}>
-                        {p.description}
-                      </div>
-                      <div className="flex gap-3 items-center mt-1">
-                        {qty > 0 && (
-                          <div className="text-xs text-blue-600 font-medium">
-                            الكمية: {qty}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+              id="bundle-image"
+            />
+            <label
+              htmlFor="bundle-image"
+              className="cursor-pointer bg-gray-100 px-3 py-1 rounded text-sm"
+            >
+              {preview ? "تغيير الصورة" : "اختر صورة"}
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-1 block">اسم العرض</label>
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-1 block">
+            السعر (الحد الأقصى: {totalProductsPrice})
+          </label>
+          <input
+            type="number"
+            value={form.price}
+            min="0"
+            max={totalProductsPrice}
+            step="0.01"
+            onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="text-sm mb-1 block">تاريخ البداية</label>
+            <input
+              type="date"
+              value={form.start_date}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, start_date: e.target.value }))
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+            />
+          </div>
+          <div>
+            <label className="text-sm mb-1 block">تاريخ النهاية</label>
+            <input
+              type="date"
+              value={form.end_date}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, end_date: e.target.value }))
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+            />
+          </div>
+        </div>
+
+        <div className="mb-2">
+          <strong>إجمالي عدد المنتجات:</strong> {totalProductsCount}
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-1 block">المنتجات</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">القسم الرئيسي</label>
+              <select
+                value={selectedMainCategoryId}
+                onChange={(e) => setSelectedMainCategoryId(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+              >
+                <option value="">اختر القسم الرئيسي</option>
+                {(categories || []).map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-gray-600 mb-1 block">المجموعة الفرعية</label>
+              <select
+                value={selectedSubCategoryId}
+                onChange={(e) => setSelectedSubCategoryId(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+                disabled={!selectedMainCategoryId}
+              >
+                <option value="">اختر المجموعة الفرعية</option>
+                {(subCategories || []).map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="ابحث عن منتج..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#F7931D]"
+          />
+          <label className="inline-flex items-center gap-2 text-sm mb-2">
+            <input
+              type="checkbox"
+              checked={withStoreProduct}
+              onChange={(e) => setWithStoreProduct(e.target.checked)}
+              className="h-4 w-4 border border-gray-300 rounded"
+            />
+            <span>عرض منتجات المتجر</span>
+          </label>
+
+          <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100">
+            {loadingProducts ? (
+              <div className="text-center py-2">جارِ التحميل...</div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-2 text-gray-500">لا توجد منتجات</div>
+            ) : (
+              filteredProducts.map((p) => {
+                const qty = qtyOf(p.id);
+
+                return (
+                  <div
+                    key={p.id}
+                    className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+                  >
+                    <div className="flex items-center gap-2">
+                      {/* ✅ USE SAFE COMPONENT HERE */}
+                      {/* If no image, fallback is handled inside or via conditional */}
+                      <SafeImage
+                        src={p.image}
+                        className="w-12 h-12 rounded object-cover"
+                        alt={p.name}
+                        fallback={
+                          <div className="w-12 h-12 bg-gray-100 text-xs text-center flex items-center justify-center text-gray-400">
+                            لا صورة
                           </div>
-                        )}
-                        <span className="text-[10px] bg-gray-100 px-1 rounded text-gray-600">
-                          {p.unit_of_measure || "وحدة غير معروفة"}
-                        </span>
+                        }
+                      />
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex gap-2 items-start">
+                          <span className="font-semibold truncate">{p.name}</span>
+                          <span className="text-gray-600 font-bold ml-2">
+                            {p.base_price} $
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 truncate" title={p.description}>
+                          {p.description}
+                        </div>
+                        <div className="flex gap-3 items-center mt-1">
+                          {qty > 0 && (
+                            <div className="text-xs text-blue-600 font-medium">
+                              الكمية: {qty}
+                            </div>
+                          )}
+                          <span className="text-[10px] bg-gray-100 px-1 rounded text-gray-600">
+                            {p.unit_of_measure || "وحدة غير معروفة"}
+                          </span>
+                        </div>
                       </div>
                     </div>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => removeProduct(p)}
+                        disabled={qty <= 0}
+                        className={`h-8 w-8 flex items-center justify-center rounded text-sm ${qty > 0
+                          ? "bg-red-500 text-white hover:bg-red-600"
+                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          }`}
+                      >
+                        -
+                      </button>
+
+                      <input
+                        type="number"
+                        min="0"
+                        value={qty}
+                        onChange={(e) => handleQtyChange(p, e.target.value)}
+                        className="w-12 h-8 border rounded text-center focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => addProduct(p)}
+                        className="h-8 w-8 flex items-center justify-center bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => removeProduct(p)}
-                      disabled={qty <= 0}
-                      className={`h-8 w-8 flex items-center justify-center rounded text-sm ${qty > 0
-                        ? "bg-red-500 text-white hover:bg-red-600"
-                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        }`}
-                    >
-                      -
-                    </button>
-
-                    <input
-                      type="number"
-                      min="0"
-                      value={qty}
-                      onChange={(e) => handleQtyChange(p, e.target.value)}
-                      className="w-12 h-8 border rounded text-center focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => addProduct(p)}
-                      className="h-8 w-8 flex items-center justify-center bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-end gap-2 mt-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 border rounded"
-        >
-          إلغاء
-        </button>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
-        >
-          {submitting ? (
-            <>
-              <LoadingSpinner size={18} className="text-white" />
-              <span>جاري الحفظ...</span>
-            </>
-          ) : (
-            "حفظ"
-          )}
-        </button>
-      </div>
+        <div className="flex justify-end gap-2 mt-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 border rounded"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
+          >
+            {submitting ? (
+              <>
+                <LoadingSpinner size={18} className="text-white" />
+                <span>جاري الحفظ...</span>
+              </>
+            ) : (
+              "حفظ"
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );

@@ -15,8 +15,14 @@ export async function POST(req) {
 /** GET — list products with query params */
 export async function GET(req) {
   try {
-    const qs = req.nextUrl?.searchParams?.toString?.() || "";
-    const url = `/admin/products/index${qs ? `?${qs}` : ""}`;
+    const { searchParams } = new URL(req.url);
+    const withStore = searchParams.get("with_store_product");
+    const qs = searchParams.toString() || "";
+
+    // Choose the backend endpoint based on with_store_product
+    const backendPath = (withStore === "true") ? "/admin/products/bulk" : "/admin/products/index";
+    const url = `${backendPath}${qs ? `?${qs}` : ""}`;
+
     const res = await serverFetch(url, { method: "GET" });
     return handleResponse(res);
   } catch (e) {
