@@ -179,20 +179,22 @@ export default function BundleForm({
           // If it's a store_product, the product info might be nested under 'product'
           const item = p.product || p;
 
+          const rawImage = (item.full_image_urls && item.full_image_urls[0]) ||
+            item.image ||
+            (item.images && item.images[0]) ||
+            (p.full_image_urls && p.full_image_urls[0]) ||
+            p.image ||
+            (p.images && p.images[0]) ||
+            "";
+
           return {
             id: p.id, // Use the unique ID (usually the link ID for store products)
             name: item.name || p.name || "",
+            store_name: item.section?.store?.name || p.section?.store?.name || "",
             description: item.description || p.description || "",
             unit_of_measure: item.unit_of_measure?.name || item.unit_of_measure || p.unit_of_measure || "",
             base_price: Number(item.base_price ?? p.base_price ?? 0),
-            image:
-              (item.full_image_urls && item.full_image_urls[0]) ||
-              item.image ||
-              (item.images && item.images[0]) ||
-              (p.full_image_urls && p.full_image_urls[0]) ||
-              p.image ||
-              (p.images && p.images[0]) ||
-              "",
+            image: normalizeImage(rawImage),
             sub_category_id: item.sub_category_id ?? p.sub_category_id ?? item.subId ?? p.subId ?? null,
           };
         });
@@ -565,6 +567,11 @@ export default function BundleForm({
                       <div className="flex-1 min-w-0">
                         <div className="flex gap-2 items-start">
                           <span className="font-semibold truncate">{p.name}</span>
+                          {p.store_name && (
+                            <span className="text-[10px] bg-blue-50 text-blue-600 px-1 rounded border border-blue-100">
+                              {p.store_name}
+                            </span>
+                          )}
                           <span className="text-gray-600 font-bold ml-2">
                             {p.base_price} $
                           </span>
