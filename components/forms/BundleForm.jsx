@@ -118,6 +118,10 @@ export default function BundleForm({
   const [productsList, setProductsList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [mainCategories, setMainCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedMainCategoryId, setSelectedMainCategoryId] = useState("");
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
 
   const fileRef = useRef(null);
   const objectUrlRef = useRef(null);
@@ -172,6 +176,7 @@ export default function BundleForm({
             p.image ||
             (p.images && p.images[0]) ||
             "",
+          sub_category_id: p.sub_category_id ?? p.subId ?? null,
         }));
         setProductsList(normalized);
       } catch (err) {
@@ -182,6 +187,51 @@ export default function BundleForm({
     }
     fetchProducts();
   }, []);
+
+  /** Load main categories once */
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetchClient("/api/categories?per_page=100", { cache: "no-store" });
+        const j = await res.json().catch(() => ({}));
+        const items = Array.isArray(j?.data) ? j.data : Array.isArray(j) ? j : [];
+        if (!alive) return;
+        setMainCategories(items.map(c => ({ id: c.id, name: c.name })));
+      } catch (e) {
+        console.error("fetch categories:", e);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  /** When main category changes, fetch related sub-categories */
+  useEffect(() => {
+    let alive = true;
+    async function loadSubs() {
+      if (!selectedMainCategoryId) {
+        setSubCategories([]);
+        setSelectedSubCategoryId("");
+        return;
+      }
+      try {
+        const res = await fetchClient(`/api/sub-categories/by-category?category_id=${encodeURIComponent(selectedMainCategoryId)}&per_page=100`, { cache: "no-store" });
+        const j = await res.json().catch(() => ({}));
+        const items = Array.isArray(j?.data) ? j.data : [];
+        if (!alive) return;
+        setSubCategories(items.map(s => ({ id: s.id, name: s.name })));
+        setSelectedSubCategoryId("");
+      } catch (e) {
+        console.error("fetch sub-categories:", e);
+        if (alive) {
+          setSubCategories([]);
+          setSelectedSubCategoryId("");
+        }
+      }
+    }
+    loadSubs();
+    return () => { alive = false; };
+  }, [selectedMainCategoryId]);
 
   /** Image preview lifecycle */
   useEffect(() => {
@@ -335,11 +385,16 @@ export default function BundleForm({
     }
   };
 
-  const filteredProducts = productsList.filter((p) => {
-    const name = normalizeArabic(p.name.toLowerCase());
-    const term = normalizeArabic(searchTerm.toLowerCase());
-    return name.includes(term);
-  });
+  const filteredProducts = productsList
+    .filter((p) => {
+      if (!selectedSubCategoryId) return true;
+      return String(p.sub_category_id || "") === String(selectedSubCategoryId);
+    })
+    .filter((p) => {
+      const name = normalizeArabic(p.name.toLowerCase());
+      const term = normalizeArabic(searchTerm.toLowerCase());
+      return name.includes(term);
+    });
 
   return (
     <form
@@ -462,6 +517,35 @@ export default function BundleForm({
       {/* PRODUCTS */}
       <div>
         <label className="text-sm font-medium mb-1 block">المنتجات</label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+          <div>
+            <label className="text-xs text-gray-600 mb-1 block">القسم الرئيسي</label>
+            <select
+              value={selectedMainCategoryId}
+              onChange={(e) => setSelectedMainCategoryId(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+            >
+              <option value="">اختر القسم الرئيسي</option>
+              {mainCategories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-600 mb-1 block">المجموعة الفرعية</label>
+            <select
+              value={selectedSubCategoryId}
+              onChange={(e) => setSelectedSubCategoryId(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+              disabled={!selectedMainCategoryId}
+            >
+              <option value="">اختر المجموعة الفرعية</option>
+              {subCategories.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         <input
           type="text"
           placeholder="ابحث عن منتج..."
