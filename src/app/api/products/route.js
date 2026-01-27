@@ -20,7 +20,7 @@ export async function GET(req) {
     const qs = searchParams.toString() || "";
 
     // Choose the backend endpoint based on with_store_product
-    const backendPath = (withStore === "true") ? "/admin/products/bulk" : "/admin/products/index";
+    const backendPath = (withStore === "true") ? "/admin/products/index?with_store_product=true" : "/admin/products/index";
     const url = `${backendPath}${qs ? `?${qs}` : ""}`;
 
     const res = await serverFetch(url, { method: "GET" });
