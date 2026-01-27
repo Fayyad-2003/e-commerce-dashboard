@@ -10,9 +10,16 @@ export async function GET(req) {
     // Extract query params directly
     const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") || "1";
-    const per_page = searchParams.get("per_page") || "100";
+    const with_store_product = searchParams.get("with_store_product");
 
-    const url = `/admin/categories/index${per_page === "all" ? "" : `?page=${page}&per_page=${per_page}`}`;
+    let query = "";
+    if (with_store_product) {
+      query = `?with_store_product=${with_store_product}`;
+    } else {
+      query = `?page=${page}&per_page=${per_page}`;
+    }
+
+    const url = `/admin/categories/index${query}`;
 
     // Use the serverFetch utility to fetch data
     const res = await serverFetch(url, { method: "GET" });

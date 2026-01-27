@@ -5,7 +5,7 @@ import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
 import { showConfirm } from "../../src/lib/confirm";
 
-export default function useBranches() {
+export default function useBranches(options = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -19,7 +19,13 @@ export default function useBranches() {
     reload,
     setData: setBranches
   } = useFetchList({
-    url: "/api/categories" // Keeps original endpoint
+    url: (page, perPage) => {
+      if (options.with_store_product) {
+        return `/api/categories?with_store_product=true`;
+      }
+      return `/api/categories?page=${page}&per_page=${perPage}`;
+    },
+    defaultPerPage: options.perPage || 10,
   });
 
   async function handleDelete(id) {

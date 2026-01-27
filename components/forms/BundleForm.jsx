@@ -218,7 +218,7 @@ export default function BundleForm({
     fetchProducts();
   }, [withStoreProduct]);
 
-  const { branches: categories } = useBranches();
+  const { branches: categories } = useBranches({ perPage: 1000, with_store_product: true });
   const { data: subCategories } = useSubCategories(selectedMainCategoryId || null, { perPage: 1000 });
 
   /** Image preview lifecycle */
