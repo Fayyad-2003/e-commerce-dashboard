@@ -236,8 +236,8 @@ export default function ProductForm({
   const [formData, setFormData] = useState({
     id: product?.id ?? "",
     // في سياق المتجر نستخدم store_section_id فقط؛ في غير ذلك نستخدم sub_category_id
-    store_section_id: String(product?.store_section_id ?? ""),
-    sub_category_id: String(product?.sub_category_id ?? defaultSubCategoryId ?? ""),
+    store_section_id: String(product?.store_section_id ?? (isStoreContext ? defaultSubCategoryId : "")),
+    sub_category_id: String(product?.sub_category_id ?? (!isStoreContext ? defaultSubCategoryId : "")),
     unit_of_measure_id: String(product?.unit_of_measure_id ?? ""),
     name: product?.name ?? "",
     model_number: product?.model_number ?? "",
@@ -576,12 +576,17 @@ export default function ProductForm({
               </p>
             )}
             {!product?.section?.name && isStoreContext && (
-              <p className="text-sm text-gray-600">
-                المجموعة الفرعية المختارة:{" "}
-                <span className="font-medium text-[#402E32]">
-                  {formData.store_section_id || "لم يتم التحديد"}
-                </span>
-              </p>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-600">
+                  المجموعة الفرعية المختارة:{" "}
+                  <span className="font-medium text-[#402E32]">
+                    {formData.store_section_id || "لم يتم التحديد"}
+                  </span>
+                </p>
+                {errors.store_section_id && (
+                  <p className="text-sm text-red-500">{errors.store_section_id}</p>
+                )}
+              </div>
             )}
             {!product?.section?.name && !isStoreContext && (
               <p className="text-sm text-gray-600">
