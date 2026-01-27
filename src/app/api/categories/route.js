@@ -10,6 +10,7 @@ export async function GET(req) {
     // Extract query params directly
     const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") || "1";
+    const per_page = searchParams.get("per_page") || "100";
     const with_store_product = searchParams.get("with_store_product");
 
     let query = "";
