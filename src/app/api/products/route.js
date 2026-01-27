@@ -21,8 +21,8 @@ export async function GET(req) {
 
     // Choose the backend endpoint based on with_store_product
     const url = (withStore === "true") ? "/admin/products/index?with_store_product=true" : "/admin/products/index";
-
     const res = await serverFetch(url, { method: "GET" });
+
     return handleResponse(res);
   } catch (e) {
     return NextResponse.json({ success: false, message: e?.message || "فشل جلب المنتجات" }, { status: 500 });

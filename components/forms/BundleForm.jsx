@@ -166,8 +166,18 @@ export default function BundleForm({
         const res = await fetchClient(url);
         const data = await res.json();
 
-        console.log(data);
-        const list = Array.isArray(data) ? data : data?.data || [];
+        console.log("Raw API Response:", data);
+
+        let list = [];
+        if (data && (data.products || data.store_products)) {
+          list = [
+            ...(Array.isArray(data.products) ? data.products : []),
+            ...(Array.isArray(data.store_products) ? data.store_products : [])
+          ];
+        } else {
+          list = Array.isArray(data) ? data : data?.data || [];
+        }
+
         const normalized = list.map((p) => ({
           id: p.id,
           name: p.name,
