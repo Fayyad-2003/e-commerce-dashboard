@@ -219,7 +219,7 @@ export default function BundleForm({
   }, [withStoreProduct]);
 
   const { categories } = useCategories();
-  const { data: subCategories } = useSubCategories(selectedMainCategoryId || null);
+  const { data: subCategories } = useSubCategories(selectedMainCategoryId || null, { perPage: 1000 });
 
   /** Image preview lifecycle */
   useEffect(() => {

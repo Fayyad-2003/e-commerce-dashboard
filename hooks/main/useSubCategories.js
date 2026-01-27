@@ -5,7 +5,7 @@ import useFetchList from "../useFetchList";
 import toast from "react-hot-toast";
 import { showConfirm } from "../../src/lib/confirm";
 
-export default function useSubCategories(categoryId) {
+export default function useSubCategories(categoryId, options = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,7 +25,8 @@ export default function useSubCategories(categoryId) {
       return `/api/sub-categories/by-category?category_id=${categoryId}&page=${page}&per_page=${perPage}`;
     },
     dependencies: [categoryId],
-    basePath: `/admin/branches/sub-branch/${categoryId}`
+    basePath: `/admin/branches/sub-branch/${categoryId}`,
+    defaultPerPage: options.perPage || 10,
   });
 
   // ----- new: delete handler for sub-categories -----
