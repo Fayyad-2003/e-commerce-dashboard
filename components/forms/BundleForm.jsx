@@ -165,6 +165,8 @@ export default function BundleForm({
         const url = withStoreProduct ? "/api/products?with_store_product=true" : "/api/products";
         const res = await fetchClient(url);
         const data = await res.json();
+
+        console.log(data);
         const list = Array.isArray(data) ? data : data?.data || [];
         const normalized = list.map((p) => ({
           id: p.id,
