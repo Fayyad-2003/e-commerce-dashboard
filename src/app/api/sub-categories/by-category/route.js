@@ -18,7 +18,7 @@ export async function GET(req) {
     }
 
     const res = await serverFetch(
-      `/admin/sub-categories/getByCategory/${encodeURIComponent(categoryId)} ${per_page === "all" ? "" : `?page=${page}&per_page=${per_page}`}`,
+      `/admin/sub-categories/getByCategory/${encodeURIComponent(categoryId)}${per_page === "all" ? "" : `?page=${page}&per_page=${per_page}`}`,
       { method: "GET" }
     );
 

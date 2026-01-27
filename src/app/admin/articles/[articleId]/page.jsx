@@ -107,8 +107,11 @@ export default function ArticleDetailsPage() {
         )}
 
         {/* المحتوى */}
-        <div className="font-bold text-md leading-relaxed">
-          {article?.content || "لا يوجد محتوى"}
+        <div className="font-bold text-md leading-relaxed whitespace-pre-wrap">
+          {(article?.content || "لا يوجد محتوى")
+            .replace(/\\r\\n/g, "\n")
+            .replace(/\\r/g, "\n")
+            .replace(/\\n/g, "\n")}
         </div>
 
         {/* معلومات إضافية */}
