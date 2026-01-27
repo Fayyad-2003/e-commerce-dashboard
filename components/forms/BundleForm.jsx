@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { fetchClient } from "../../src/lib/fetchClient";
-import { useCategories, useSubCategories } from "../../hooks";
+import { useBranches, useSubCategories } from "../../hooks";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const STORAGE_BASE =
@@ -218,7 +218,7 @@ export default function BundleForm({
     fetchProducts();
   }, [withStoreProduct]);
 
-  const { categories } = useCategories();
+  const { branches: categories } = useBranches();
   const { data: subCategories } = useSubCategories(selectedMainCategoryId || null, { perPage: 1000 });
 
   /** Image preview lifecycle */
