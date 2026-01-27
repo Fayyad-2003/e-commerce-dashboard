@@ -375,7 +375,6 @@ export default function BundleForm({
 
   const filteredProducts = productsList
     .filter((p) => {
-      if (withStoreProduct) return true;
       if (!selectedSubCategoryId) return true;
       return String(p.sub_category_id || "") === String(selectedSubCategoryId);
     })
