@@ -4,16 +4,6 @@ import { useRouter } from "next/navigation";
 import { Save, X, Plus, Trash2 } from "lucide-react";
 import { fetchClient } from "../../src/lib/fetchClient";
 
-/*
-  Enhanced EditProductForm: supports both edit *and* create modes.
-  - Pass `product` to edit an existing product (existing behaviour).
-  - Pass `defaultSubCategoryId` (and do NOT pass `product`) to open the form in CREATE mode with that sub-category preselected.
-
-  Behavioural notes included in code comments.
-*/
-
-const UPLOADED_SCREENSHOT = "/mnt/data/Screenshot 2025-11-24 145132.png";
-
 function normalizeColors(raw) {
   if (raw === null || raw === undefined) return [];
 
@@ -229,6 +219,7 @@ export default function ProductForm({
   const router = useRouter();
   // نعتمد فقط على عدم وجود منتج لتحديد وضع الإنشاء
   const isCreate = !product?.id;
+  const isStoreContext = redirectBaseUrl === "/admin/stores/products";
   // units
   const [units, setUnits] = useState({ items: [], loading: true, error: "" });
 
@@ -244,10 +235,9 @@ export default function ProductForm({
 
   const [formData, setFormData] = useState({
     id: product?.id ?? "",
-    // prefer product.store_section_id, otherwise use defaultSubCategoryId (create mode)
-    store_section_id: String(
-      product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId ?? ""
-    ),
+    // في سياق المتجر نستخدم store_section_id فقط؛ في غير ذلك نستخدم sub_category_id
+    store_section_id: String(product?.store_section_id ?? ""),
+    sub_category_id: String(product?.sub_category_id ?? defaultSubCategoryId ?? ""),
     unit_of_measure_id: String(product?.unit_of_measure_id ?? ""),
     name: product?.name ?? "",
     model_number: product?.model_number ?? "",
@@ -403,7 +393,11 @@ export default function ProductForm({
   // validation (slightly adjusted to allow create-mode without id)
   const validate = () => {
     const newErrors = {};
-    if (!formData.store_section_id) newErrors.store_section_id = "مطلوب";
+    if (isStoreContext) {
+      if (!formData.store_section_id) newErrors.store_section_id = "مطلوب";
+    } else {
+      if (!formData.sub_category_id) newErrors.sub_category_id = "مطلوب";
+    }
     if (!formData.unit_of_measure_id) newErrors.unit_of_measure_id = "مطلوب";
     if (!formData.name) newErrors.name = "مطلوب";
     if (!formData.model_number) newErrors.model_number = "مطلوب";
@@ -432,7 +426,11 @@ export default function ProductForm({
       if (!isCreate && formData.id)
         fd.append("product_id", String(formData.id));
 
-      fd.append("store_section_id", String(formData.store_section_id));
+      if (isStoreContext) {
+        fd.append("store_section_id", String(formData.store_section_id));
+      } else {
+        fd.append("sub_category_id", String(formData.sub_category_id));
+      }
       fd.append("unit_of_measure_id", String(formData.unit_of_measure_id));
       fd.append("name", formData.name);
       fd.append("model_number", formData.model_number);
@@ -474,13 +472,8 @@ export default function ProductForm({
 
       // choose endpoint and method
       let endpoint = isCreate
-        ? `/api/products`
+        ? (isStoreContext ? `/api/store-products/store` : `/api/products`)
         : (updateBaseUrl ? `${updateBaseUrl}` : `/api/products/${formData.id}`);
-
-      // IF it's a create action AND we have a store_section_id, use the specific store-product endpoint
-      if (isCreate && formData.store_section_id && !updateBaseUrl) {
-        endpoint = `/api/store-products/store`;
-      }
 
       const method = "POST"; // use POST for both create and edit (keeps parity with previous behaviour)
 
@@ -492,11 +485,12 @@ export default function ProductForm({
         const newId =
           out?.product?.id ?? out?.data?.id ?? out?.id ?? formData.id;
 
-        if (redirectBaseUrl) {
-          router.push(`${redirectBaseUrl}/${formData.store_section_id}`);
+        if (isStoreContext) {
+          const targetBase = redirectBaseUrl || "/admin/stores/products";
+          router.push(`${targetBase}/${formData.store_section_id}`);
         } else {
           router.push(
-            `/admin/products/sub-branch-products/${formData.store_section_id}`
+            `/admin/products/sub-branch-products/${formData.sub_category_id}`
           );
         }
       } else {
@@ -517,12 +511,13 @@ export default function ProductForm({
         </h2>
         <button
           onClick={() => {
-            if (redirectBaseUrl) {
-              router.push(`${redirectBaseUrl}/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId}`);
+            if (isStoreContext) {
+              const id = product?.store_section_id ?? formData.store_section_id;
+              const base = redirectBaseUrl || "/admin/stores/products";
+              router.push(`${base}/${id}`);
             } else {
-              router.push(
-                `/admin/products/sub-branch-products/${product?.store_section_id ?? product?.sub_category_id ?? defaultSubCategoryId}`
-              );
+              const id = product?.sub_category_id ?? formData.sub_category_id ?? defaultSubCategoryId;
+              router.push(`/admin/products/sub-branch-products/${id}`);
             }
           }}
           className="flex items-center text-gray-500 hover:text-gray-700"
@@ -580,11 +575,19 @@ export default function ProductForm({
                 </span>
               </p>
             )}
-            {!product?.section?.name && (
+            {!product?.section?.name && isStoreContext && (
               <p className="text-sm text-gray-600">
                 المجموعة الفرعية المختارة:{" "}
                 <span className="font-medium text-[#402E32]">
                   {formData.store_section_id || "لم يتم التحديد"}
+                </span>
+              </p>
+            )}
+            {!product?.section?.name && !isStoreContext && (
+              <p className="text-sm text-gray-600">
+                المجموعة الفرعية المختارة:{" "}
+                <span className="font-medium text-[#402E32]">
+                  {formData.sub_category_id || "لم يتم التحديد"}
                 </span>
               </p>
             )}
